@@ -1,0 +1,31 @@
+.logo {
+  float: left;
+  height: 32px;
+  width: 32px;
+  margin: 16px 24px 16px 0;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  padding: 15px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+}
+
+.resultEntryContainer {
+  padding: 15px;
+  border: 1px solid #DDD;
+  border-radius: 8px;
+  background-color: cornflowerblue;
+  color: #FEFEFE;
+}
+
+.answerContainer {
+  margin-top: 10px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #DDDDDD;
+  border-radius: 8px;
+  min-height: 200px;
+}
