@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Title from "antd/es/typography/Title";
 import { AutoComplete, Button, Col, Row, Space } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
@@ -20,6 +20,9 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
       () => console.debug("Location not available!")
     );
   };
+
+  useEffect(() => {}, []);
+
   return (
     <>
       <Title level={1}>Dein Klimacheck</Title>
