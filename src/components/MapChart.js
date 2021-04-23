@@ -3,7 +3,6 @@ import {
   ComposableMap,
   Geographies,
   Geography,
-  Annotation,
   Marker,
 } from "react-simple-maps";
 

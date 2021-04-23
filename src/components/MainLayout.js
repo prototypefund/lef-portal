@@ -8,6 +8,9 @@ import { ResultEntry } from "./resultPageComponents/ResultEntry";
 import { Imprint } from "./Imprint";
 import { SignInPage } from "./SignInPage";
 import { SignUpPage } from "./SignUpPage";
+import { useSelector } from "react-redux";
+import { AccountPage } from "./AccountPage";
+import ProtectedRoute from "./ProtectedRoute";
 
 const { Header, Footer, Content } = Layout;
 const pages = [
@@ -16,17 +19,32 @@ const pages = [
     label: "Klimacheck",
     to: "/",
   },
-  {
+  /*{
     id: "2",
     label: "Impressum",
     to: "/impressum",
     style: { float: "right" },
-  },
+  },*/
   {
     id: "3",
-    label: "Einloggen",
+    label: "Anmelden",
     to: "/signIn",
     style: { float: "right" },
+    unsecure: true,
+  },
+  {
+    id: "4",
+    label: "Abmelden",
+    action: "signOut",
+    style: { float: "right" },
+    secure: true,
+  },
+  {
+    id: "5",
+    label: "Mein Konto",
+    to: "/account",
+    style: { float: "right" },
+    secure: true,
   },
 ];
 
@@ -34,21 +52,28 @@ ResultEntry.propTypes = { question: PropTypes.string };
 
 const MainLayout = ({ location = {}, history = {} }) => {
   const { state = {} } = location;
+  const authStatus = useSelector((state) => state.auth.authState);
+  const loggedIn = authStatus === "loggedIn";
   const selectedKeys = pages
     .filter((p) => p.to === location.pathname)
     .map((page) => page.id);
   return (
     <Layout className="layout" style={{ height: "100vh" }}>
       <Header>
-        <div className="logo">LEF</div>
+        {/*<div className="logo">LEF</div>*/}
         <Menu theme="dark" mode="horizontal" selectedKeys={selectedKeys}>
-          {pages.map((page) => {
-            return (
-              <Menu.Item key={page.id} style={page.style}>
-                <Link to={page.to}>{page.label}</Link>
-              </Menu.Item>
-            );
-          })}
+          {pages
+            .filter(
+              (page) =>
+                !(!loggedIn && page.secure) && !(loggedIn && page.unsecure)
+            )
+            .map((page) => {
+              return (
+                <Menu.Item key={page.id} style={page.style}>
+                  <Link to={page.to}>{page.label}</Link>
+                </Menu.Item>
+              );
+            })}
         </Menu>
       </Header>
       <Content>
@@ -72,6 +97,12 @@ const MainLayout = ({ location = {}, history = {} }) => {
             <Route path={"/signUp"}>
               <SignUpPage />
             </Route>
+
+            <ProtectedRoute
+              loggedIn={loggedIn}
+              path={"/account"}
+              component={AccountPage}
+            />
 
             <Route path="/">
               <StartPage
