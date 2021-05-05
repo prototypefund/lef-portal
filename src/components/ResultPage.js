@@ -1,6 +1,7 @@
 import { ResultEntry } from "./resultPageComponents/ResultEntry";
 import { Heading } from "./shared/Heading";
 import { Button } from "react-bootstrap";
+import { TargetWidget } from "./shared/TargetWidget";
 
 const resultEntries = [
   {
@@ -27,5 +28,7 @@ export const ResultPage = ({ city = "", onBack = () => {} }) => (
         <ResultEntry question={entry.question.replaceAll("%s", city)} />
       ))}
     </div>
+
+    <TargetWidget city={city} />
   </div>
 );
