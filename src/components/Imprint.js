@@ -1,3 +1,3 @@
-import Title from "antd/es/typography/Title";
+import { Heading } from "./shared/Heading";
 
-export const Imprint = () => <Title level={1}>Impressum</Title>;
+export const Imprint = () => <Heading size={"h1"} text={"Impressum"} />;

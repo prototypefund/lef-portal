@@ -4,7 +4,7 @@ export const lefApi = {
   signUp: (username, password) => {},
   signIn: (username, password) => {
     return apiRequest("token/get", {
-      userName: username,
+      email: username,
       password: password,
     });
   },

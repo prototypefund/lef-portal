@@ -9,4 +9,4 @@ Es ist so einfach, meine Oma könnte dieses Repo aufsetzen:
 - Faker: Erstellung von Fakedaten
 - Axios: Kommunikation mit Server
 - Redux-Toolkit: lokaler Zwischenspeicher
-- Antd: Design Framework, angelehnt an Material Design
+- Bootstrap: Design Framework

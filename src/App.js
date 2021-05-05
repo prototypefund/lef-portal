@@ -4,10 +4,8 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import reducers from "./../src/redux/rootReducers";
 import { createLogger } from "redux-logger";
-import "antd/dist/antd.css";
 import MainContent from "./components/MainLayout";
-import { ConfigProvider } from "antd";
-import deDE from "antd/lib/locale/de_DE";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const logger = createLogger({
   timestamp: true,
@@ -20,13 +18,11 @@ const store = configureStore({
 
 const App = () => (
   <div className="App">
-    <ConfigProvider locale={deDE}>
-      <Provider store={store}>
-        <Router>
-          <MainContent />
-        </Router>
-      </Provider>
-    </ConfigProvider>
+    <Provider store={store}>
+      <Router>
+        <MainContent />
+      </Router>
+    </Provider>
   </div>
 );
 

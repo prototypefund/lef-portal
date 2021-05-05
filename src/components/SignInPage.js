@@ -1,116 +1,56 @@
-import {
-  Button,
-  Checkbox,
-  Col,
-  Divider,
-  Form,
-  Input,
-  Row,
-  Typography,
-} from "antd";
-import Title from "antd/es/typography/Title";
 import { useDispatch, useSelector } from "react-redux";
 import { requestSignIn } from "../redux/authSlice";
-
-const layout = {
-  labelCol: {
-    span: 5,
-  },
-  wrapperCol: {
-    span: 19,
-  },
-};
-const tailLayout = {
-  wrapperCol: {
-    offset: 5,
-    span: 19,
-  },
-};
+import { useState } from "react";
+import { Button, Form } from "react-bootstrap";
+import { Heading } from "./shared/Heading";
 
 export function SignInPage() {
   const dispatch = useDispatch();
   const authMessage = useSelector((state) => state.auth.message);
   const authState = useSelector((state) => state.auth.authState);
-  const onFinish = (values) => {
-    // console.log("Success:", values);
-    dispatch(requestSignIn(values.username, values.password));
-  };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const onFinish = () => {
+    dispatch(requestSignIn(email, password));
   };
 
   return (
-    <Row style={{ margin: 10 }}>
+    <div>
       {authState === "loggedIn" ? (
-        <Col>Erfolgreich eingeloggt.</Col>
+        <p>Erfolgreich eingeloggt.</p>
       ) : (
-        <Col span={24}>
-          <Title level={1}>Einloggen</Title>
-          <Typography style={{ whiteSpace: "pre-wrap", marginBottom: 15 }}>
+        <div>
+          <Heading text={"Anmelden"} />
+          <p style={{ whiteSpace: "pre-wrap", marginBottom: 15 }}>
             {"Loggen Sie sich mit Ihrem Nutzernamen und Passwort ein."}
-          </Typography>
-          <Form
-            {...layout}
-            name="basic"
-            initialValues={{
-              remember: true,
-            }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
-          >
-            <Form.Item
-              label="Benutzername"
-              name="username"
-              rules={[
-                {
-                  required: true,
-                  message: "Bitte Ihren Benutzernamen nicht vergessen.",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
+          </p>
+          <Form>
+            <Form.Group controlId={"signUpForm"}>
+              <Form.Label>Benutzername</Form.Label>
+              <Form.Control
+                onChange={(e) => setEmail(e.target.value)}
+                type={"email"}
+                placeholder={"Ihre E-Mail"}
+              />
 
-            <Form.Item
-              label="Passwort"
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Bitte Ihr Passwort eingeben.",
-                },
-              ]}
-            >
-              <Input.Password />
-            </Form.Item>
+              <Form.Label>Passwort</Form.Label>
+              <Form.Control
+                onChange={(e) => setPassword(e.target.value)}
+                type={"password"}
+                placeholder={"Ihr Passwort"}
+              />
 
-            <Form.Item {...tailLayout} name="remember" valuePropName="checked">
-              <Checkbox>Eingeloggt bleiben</Checkbox>
-            </Form.Item>
-
-            <Form.Item {...tailLayout}>
-              <Button type="primary" htmlType="submit">
-                Einloggen
+              <Button variant="primary" onClick={onFinish} className={"mt-3"}>
+                Anmelden
               </Button>
-            </Form.Item>
+            </Form.Group>
           </Form>
-
-          <Form.Item {...tailLayout}>
-            {authMessage && (
-              <Typography style={{ color: "red" }}>{authMessage}</Typography>
-            )}
-          </Form.Item>
-          <Divider />
-
-          <Row align={"middle"}>
-            <Typography>Noch keinen Account?</Typography>
-            <Button type={"link"} href={"/signUp"}>
-              Jetzt registrieren
-            </Button>
-          </Row>
-        </Col>
+          <hr />
+          <p>{authMessage}</p>
+        </div>
       )}
-    </Row>
+    </div>
   );
 }

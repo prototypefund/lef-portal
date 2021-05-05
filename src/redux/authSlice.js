@@ -12,8 +12,7 @@ const authSlice = createSlice({
   },
   reducers: {
     updateAuthState: (state, action) => {
-      const { authState, message, token } = action.payload;
-      localStorage.setItem("token", token);
+      const { authState, message } = action.payload;
       return { authState, message };
     },
   },
@@ -26,9 +25,10 @@ export const requestSignIn = (username, password) => (dispatch) => {
   lefApi
     .signIn(username, password)
     .then((response) => {
-      dispatch(
-        updateAuthState({ authState: "loggedIn", token: response.data })
-      );
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      }
+      dispatch(updateAuthState({ authState: "loggedIn" }));
     })
     .catch(function (error) {
       dispatch(
@@ -38,10 +38,13 @@ export const requestSignIn = (username, password) => (dispatch) => {
             error && error.message ? error.message : "Ungültige Anmeldedaten.",
         })
       );
-    })
-    .then(function () {
-      // always executed
     });
+};
+
+export const requestSignOut = () => (dispatch) => {
+  userToken = null;
+  localStorage.clear();
+  dispatch(updateAuthState({ authState: "loggedOut" }));
 };
 
 export const requestGetData = () => (dispatch) => {

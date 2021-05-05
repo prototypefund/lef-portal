@@ -1,5 +1,6 @@
-import { Col, PageHeader } from "antd";
 import { ResultEntry } from "./resultPageComponents/ResultEntry";
+import { Heading } from "./shared/Heading";
+import { Button } from "react-bootstrap";
 
 const resultEntries = [
   {
@@ -9,18 +10,22 @@ const resultEntries = [
 ];
 
 export const ResultPage = ({ city = "", onBack = () => {} }) => (
-  <>
-    <PageHeader
-      className="site-page-header"
-      onBack={onBack}
-      title={`Dein Klimacheck für: ${city}`}
-      // subTitle={"Ziehs dir rein!"}
-    />
+  <div>
+    <div className={"d-flex align-items-center mb-1"}>
+      <div className={"flex-grow-0"}>
+        <Button variant={"link"} className={"mr-1"} onClick={onBack}>
+          {"<"}
+        </Button>
+      </div>
+      <div className={"flex-grow-1"}>
+        <Heading size={"h4"} text={`Dein Klimacheck für: ${city}`} />
+      </div>
+    </div>
 
-    <Col style={{ maxWidth: 900 }}>
+    <div className={"d-flex flex-column w-100"}>
       {resultEntries.map((entry) => (
         <ResultEntry question={entry.question.replaceAll("%s", city)} />
       ))}
-    </Col>
-  </>
+    </div>
+  </div>
 );

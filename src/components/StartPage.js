@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import Title from "antd/es/typography/Title";
-import { AutoComplete, Button, Col, Row, Space } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import MapChart from "./MapChart";
+import { Heading } from "./shared/Heading";
+import { Typeahead } from "react-bootstrap-typeahead";
+import { Button } from "react-bootstrap";
 
 export const StartPage = ({ onCitySelect = () => {} }) => {
   const [searchWord, setSearchword] = useState("");
@@ -24,62 +25,37 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
   useEffect(() => {}, []);
 
   return (
-    <>
-      <Title level={1}>Dein Klimacheck</Title>
-      <Row
-        style={{ height: "100%" }}
-        align={"stretch"}
-        justify={"space-between"}
-      >
-        <Col md>
-          <Row gutter={16} align={"middle"} justify={"center"} wrap>
-            <Space size={"middle"} align={"start"}>
-              <Col sm>
-                <Title level={5} style={{ marginTop: 5 }}>
-                  Wie läuft der Klimaschutz in/bei ..
-                </Title>
-              </Col>
-              <Col sm>
-                <Row>
-                  <Space direction={"horizontal"}>
-                    <AutoComplete
-                      value={searchWord}
-                      options={[
-                        { label: "Münster", value: "Münster (Westfalen)" },
-                      ]}
-                      style={{ width: 200 }}
-                      onSelect={(text) => onCitySelect(text)}
-                      // onSearch={onSearch}
-                      onChange={() => setSearchword(searchWord)}
-                      placeholder={"Stadt / Unternehmen"}
-                    />
-                  </Space>
-                </Row>
-
-                <Row justify={"end"}>
-                  <Button
-                    type={"link"}
-                    size={"small"}
-                    onClick={() => getLocation()}
-                  >
-                    Meinen Standort verwenden
-                  </Button>
-                </Row>
-              </Col>
-              <Col>
-                {searchWord && (
-                  <Button shape="circle" icon={<ArrowRightOutlined />} />
-                )}
-              </Col>
-            </Space>
-          </Row>
-        </Col>
-        <Col span={12} md style={{ height: "90%" }}>
-          <div style={{ height: "100%", overflow: "hidden", display: "flex" }}>
-            <MapChart lat={latitude} lon={longitude} />
-          </div>
-        </Col>
-      </Row>
-    </>
+    <div className={"col"}>
+      <div className={"row"}>
+        <div className={"col"}>
+          <Heading text={"Dein Klimacheck"} level={1} />
+        </div>
+      </div>
+      <div className={"row"}>
+        <div className={"col-md col-lg-3 mb-2 mb-0-md"}>
+          <Heading size={"h4"} text={"Wie läuft der Klimaschutz in/bei .."} />
+        </div>
+        <div className={"col-md col-lg-3 mb-2 mb-0-md"}>
+          <Typeahead
+            id={"citySelection"}
+            onChange={(values) => onCitySelect(values[0].value)}
+            placeholder={"Stadt / Unternehmen"}
+            options={[{ label: "Münster", value: "Münster (Westfalen)" }]}
+            emptyLabel={"Keine Ergebnisse."}
+          />
+          <Button
+            className={"mt-1"}
+            size={"sm"}
+            variant={"link"}
+            onClick={() => getLocation()}
+          >
+            Meinen Standort verwenden
+          </Button>
+        </div>
+        <div className={"col-lg"}>
+          <MapChart lat={latitude} lon={longitude} />
+        </div>
+      </div>
+    </div>
   );
 };

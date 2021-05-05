@@ -1,7 +1,7 @@
-import Title from "antd/es/typography/Title";
 import { useEffect } from "react";
 import { requestGetData } from "../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { Heading } from "./shared/Heading";
 
 export const AccountPage = () => {
   const dispatch = useDispatch();
@@ -11,7 +11,7 @@ export const AccountPage = () => {
   }, []);
   return (
     <div>
-      <Title level={1}>Mein Account</Title>
+      <Heading size={"h1"} text={"Mein Account"} />
       <p>{data}</p>
     </div>
   );
