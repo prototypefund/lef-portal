@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { lefApi } from "../api/lefApi";
-import { setLocalData } from "./dataSlice";
+import { setLocalData, setRegionData } from "./dataSlice";
 
 let userToken = localStorage.getItem("token");
 
@@ -51,4 +51,16 @@ export const requestGetData = () => (dispatch) => {
   lefApi
     .getData(userToken, {})
     .then((response) => dispatch(setLocalData(response.data)));
+};
+
+export const requestGetRegion = (regionId) => (dispatch) => {
+  lefApi
+    .getRegionData(regionId)
+    .then((response) =>
+      dispatch(setRegionData({ regionId, data: response.data }))
+    );
+};
+
+export const requestCreateRegion = () => (dispatch) => {
+  lefApi.createRegion().then((response) => console.debug(response));
 };

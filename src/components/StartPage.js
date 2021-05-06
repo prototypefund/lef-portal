@@ -5,6 +5,17 @@ import { Heading } from "./shared/Heading";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { Button } from "react-bootstrap";
 
+const regions = [
+  {
+    label: "Münster",
+    id: "609454a56242d72210a4fefc",
+  },
+  {
+    label: "Dresden",
+    id: "6094567e6242d72210a4fefd",
+  },
+];
+
 export const StartPage = ({ onCitySelect = () => {} }) => {
   const [searchWord, setSearchword] = useState("");
   const [coords, setCoords] = useState({});
@@ -40,7 +51,10 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
             id={"citySelection"}
             onChange={(values) => onCitySelect(values[0].value)}
             placeholder={"Stadt / Unternehmen"}
-            options={[{ label: "Münster", value: "Münster (Westfalen)" }]}
+            options={regions.map((region) => ({
+              label: region.label,
+              value: region.id,
+            }))}
             emptyLabel={"Keine Ergebnisse."}
           />
           <Button

@@ -62,17 +62,19 @@ const actions = [
 ];
 
 export const TargetWidget = (props) => (
-  <div>
+  <div style={{ maxWidth: "95vw" }}>
     <h1>{`Ziele der Stadt ${props.city}`}</h1>
     <div
       className={"alert alert-info d-flex"}
-      style={{ width: "100vw", overflow: "auto" }}
+      style={{ width: "100vw", overflow: "auto", minHeight: 300 }}
     >
       {objectives.map((objective) => (
         <div
           style={{
             width: 500,
             flexShrink: 0,
+            borderRight: "2px solid #CCC",
+            padding: "0 15px",
           }}
         >
           <div></div>

@@ -82,7 +82,7 @@ const MainLayout = ({ location = {}, history = {} }) => {
           </Route>
 
           <Route path={"/result"}>
-            <ResultPage city={state.city} onBack={() => history.goBack()} />
+            <ResultPage regionId={state.city} onBack={() => history.goBack()} />
           </Route>
 
           <Route path={"/signIn"}>
