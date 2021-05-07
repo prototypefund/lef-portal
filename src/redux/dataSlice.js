@@ -6,6 +6,7 @@ const dataSlice = createSlice({
   initialState: {
     data: {},
     regionData: {},
+    objectiveData: {},
   },
   reducers: {
     setLocalData(state, action) {
@@ -14,8 +15,15 @@ const dataSlice = createSlice({
     setRegionData(state, action) {
       state.regionData[action.payload.regionId] = action.payload.data;
     },
+    setObjectiveData(state, action) {
+      state.objectiveData[action.payload.objectiveId] = action.payload.data;
+    },
   },
 });
 
-export const { setLocalData, setRegionData } = dataSlice.actions;
+export const {
+  setLocalData,
+  setRegionData,
+  setObjectiveData,
+} = dataSlice.actions;
 export default dataSlice.reducer;

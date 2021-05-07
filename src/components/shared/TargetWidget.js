@@ -1,3 +1,7 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { requestGetObjective } from "../../redux/authSlice";
+
 const objectives = [
   {
     objectiveId: "objective1",
@@ -61,27 +65,50 @@ const actions = [
   },
 ];
 
-export const TargetWidget = (props) => (
-  <div style={{ maxWidth: "95vw" }}>
-    <h1>{`Ziele der Stadt ${props.city}`}</h1>
-    <div
-      className={"alert alert-info d-flex"}
-      style={{ width: "100vw", overflow: "auto", minHeight: 300 }}
-    >
-      {objectives.map((objective) => (
-        <div
-          style={{
-            width: 500,
-            flexShrink: 0,
-            borderRight: "2px solid #CCC",
-            padding: "0 15px",
-          }}
-        >
-          <div></div>
-          <h3>{`${objective.title}`}</h3>
-          <p>{`${objective.description}`}</p>
-        </div>
-      ))}
+export const TargetWidget = (props) => {
+  const dispatch = useDispatch();
+  const { objectives: objectiveIds = [] } = props.regionData;
+  const objectiveData = useSelector((state) => state.data.objectiveData);
+
+  useEffect(() => {
+    objectiveIds.forEach((objectiveId) => {
+      dispatch(requestGetObjective(objectiveId));
+    });
+  }, [objectiveIds]);
+  return (
+    <div style={{ maxWidth: "95vw" }}>
+      <h1>{`Ziele der Stadt ${props.city}`}</h1>
+      <div
+        className={"alert alert-info d-flex"}
+        style={{ width: "100vw", overflow: "auto", minHeight: 300 }}
+      >
+        {objectiveIds
+          .map((id) => objectiveData[id])
+          .filter((o) => o)
+          .map((objective) => (
+            <div
+              key={objective._id}
+              style={{
+                width: 500,
+                flexShrink: 0,
+                borderRight: "2px solid #CCC",
+                padding: "0 15px",
+              }}
+            >
+              <div></div>
+              <h3>{`${objective.title}`}</h3>
+              <p>{`${objective.description}`}</p>
+              <div className={"d-flex"}>
+                {objective.tags &&
+                  objective.tags.map((tag, i) => (
+                    <div className={"badge badge-info m-1 p-2"} key={i}>
+                      {tag}
+                    </div>
+                  ))}
+              </div>
+            </div>
+          ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};

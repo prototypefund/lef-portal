@@ -9,14 +9,16 @@ export const lefApi = {
     });
   },
   getData: (token, body) => apiRequest("/methodtests", body, token),
-  getRegionData: (regionId) =>
-    apiRequest("/region/get", { _id: regionId }, null),
+  getRegionData: (regionId) => apiRequest("/region/get", { _id: regionId }),
   createRegion: (name, postalcodes = []) =>
     apiRequest("/region/create", {
       postalcodes,
       name,
     }),
-  updateRegion: (updatedRegion) => apiRequest("/region/update", updatedRegion),
+  updateRegion: (updatedRegion) =>
+    apiRequest("/region/update", { region: updatedRegion }),
+  getObjective: (objectiveId) =>
+    apiRequest("/objective/get", { _id: objectiveId }),
   createObjective: (
     startDate,
     endDate,

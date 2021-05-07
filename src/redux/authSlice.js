@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { lefApi } from "../api/lefApi";
-import { setLocalData, setRegionData } from "./dataSlice";
+import { setLocalData, setObjectiveData, setRegionData } from "./dataSlice";
 
 let userToken = localStorage.getItem("token");
 
@@ -61,28 +61,38 @@ export const requestGetRegion = (regionId) => (dispatch) => {
     );
 };
 
+export const requestGetObjective = (objectiveId) => (dispatch) => {
+  lefApi
+    .getObjective(objectiveId)
+    .then((response) =>
+      dispatch(setObjectiveData({ objectiveId, data: response.data }))
+    );
+};
+
 export const requestCreateRegion = (name, postalcodes) => (dispatch) => {
   lefApi
     .createRegion(name, postalcodes)
     .then((response) => console.debug(response));
 };
 
-export const createObjectiveForRegion = (
+export const requestCreateObjectiveForRegion = (
   startDate,
   endDate,
   title,
   description,
-  tags,
-  actions,
+  tagsString,
+  actions = [],
   regionData
 ) => (dispatch) => {
+  const tagsArray =
+    tagsString && tagsString !== "" ? tagsString.split(" ") : [];
   lefApi
     .createObjective(
       startDate,
       endDate,
       title,
       description,
-      tags,
+      tagsArray,
       actions,
       regionData
     )

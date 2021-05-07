@@ -1,11 +1,12 @@
 import { ResultEntry } from "./resultPageComponents/ResultEntry";
 import { Heading } from "./shared/Heading";
-import { Button } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import { TargetWidget } from "./shared/TargetWidget";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { requestGetRegion } from "../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { AddObjectivesAndActions } from "./resultPageComponents/AddObjectivesAndActions";
+import { AddObjectivesAndActionsDialog } from "./resultPageComponents/AddObjectivesAndActionsDialog";
+import { LefModal } from "./shared/LefModal";
 
 const resultEntries = [
   {
@@ -16,6 +17,7 @@ const resultEntries = [
 
 export const ResultPage = ({ regionId, onBack = () => {} }) => {
   const dispatch = useDispatch();
+  const [showAddDialog, setShowAddDialog] = useState(true);
   useEffect(() => {
     dispatch(requestGetRegion(regionId));
   }, []);
@@ -45,8 +47,13 @@ export const ResultPage = ({ regionId, onBack = () => {} }) => {
         ))}
       </div>
 
-      <TargetWidget city={name} />
-      <AddObjectivesAndActions />
+      <TargetWidget city={name} regionData={regionData} />
+      <Button onClick={() => setShowAddDialog(true)}>Ziel hinzufügen</Button>
+      <AddObjectivesAndActionsDialog
+        regionData={regionData}
+        show={showAddDialog}
+        onClose={() => setShowAddDialog(false)}
+      />
     </div>
   );
 };
