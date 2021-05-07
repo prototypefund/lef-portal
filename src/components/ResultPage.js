@@ -3,8 +3,9 @@ import { Heading } from "./shared/Heading";
 import { Button } from "react-bootstrap";
 import { TargetWidget } from "./shared/TargetWidget";
 import { useEffect } from "react";
-import { requestCreateRegion, requestGetRegion } from "../redux/authSlice";
+import { requestGetRegion } from "../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { AddObjectivesAndActions } from "./resultPageComponents/AddObjectivesAndActions";
 
 const resultEntries = [
   {
@@ -45,6 +46,7 @@ export const ResultPage = ({ regionId, onBack = () => {} }) => {
       </div>
 
       <TargetWidget city={name} />
+      <AddObjectivesAndActions />
     </div>
   );
 };

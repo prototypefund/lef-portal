@@ -61,6 +61,45 @@ export const requestGetRegion = (regionId) => (dispatch) => {
     );
 };
 
-export const requestCreateRegion = () => (dispatch) => {
-  lefApi.createRegion().then((response) => console.debug(response));
+export const requestCreateRegion = (name, postalcodes) => (dispatch) => {
+  lefApi
+    .createRegion(name, postalcodes)
+    .then((response) => console.debug(response));
+};
+
+export const createObjectiveForRegion = (
+  startDate,
+  endDate,
+  title,
+  description,
+  tags,
+  actions,
+  regionData
+) => (dispatch) => {
+  lefApi
+    .createObjective(
+      startDate,
+      endDate,
+      title,
+      description,
+      tags,
+      actions,
+      regionData
+    )
+    .then((objectiveResponse) => {
+      const objectiveId = objectiveResponse.data._id;
+      lefApi
+        .updateRegion({
+          ...regionData,
+          objectives: [...regionData.objectives, objectiveId],
+        })
+        .then((regionResponse) =>
+          dispatch(
+            setRegionData({
+              regionId: regionData._id,
+              data: regionResponse.data,
+            })
+          )
+        );
+    });
 };

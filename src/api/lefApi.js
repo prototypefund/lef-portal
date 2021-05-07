@@ -11,11 +11,39 @@ export const lefApi = {
   getData: (token, body) => apiRequest("/methodtests", body, token),
   getRegionData: (regionId) =>
     apiRequest("/region/get", { _id: regionId }, null),
-  createRegion: () =>
+  createRegion: (name, postalcodes = []) =>
     apiRequest("/region/create", {
-      postalcodes: ["22567", "22568"],
-      name: "Dresden",
+      postalcodes,
+      name,
     }),
+  updateRegion: (updatedRegion) => apiRequest("/region/update", updatedRegion),
+  createObjective: (
+    startDate,
+    endDate,
+    title,
+    description,
+    tags = [],
+    actions = []
+  ) =>
+    apiRequest("/objective/create", {
+      startDate,
+      endDate,
+      title,
+      description,
+      tags,
+      actions,
+    }),
+  updateObjective: (updatedObjective) =>
+    apiRequest("/objective/update", updatedObjective),
+  createAction: (startDate, endDate, description, tags = [], budget) =>
+    apiRequest("/action/create", {
+      startDate,
+      endDate,
+      description,
+      tags,
+      budget,
+    }),
+  updateAction: (updatedAction) => apiRequest("/action/update", updatedAction),
 };
 
 const apiRequest = (path, body, token, method = "post") => {
