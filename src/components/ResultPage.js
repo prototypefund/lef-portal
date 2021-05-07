@@ -17,7 +17,7 @@ const resultEntries = [
 
 export const ResultPage = ({ regionId, onBack = () => {} }) => {
   const dispatch = useDispatch();
-  const [showAddDialog, setShowAddDialog] = useState(falseg);
+  const [showAddDialog, setShowAddDialog] = useState(false);
   useEffect(() => {
     dispatch(requestGetRegion(regionId));
   }, []);
