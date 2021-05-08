@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { requestGetObjective } from "../../redux/authSlice";
+import { Button, Row } from "react-bootstrap";
 
 const objectives = [
   {
@@ -66,6 +67,7 @@ const actions = [
 ];
 
 export const TargetWidget = (props) => {
+  const { onEdit } = props;
   const dispatch = useDispatch();
   const { objectives: objectiveIds = [] } = props.regionData;
   const objectiveData = useSelector((state) => state.data.objectiveData);
@@ -88,15 +90,25 @@ export const TargetWidget = (props) => {
           .map((objective) => (
             <div
               key={objective._id}
-              style={{
+              className={"p-3, m-3"}
+              style={{g
                 width: 500,
                 flexShrink: 0,
                 borderRight: "2px solid #CCC",
-                padding: "0 15px",
               }}
             >
               <div></div>
-              <h3>{`${objective.title}`}</h3>
+              <Row>
+                <h3>{`${objective.title}`}</h3>
+                <Button
+                  variant={"light"}
+                  className={"ml-2"}
+                  size={"sm"}
+                  onClick={() => onEdit(objective._id)}
+                >
+                  Edit
+                </Button>
+              </Row>
               <p>{`${objective.description}`}</p>
               <div className={"d-flex"}>
                 {objective.tags &&

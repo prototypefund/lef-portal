@@ -1,20 +1,45 @@
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { useState } from "react";
-import { requestCreateObjectiveForRegion } from "../../redux/authSlice";
+import { useEffect, useState } from "react";
+import {
+  requestCreateObjectiveForRegion,
+  requestUpdateObjective,
+} from "../../redux/authSlice";
 import { useDispatch } from "react-redux";
 import { LefModal } from "../shared/LefModal";
 
+const getYYYYMMDD = (date) => {
+  const dateObj = new Date(date);
+  const mm = dateObj.getMonth() + 1;
+  const dd = dateObj.getDate();
+
+  return [
+    dateObj.getFullYear(),
+    (mm > 9 ? "" : "0") + mm,
+    (dd > 9 ? "" : "0") + dd,
+  ].join("-");
+};
+
 export const AddObjectivesAndActionsDialog = ({
   regionData,
+  editedOjective = {},
   show,
   onClose,
 }) => {
   const dispatch = useDispatch();
-  const [title, setTitle] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [description, setDescription] = useState("");
-  const [tags, setTags] = useState("");
+  const [title, setTitle] = useState(editedOjective.title || "");
+  const [startDate, setStartDate] = useState(
+    editedOjective.startDate ? getYYYYMMDD(editedOjective.startDate) : ""
+  );
+  const [endDate, setEndDate] = useState(
+    editedOjective.endDate ? getYYYYMMDD(editedOjective.endDate) : ""
+  );
+  const [description, setDescription] = useState(
+    editedOjective.description || ""
+  );
+  const [tags, setTags] = useState(
+    editedOjective.tags ? editedOjective.tags.join(" ") : ""
+  );
+  const editMode = Boolean(editedOjective._id);
 
   const size = "md";
   let content = (
@@ -94,7 +119,7 @@ export const AddObjectivesAndActionsDialog = ({
       size={"lg"}
       content={content}
       show={show}
-      title={`Ziel für ${regionData.name} hinzufügen`}
+      title={`Ziel ${editMode ? "bearbeiten" : "hinzufügen"}`}
       buttons={[
         {
           label: "Abbrechen",
@@ -102,19 +127,29 @@ export const AddObjectivesAndActionsDialog = ({
           onClick: onClose,
         },
         {
-          label: "Hinzufügen",
+          label: editMode ? "Änderung speichern" : "Hinzufügen",
           onClick: () => {
             dispatch(
-              requestCreateObjectiveForRegion(
-                startDate,
-                endDate,
-                title,
-                description,
-                tags,
-                [],
-                regionData
-              )
+              editMode
+                ? requestUpdateObjective({
+                    ...editedOjective,
+                    startDate,
+                    endDate,
+                    title,
+                    description,
+                    tags,
+                  })
+                : requestCreateObjectiveForRegion(
+                    startDate,
+                    endDate,
+                    title,
+                    description,
+                    tags,
+                    [],
+                    regionData
+                  )
             );
+            onClose();
             setDescription("");
             setTitle("");
             setTags("");

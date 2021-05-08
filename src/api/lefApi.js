@@ -36,7 +36,7 @@ export const lefApi = {
       actions,
     }),
   updateObjective: (updatedObjective) =>
-    apiRequest("/objective/update", updatedObjective),
+    apiRequest("/objective/update", { objective: updatedObjective }),
   createAction: (startDate, endDate, description, tags = [], budget) =>
     apiRequest("/action/create", {
       startDate,

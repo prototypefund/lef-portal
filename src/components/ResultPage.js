@@ -1,12 +1,11 @@
 import { ResultEntry } from "./resultPageComponents/ResultEntry";
 import { Heading } from "./shared/Heading";
-import { Button, Modal } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { TargetWidget } from "./shared/TargetWidget";
 import { useEffect, useState } from "react";
 import { requestGetRegion } from "../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AddObjectivesAndActionsDialog } from "./resultPageComponents/AddObjectivesAndActionsDialog";
-import { LefModal } from "./shared/LefModal";
 
 const resultEntries = [
   {
@@ -18,6 +17,9 @@ const resultEntries = [
 export const ResultPage = ({ regionId, onBack = () => {} }) => {
   const dispatch = useDispatch();
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [editedObjective, setEditedObjective] = useState({});
+  const objectiveData = useSelector((state) => state.data.objectiveData);
+
   useEffect(() => {
     dispatch(requestGetRegion(regionId));
   }, []);
@@ -47,13 +49,30 @@ export const ResultPage = ({ regionId, onBack = () => {} }) => {
         ))}
       </div>
 
-      <TargetWidget city={name} regionData={regionData} />
-      <Button onClick={() => setShowAddDialog(true)}>Ziel hinzufügen</Button>
-      <AddObjectivesAndActionsDialog
+      <TargetWidget
+        city={name}
         regionData={regionData}
-        show={showAddDialog}
-        onClose={() => setShowAddDialog(false)}
+        onEdit={(id) => {
+          setEditedObjective(objectiveData[id]);
+          setShowAddDialog(true);
+        }}
       />
+      <Button
+        onClick={() => {
+          setEditedObjective({});
+          setShowAddDialog(true);
+        }}
+      >
+        Ziel hinzufügen
+      </Button>
+      {showAddDialog && (
+        <AddObjectivesAndActionsDialog
+          editedOjective={editedObjective}
+          regionData={regionData}
+          show={showAddDialog}
+          onClose={() => setShowAddDialog(false)}
+        />
+      )}
     </div>
   );
 };

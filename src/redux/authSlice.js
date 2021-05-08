@@ -113,3 +113,14 @@ export const requestCreateObjectiveForRegion = (
         );
     });
 };
+
+export const requestUpdateObjective = (updatedObjective) => (dispatch) => {
+  lefApi.updateObjective(updatedObjective).then((response) => {
+    dispatch(
+      setObjectiveData({
+        objectiveId: updatedObjective._id,
+        data: response.data,
+      })
+    );
+  });
+};
