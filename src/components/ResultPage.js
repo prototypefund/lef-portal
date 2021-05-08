@@ -17,6 +17,7 @@ const resultEntries = [
 export const ResultPage = ({ regionId, onBack = () => {} }) => {
   const dispatch = useDispatch();
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [isActionMode, setIsActionMode] = useState(false);
   const [editedObjective, setEditedObjective] = useState({});
   const objectiveData = useSelector((state) => state.data.objectiveData);
 
@@ -50,6 +51,10 @@ export const ResultPage = ({ regionId, onBack = () => {} }) => {
       </div>
 
       <TargetWidget
+        onActionAdd={() => {
+          setIsActionMode(true);
+          setShowAddDialog(true);
+        }}
         city={name}
         regionData={regionData}
         onEdit={(id) => {
@@ -67,10 +72,14 @@ export const ResultPage = ({ regionId, onBack = () => {} }) => {
       </Button>
       {showAddDialog && (
         <AddObjectivesAndActionsDialog
+          isAction={isActionMode}
           editedOjective={editedObjective}
           regionData={regionData}
           show={showAddDialog}
-          onClose={() => setShowAddDialog(false)}
+          onClose={() => {
+            setShowAddDialog(false);
+            setIsActionMode(false);
+          }}
         />
       )}
     </div>

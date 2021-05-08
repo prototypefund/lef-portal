@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { requestGetObjective } from "../../redux/authSlice";
-import { Button, Row } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
+import { PencilFill } from "react-bootstrap-icons";
 
 const objectives = [
   {
@@ -67,9 +68,12 @@ const actions = [
 ];
 
 export const TargetWidget = (props) => {
-  const { onEdit } = props;
+  const { onEdit, onActionAdd } = props;
   const dispatch = useDispatch();
-  const { objectives: objectiveIds = [] } = props.regionData;
+  const {
+    objectives: objectiveIds = [],
+    actions: actionIds = [],
+  } = props.regionData;
   const objectiveData = useSelector((state) => state.data.objectiveData);
 
   useEffect(() => {
@@ -87,39 +91,73 @@ export const TargetWidget = (props) => {
         {objectiveIds
           .map((id) => objectiveData[id])
           .filter((o) => o)
-          .map((objective) => (
-            <div
-              key={objective._id}
-              className={"p-3, m-3"}
-              style={{g
-                width: 500,
-                flexShrink: 0,
-                borderRight: "2px solid #CCC",
-              }}
-            >
-              <div></div>
-              <Row>
-                <h3>{`${objective.title}`}</h3>
-                <Button
-                  variant={"light"}
-                  className={"ml-2"}
-                  size={"sm"}
-                  onClick={() => onEdit(objective._id)}
-                >
-                  Edit
-                </Button>
-              </Row>
-              <p>{`${objective.description}`}</p>
-              <div className={"d-flex"}>
-                {objective.tags &&
-                  objective.tags.map((tag, i) => (
-                    <div className={"badge badge-info m-1 p-2"} key={i}>
-                      {tag}
+          .sort((a, b) => new Date(a.endDate) - new Date(b.endDate))
+          .map((objective) => {
+            const endDate = new Date(objective.endDate);
+            return (
+              <Container
+                key={objective._id}
+                className={"p-3, m-3"}
+                style={{
+                  width: 500,
+                  flexShrink: 0,
+                  borderRight: "2px solid #CCC",
+                }}
+              >
+                <div></div>
+                <Row>
+                  <Col>
+                    <h6>{endDate.toLocaleDateString()}</h6>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={10}>
+                    <h3>{`${objective.title}`}</h3>
+                  </Col>
+                  <Col>
+                    <Button
+                      variant={"link"}
+                      className={"ml-2"}
+                      size={"sm"}
+                      onClick={() => onEdit(objective._id)}
+                    >
+                      <PencilFill />
+                    </Button>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <p>{`${objective.description}`}</p>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <div className={"d-flex"}>
+                      {objective.tags &&
+                        objective.tags.map((tag, i) => (
+                          <Row className={"badge badge-info m-1 p-2"} key={i}>
+                            {tag}
+                          </Row>
+                        ))}
                     </div>
+                  </Col>
+                </Row>
+                <Col className={"mt-3"}>
+                  <Row>
+                    <h4>Maßnahmen</h4>
+                  </Row>
+                  {actionIds.map((id) => (
+                    <Row>{id}</Row>
                   ))}
-              </div>
-            </div>
-          ))}
+                </Col>
+                <Row>
+                  <Col>
+                    <Button onClick={onActionAdd}>Maßnahme hinzufügen</Button>
+                  </Col>
+                </Row>
+              </Container>
+            );
+          })}
       </div>
     </div>
   );

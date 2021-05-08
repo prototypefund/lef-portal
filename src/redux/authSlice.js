@@ -80,19 +80,17 @@ export const requestCreateObjectiveForRegion = (
   endDate,
   title,
   description,
-  tagsString,
+  tags,
   actions = [],
   regionData
 ) => (dispatch) => {
-  const tagsArray =
-    tagsString && tagsString !== "" ? tagsString.split(" ") : [];
   lefApi
     .createObjective(
       startDate,
       endDate,
       title,
       description,
-      tagsArray,
+      tags,
       actions,
       regionData
     )
@@ -124,3 +122,14 @@ export const requestUpdateObjective = (updatedObjective) => (dispatch) => {
     );
   });
 };
+
+export const requestCreateAction = (
+  startDate,
+  endDate,
+  name,
+  description,
+  budget,
+  tags
+) => (dispatch) => {};
+
+export const requestUpdateAction = (updatedAction) => (dispatch) => {};

@@ -1,7 +1,9 @@
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import {
+  requestCreateAction,
   requestCreateObjectiveForRegion,
+  requestUpdateAction,
   requestUpdateObjective,
 } from "../../redux/authSlice";
 import { useDispatch } from "react-redux";
@@ -24,6 +26,7 @@ export const AddObjectivesAndActionsDialog = ({
   editedOjective = {},
   show,
   onClose,
+  isAction,
 }) => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState(editedOjective.title || "");
@@ -47,19 +50,19 @@ export const AddObjectivesAndActionsDialog = ({
       <Form>
         <Row>
           <Col md={12} lg={6}>
-            <Form.Group controlId={"addObjectiveName"}>
+            <Form.Group controlId={isAction ? "actionName" : "objectiveName"}>
               <Form.Label>Name</Form.Label>
               <Form.Control
                 size={size}
                 onChange={(e) => setTitle(e.target.value)}
                 type={"title"}
-                placeholder={"Name des Ziels"}
+                placeholder={isAction ? "Name der Maßnahme" : "Name des Ziels"}
                 value={title}
               />
             </Form.Group>
           </Col>
           <Col md={12} lg={6}>
-            <Form.Group controlId={"addObjectiveTags"}>
+            <Form.Group controlId={"objectiveTags"}>
               <Form.Label>Stichwörter</Form.Label>
               <Form.Control
                 size={size}
@@ -73,7 +76,7 @@ export const AddObjectivesAndActionsDialog = ({
             </Form.Group>
           </Col>
         </Row>
-        <Form.Group controlId={"addObjectiveDescription"}>
+        <Form.Group controlId={"objectiveDescription"}>
           <Form.Label>Beschreibung</Form.Label>
           <Form.Control
             size={size}
@@ -81,15 +84,23 @@ export const AddObjectivesAndActionsDialog = ({
             rows={3}
             onChange={(e) => setDescription(e.target.value)}
             type={"textarea"}
-            placeholder={"Kurze Beschreibung des Ziels"}
+            placeholder={
+              isAction
+                ? "Kurze Beschreibung der Maßnahme"
+                : "Kurze Beschreibung des Ziels"
+            }
             value={description}
           />
         </Form.Group>
 
         <Row>
           <Col md={12} lg={6}>
-            <Form.Group controlId={"addObjectiveStartDate"}>
-              <Form.Label>Beginn / Datum der Zielsetzung</Form.Label>
+            <Form.Group controlId={"objectiveStartDate"}>
+              <Form.Label>
+                {isAction
+                  ? "Beginn der Maßnahme"
+                  : "Beginn / Datum der Zielsetzung"}
+              </Form.Label>
               <Form.Control
                 size={size}
                 onChange={(e) => setStartDate(e.target.value)}
@@ -100,8 +111,12 @@ export const AddObjectivesAndActionsDialog = ({
           </Col>
 
           <Col md={12} lg={6}>
-            <Form.Group controlId={"addObjectiveEndDate"}>
-              <Form.Label>Angepeiltes Datum der Zielerreichung</Form.Label>
+            <Form.Group controlId={"objectiveEndDate"}>
+              <Form.Label>
+                {isAction
+                  ? "Ende der Maßnahme"
+                  : "Angepeiltes Datum der Zielerreichung"}
+              </Form.Label>
               <Form.Control
                 size={size}
                 onChange={(e) => setEndDate(e.target.value)}
@@ -119,7 +134,9 @@ export const AddObjectivesAndActionsDialog = ({
       size={"lg"}
       content={content}
       show={show}
-      title={`Ziel ${editMode ? "bearbeiten" : "hinzufügen"}`}
+      title={`${isAction ? "Maßnahme" : "Ziel"} ${
+        editMode ? "bearbeiten" : "hinzufügen"
+      }`}
       buttons={[
         {
           label: "Abbrechen",
@@ -129,22 +146,34 @@ export const AddObjectivesAndActionsDialog = ({
         {
           label: editMode ? "Änderung speichern" : "Hinzufügen",
           onClick: () => {
+            const tagsArray = tags && tags !== "" ? tags.split(" ") : [];
             dispatch(
-              editMode
+              isAction
+                ? editMode
+                  ? requestUpdateAction()
+                  : requestCreateAction(
+                      startDate,
+                      endDate,
+                      title,
+                      description,
+                      "budget",
+                      tags
+                    )
+                : editMode
                 ? requestUpdateObjective({
                     ...editedOjective,
                     startDate,
                     endDate,
                     title,
                     description,
-                    tags,
+                    tags: tagsArray,
                   })
                 : requestCreateObjectiveForRegion(
                     startDate,
                     endDate,
                     title,
                     description,
-                    tags,
+                    tagsArray,
                     [],
                     regionData
                   )
