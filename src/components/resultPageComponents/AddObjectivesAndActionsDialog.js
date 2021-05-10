@@ -23,26 +23,26 @@ const getYYYYMMDD = (date) => {
 
 export const AddObjectivesAndActionsDialog = ({
   regionData,
-  editedOjective = {},
+  editedObjective = {},
   show,
   onClose,
   isAction,
 }) => {
   const dispatch = useDispatch();
-  const [title, setTitle] = useState(editedOjective.title || "");
+  const [title, setTitle] = useState(editedObjective.title || "");
   const [startDate, setStartDate] = useState(
-    editedOjective.startDate ? getYYYYMMDD(editedOjective.startDate) : ""
+    editedObjective.startDate ? getYYYYMMDD(editedObjective.startDate) : ""
   );
   const [endDate, setEndDate] = useState(
-    editedOjective.endDate ? getYYYYMMDD(editedOjective.endDate) : ""
+    editedObjective.endDate ? getYYYYMMDD(editedObjective.endDate) : ""
   );
   const [description, setDescription] = useState(
-    editedOjective.description || ""
+    editedObjective.description || ""
   );
   const [tags, setTags] = useState(
-    editedOjective.tags ? editedOjective.tags.join(" ") : ""
+    editedObjective.tags ? editedObjective.tags.join(" ") : ""
   );
-  const editMode = Boolean(editedOjective._id);
+  const editMode = Boolean(editedObjective._id);
 
   const size = "md";
   let content = (
@@ -161,7 +161,7 @@ export const AddObjectivesAndActionsDialog = ({
                     )
                 : editMode
                 ? requestUpdateObjective({
-                    ...editedOjective,
+                    ...editedObjective,
                     startDate,
                     endDate,
                     title,

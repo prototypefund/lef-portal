@@ -82,11 +82,15 @@ export const TargetWidget = (props) => {
     });
   }, [objectiveIds]);
   return (
-    <div style={{ maxWidth: "95vw" }}>
-      <h1>{`Ziele der Stadt ${props.city}`}</h1>
+    <div style={{ maxWidth: "90vw" }}>
+      {/*<h1>{`Ziele der Stadt ${props.city}`}</h1>*/}
       <div
         className={"alert alert-info d-flex"}
-        style={{ width: "100vw", overflow: "auto", minHeight: 300 }}
+        style={{
+          //width: "100vw",
+          overflow: "auto",
+          minHeight: 300,
+        }}
       >
         {objectiveIds
           .map((id) => objectiveData[id])
@@ -99,7 +103,7 @@ export const TargetWidget = (props) => {
                 key={objective._id}
                 className={"p-3, m-3"}
                 style={{
-                  width: 500,
+                  maxWidth: 500,
                   flexShrink: 0,
                   borderRight: "2px solid #CCC",
                 }}

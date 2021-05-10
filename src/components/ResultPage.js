@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { requestGetRegion } from "../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AddObjectivesAndActionsDialog } from "./resultPageComponents/AddObjectivesAndActionsDialog";
+import { ArrowLeftCircleFill } from "react-bootstrap-icons";
 
 const resultEntries = [
   {
@@ -36,7 +37,7 @@ export const ResultPage = ({ regionId, onBack = () => {} }) => {
       <div className={"d-flex align-items-center mb-1"}>
         <div className={"flex-grow-0"}>
           <Button variant={"link"} className={"mr-1"} onClick={onBack}>
-            {"<"}
+            <ArrowLeftCircleFill size={25} />
           </Button>
         </div>
         <div className={"flex-grow-1"}>
@@ -73,7 +74,7 @@ export const ResultPage = ({ regionId, onBack = () => {} }) => {
       {showAddDialog && (
         <AddObjectivesAndActionsDialog
           isAction={isActionMode}
-          editedOjective={editedObjective}
+          editedObjective={editedObjective}
           regionData={regionData}
           show={showAddDialog}
           onClose={() => {
