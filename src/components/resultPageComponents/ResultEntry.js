@@ -10,13 +10,5 @@ export const ResultEntry = ({ question }) => (
         <div style={{ whiteSpace: "pre-wrap" }}>{question}</div>
       </div>
     </div>
-    {/*<div
-      className={
-        "mt-1 p-4 d-flex align-items-center justify-content-center alert alert-secondary"
-      }
-      style={{ minHeight: 200 }}
-    >
-      GRAFIK UND INFORMATIONEN
-    </div>*/}
   </>
 );

@@ -1,86 +1,57 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { requestGetObjective } from "../../redux/authSlice";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import {
+  requestGetAllActionsForRegion,
+  requestGetObjective,
+} from "../../redux/authSlice";
+import { Badge, Button, Carousel, Col, Container, Row } from "react-bootstrap";
 import { PencilFill } from "react-bootstrap-icons";
+import * as PropTypes from "prop-types";
+import { getYYYYMMDD } from "../resultPageComponents/AddObjectivesAndActionsDialog";
+import { PRIMARY_COLOR, PRIMARY_COLOR_DARK } from "../../assets/colors";
 
-const objectives = [
-  {
-    objectiveId: "objective1",
-    startDate: "1620040876881",
-    endDate: "1620040876881",
-    title: "Autofreie Stadt",
-    description: "Ganz Münster soll autofrei sein.",
-    tags: ["tag1"],
-    actions: ["action1", "action2"],
-  },
-  {
-    objectiveId: "objective2",
-    startDate: "1620040886881",
-    endDate: "1620040867881",
-    title: "Mehr erneuerbare Energien",
-    description:
-      "Wir wollen richtig viele neue gute erneuerbare Energien in Münster haben.",
-    tags: ["tag1"],
-    actions: ["action2"],
-  },
-  {
-    objectiveId: "objective2",
-    startDate: "1620040886881",
-    endDate: "1620040867881",
-    title: "Mehr erneuerbare Energien",
-    description:
-      "Wir wollen richtig viele neue gute erneuerbare Energien in Münster haben.",
-    tags: ["tag1"],
-    actions: ["action2"],
-  },
-  {
-    objectiveId: "objective2",
-    startDate: "1620040886881",
-    endDate: "1620040867881",
-    title: "Mehr erneuerbare Energien",
-    description:
-      "Wir wollen richtig viele neue gute erneuerbare Energien in Münster haben.",
-    tags: ["tag1"],
-    actions: ["action2"],
-  },
-];
+const ActionDisplay = ({ action = {} }) => {
+  const { description, startDate, endDate, budget } = action;
+  return (
+    <Row xs={12} className={"w-100 mb-1"}>
+      <Col xs={6} sm={4}>
+        <Row>
+          <Col xs={6}>
+            <Badge variant={"light"}>{getYYYYMMDD(startDate)}</Badge>
+          </Col>
+          <Col xs={6}>
+            <Badge variant={"light"}>{getYYYYMMDD(endDate)}</Badge>
+          </Col>
+        </Row>
+      </Col>
+      <Col xs={12} sm={8}>
+        {`${description} (${budget}€)`}
+      </Col>
+    </Row>
+  );
+};
 
-const actions = [
-  {
-    actionId: "action1",
-    startDate: "1620040876881",
-    endDate: "1620040876881",
-    title: "Flyover Radstrecke",
-    description: "Test-Description",
-    tags: ["tag1"],
-    data: ["objective1"],
-  },
-  {
-    actionId: "action2",
-    startDate: "1620040872003",
-    endDate: "1620040879999",
-    title: "Bäume-Gießen-Projekt",
-    description: "Test-Description",
-    tags: ["tag1"],
-    data: ["objective2"],
-  },
-];
-
+ActionDisplay.propTypes = { action: PropTypes.any };
 export const TargetWidget = (props) => {
-  const { onEdit, onActionAdd } = props;
+  const { onEdit, onActionAdd, regionData } = props;
   const dispatch = useDispatch();
-  const {
-    objectives: objectiveIds = [],
-    actions: actionIds = [],
-  } = props.regionData;
+  const { objectives: objectiveIds = [] } = props.regionData;
   const objectiveData = useSelector((state) => state.data.objectiveData);
+  const regionsActions = useSelector((state) =>
+    state.data.actionsForRegion[regionData._id]
+      ? state.data.actionsForRegion[regionData._id]
+      : []
+  );
 
   useEffect(() => {
+    // TODO remove due to new function getAllObjectivesForRegion
     objectiveIds.forEach((objectiveId) => {
       dispatch(requestGetObjective(objectiveId));
     });
+    dispatch(requestGetAllActionsForRegion(regionData._id));
   }, [objectiveIds]);
+
+  const isSmallScreen = false;
   return (
     <div style={{ maxWidth: "90vw" }}>
       {/*<h1>{`Ziele der Stadt ${props.city}`}</h1>*/}
@@ -92,6 +63,21 @@ export const TargetWidget = (props) => {
           minHeight: 300,
         }}
       >
+        {isSmallScreen && (
+          <Carousel activeIndex={0}>
+            {objectiveIds
+              .map((id) => objectiveData[id])
+              .map((objective) => (
+                <Carousel.Item styles={{ height: 300 }}>
+                  <Carousel.Caption>
+                    <h3>{objective.title}</h3>
+                    <p>{objective.description}</p>
+                  </Carousel.Caption>
+                </Carousel.Item>
+              ))}
+          </Carousel>
+        )}
+
         {objectiveIds
           .map((id) => objectiveData[id])
           .filter((o) => o)
@@ -101,27 +87,50 @@ export const TargetWidget = (props) => {
             return (
               <Container
                 key={objective._id}
-                className={"p-3, m-3"}
+                className={"p-0"}
                 style={{
                   maxWidth: 500,
                   flexShrink: 0,
-                  borderRight: "2px solid #CCC",
+                  // borderRight: "2px solid #CCC",
                 }}
               >
-                <div></div>
-                <Row>
-                  <Col>
-                    <h6>{endDate.toLocaleDateString()}</h6>
+                <div
+                  style={{
+                    borderBottom: `2px dashed ${PRIMARY_COLOR}`,
+                    width: "100%",
+                    marginTop: 15,
+                    marginBottom: 15,
+                  }}
+                />
+                <Row style={{ height: 20 }}>
+                  <Col
+                    xs={12}
+                    style={{
+                      top: -30,
+                      color: "white",
+                    }}
+                  >
+                    <h6
+                      style={{
+                        backgroundColor: PRIMARY_COLOR_DARK,
+                        width: "fit-content",
+                        padding: "5px 12px",
+                        borderRadius: 5,
+                      }}
+                    >
+                      {endDate.getFullYear()}
+                    </h6>
                   </Col>
                 </Row>
                 <Row>
-                  <Col xs={10}>
-                    <h3>{`${objective.title}`}</h3>
-                  </Col>
-                  <Col>
+                  <Col xs={12} className={"d-flex align-items-center"}>
+                    <span
+                      className={"h3"}
+                      style={{ width: "fit-content" }}
+                    >{`${objective.title}`}</span>
                     <Button
                       variant={"link"}
-                      className={"ml-2"}
+                      className={"ml-2 mb-2"}
                       size={"sm"}
                       onClick={() => onEdit(objective._id)}
                     >
@@ -150,13 +159,24 @@ export const TargetWidget = (props) => {
                   <Row>
                     <h4>Maßnahmen</h4>
                   </Row>
-                  {actionIds.map((id) => (
-                    <Row>{id}</Row>
-                  ))}
+                  <Row>
+                    {regionsActions
+                      .filter((action) =>
+                        action.objectiveIds.includes(objective._id)
+                      )
+                      .map((action) => (
+                        <ActionDisplay action={action} />
+                      ))}
+                  </Row>
                 </Col>
                 <Row>
                   <Col>
-                    <Button onClick={onActionAdd}>Maßnahme hinzufügen</Button>
+                    <Button
+                      size={"sm"}
+                      onClick={() => onActionAdd(objective._id)}
+                    >
+                      + Maßnahme hinzufügen
+                    </Button>
                   </Col>
                 </Row>
               </Container>

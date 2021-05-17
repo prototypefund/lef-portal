@@ -1,15 +1,16 @@
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Col, Form, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import {
-  requestCreateAction,
+  requestCreateActionForRegion,
   requestCreateObjectiveForRegion,
   requestUpdateAction,
   requestUpdateObjective,
 } from "../../redux/authSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { LefModal } from "../shared/LefModal";
+import MultiSelect from "react-multi-select-component";
 
-const getYYYYMMDD = (date) => {
+export const getYYYYMMDD = (date) => {
   const dateObj = new Date(date);
   const mm = dateObj.getMonth() + 1;
   const dd = dateObj.getDate();
@@ -29,22 +30,70 @@ export const AddObjectivesAndActionsDialog = ({
   isAction,
 }) => {
   const dispatch = useDispatch();
-  const [title, setTitle] = useState(editedObjective.title || "");
+  const [title, setTitle] = useState(editedObjective.title || "Test");
+  const [budget, setBudget] = useState(editedObjective.title || "0");
   const [startDate, setStartDate] = useState(
-    editedObjective.startDate ? getYYYYMMDD(editedObjective.startDate) : ""
+    editedObjective.startDate
+      ? getYYYYMMDD(editedObjective.startDate)
+      : "01.01.2020"
   );
   const [endDate, setEndDate] = useState(
-    editedObjective.endDate ? getYYYYMMDD(editedObjective.endDate) : ""
+    editedObjective.endDate
+      ? getYYYYMMDD(editedObjective.endDate)
+      : "01.01.2030"
   );
   const [description, setDescription] = useState(
-    editedObjective.description || ""
+    editedObjective.description || "Test Beschreibung"
   );
   const [tags, setTags] = useState(
-    editedObjective.tags ? editedObjective.tags.join(" ") : ""
+    editedObjective.tags ? editedObjective.tags.join(" ") : "Test"
   );
-  const editMode = Boolean(editedObjective._id);
+  const [objectiveIds, setObjectiveIds] = useState(
+    editedObjective.objectiveIds
+      ? editedObjective.objectiveIds.join(" ")
+      : "6095ab9dd25491398032b409"
+  );
+
+  const regionsActions = useSelector((state) =>
+    state.data.actionsForRegion[regionData._id]
+      ? state.data.actionsForRegion[regionData._id]
+      : []
+  );
+
+  console.debug(regionsActions);
+
+  const [actionIds, setActionIds] = useState([]);
+  const editMode = Boolean(!isAction && editedObjective._id);
+
+  const resetValues = () => {
+    setDescription("");
+    setTitle("");
+    setTags("");
+    setStartDate("");
+    setEndDate("");
+    setBudget(0);
+  };
+
+  const closeDialog = () => {
+    resetValues();
+    onClose();
+  };
+
+  const filteredActions = regionsActions.filter(
+    (a) =>
+      Array.isArray(a.objectiveIds) &&
+      a.objectiveIds.includes(editedObjective._id)
+  );
+
+  useEffect(() => {
+    setActionIds(filteredActions);
+  }, [editedObjective._id]);
 
   const size = "md";
+  let optionsMapping = (a) => ({
+    label: a.description,
+    value: a._id,
+  });
   let content = (
     <div>
       <Form>
@@ -126,9 +175,58 @@ export const AddObjectivesAndActionsDialog = ({
             </Form.Group>
           </Col>
         </Row>
+
+        {isAction && (
+          <Row>
+            <Col md={12} lg={6}>
+              <Form.Group controlId={"budget"}>
+                <Form.Label>{"Budget"}</Form.Label>
+                <Form.Control
+                  size={size}
+                  onChange={(e) => setBudget(e.target.value)}
+                  type={"number"}
+                  value={budget}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+        )}
+        {!isAction && (
+          <Row>
+            <Col md={12} lg={6}>
+              <Form.Group controlId={"objectives"}>
+                <Form.Label>{"Zugeordnete Maßnahmen"}</Form.Label>
+                <MultiSelect
+                  options={regionsActions.map(optionsMapping)}
+                  value={actionIds.map(optionsMapping)}
+                  onChange={(selected) =>
+                    setActionIds(
+                      regionsActions.filter((a) => selected.includes(a._id))
+                    )
+                  }
+                  labelledBy="actions"
+                  placeholder={"Keine Maßnahmen zugeordnet"}
+                  selectDeselectLabel={"Alle/Keine auswählen"}
+                  hasSelectAll={false}
+                  overrideStrings={{
+                    allItemsAreSelected: "(alle ausgewählt)",
+                    clearSearch: "",
+                    noOptions: "Keine Maßnahmen vorhanden",
+                    search: "Suche",
+                    selectAll: "Alle auswählen",
+                    selectSomeItems: "Auswählen..",
+                  }}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+        )}
       </Form>
     </div>
   );
+  const tagsArray = tags && tags !== "" ? tags.split(" ") : [];
+  const objectiveIdsArray =
+    objectiveIds && objectiveIds !== "" ? objectiveIds.split(" ") : [];
   return (
     <LefModal
       size={"lg"}
@@ -141,23 +239,24 @@ export const AddObjectivesAndActionsDialog = ({
         {
           label: "Abbrechen",
           variant: "secondary",
-          onClick: onClose,
+          onClick: closeDialog,
         },
         {
           label: editMode ? "Änderung speichern" : "Hinzufügen",
           onClick: () => {
-            const tagsArray = tags && tags !== "" ? tags.split(" ") : [];
             dispatch(
               isAction
                 ? editMode
                   ? requestUpdateAction()
-                  : requestCreateAction(
+                  : requestCreateActionForRegion(
                       startDate,
                       endDate,
                       title,
                       description,
-                      "budget",
-                      tags
+                      budget,
+                      tags,
+                      regionData._id,
+                      [editedObjective._id]
                     )
                 : editMode
                 ? requestUpdateObjective({
@@ -167,6 +266,7 @@ export const AddObjectivesAndActionsDialog = ({
                     title,
                     description,
                     tags: tagsArray,
+                    actions: actionIds,
                   })
                 : requestCreateObjectiveForRegion(
                     startDate,
@@ -174,17 +274,12 @@ export const AddObjectivesAndActionsDialog = ({
                     title,
                     description,
                     tagsArray,
-                    [],
-                    regionData
+                    regionData._id
                   )
             );
-            onClose();
-            setDescription("");
-            setTitle("");
-            setTags("");
-            setStartDate("");
-            setEndDate("");
+            closeDialog();
           },
+          disabled: tagsArray.length === 0,
         },
       ]}
     />

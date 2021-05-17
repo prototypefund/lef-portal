@@ -1,39 +1,34 @@
 import { useEffect, useState } from "react";
-import { ArrowRightOutlined } from "@ant-design/icons";
 import MapChart from "./MapChart";
 import { Heading } from "./shared/Heading";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { Button } from "react-bootstrap";
-
-const regions = [
-  {
-    label: "Münster",
-    id: "609454a56242d72210a4fefc",
-  },
-  {
-    label: "Dresden",
-    id: "6094567e6242d72210a4fefd",
-  },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { requestGetAllRegions } from "../redux/authSlice";
 
 export const StartPage = ({ onCitySelect = () => {} }) => {
-  const [searchWord, setSearchword] = useState("");
+  const regions = useSelector((state) => state.data.regionData);
+  const dispatch = useDispatch();
   const [coords, setCoords] = useState({});
   const { longitude, latitude } = coords;
+
+  useEffect(() => {}, []);
 
   const getLocation = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setSearchword(
-          position.coords.latitude + "/" + position.coords.longitude
-        );
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
         setCoords(position.coords);
+        // TODO find region closest to user location
       },
-      () => console.debug("Location not available!")
+      () => alert("Dein Standort konnte leider nicht ermittelt werden!")
     );
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    dispatch(requestGetAllRegions());
+  }, []);
 
   return (
     <div className={"col"}>
@@ -52,15 +47,16 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
             onChange={(values) => onCitySelect(values[0].value)}
             placeholder={"Stadt / Unternehmen"}
             options={regions.map((region) => ({
-              label: region.label,
-              value: region.id,
+              label: region.name,
+              value: region._id,
             }))}
             emptyLabel={"Keine Ergebnisse."}
           />
+
           <Button
             className={"mt-1"}
             size={"sm"}
-            variant={"link"}
+            variant={"primary"}
             onClick={() => getLocation()}
           >
             Meinen Standort verwenden

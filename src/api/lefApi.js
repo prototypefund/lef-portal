@@ -8,8 +8,9 @@ export const lefApi = {
       password: password,
     });
   },
-  getData: (token, body) => apiRequest("/methodtests", body, token),
+
   getRegionData: (regionId) => apiRequest("/region/get", { _id: regionId }),
+  getAllRegions: () => apiRequest("/region/get", { allRegions: true }),
   createRegion: (name, postalcodes = []) =>
     apiRequest("/region/create", {
       postalcodes,
@@ -17,33 +18,41 @@ export const lefApi = {
     }),
   updateRegion: (updatedRegion) =>
     apiRequest("/region/update", { region: updatedRegion }),
-  getObjective: (objectiveId) =>
+
+  getObjectiveById: (objectiveId) =>
     apiRequest("/objective/get", { _id: objectiveId }),
-  createObjective: (
-    startDate,
-    endDate,
-    title,
-    description,
-    tags = [],
-    actions = []
-  ) =>
+  getAllObjectivesForRegion: (regionId) =>
+    apiRequest("/objective/get", { regionId }),
+  createObjective: (startDate, endDate, title, description, tags, regionId) =>
     apiRequest("/objective/create", {
       startDate,
       endDate,
       title,
       description,
       tags,
-      actions,
+      regionId,
     }),
   updateObjective: (updatedObjective) =>
     apiRequest("/objective/update", { objective: updatedObjective }),
-  createAction: (startDate, endDate, description, tags = [], budget) =>
+
+  getAllActionsForRegion: (regionId) => apiRequest("/action/get", { regionId }),
+  createAction: (
+    startDate,
+    endDate,
+    description,
+    tags = [],
+    budget,
+    regionId,
+    objectiveIds
+  ) =>
     apiRequest("/action/create", {
       startDate,
       endDate,
       description,
       tags,
       budget,
+      regionId,
+      objectiveIds,
     }),
   updateAction: (updatedAction) => apiRequest("/action/update", updatedAction),
 };
