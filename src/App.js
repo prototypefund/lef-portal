@@ -6,7 +6,14 @@ import reducers from "./../src/redux/rootReducers";
 import { createLogger } from "redux-logger";
 import MainContent from "./components/MainLayout";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { PRIMARY_COLOR, PRIMARY_COLOR_DARK } from "./assets/colors";
+import {
+  COLOR_TEXT_BRIGHT,
+  PRIMARY_COLOR,
+  PRIMARY_COLOR_DARK,
+  SECONDARY_COLOR,
+  SECONDARY_COLOR_DARK,
+} from "./assets/colors";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 
 const logger = createLogger({
   timestamp: true,
@@ -23,13 +30,13 @@ const App = () => (
       {`
     .btn-primary {
       background-color: ${PRIMARY_COLOR};
-      color: white;
+      color: ${COLOR_TEXT_BRIGHT};
       border: none;
     }
     
     .btn-primary:hover {
       background-color: ${PRIMARY_COLOR_DARK};
-      color: white;
+      color: ${COLOR_TEXT_BRIGHT};
       border: none;
     }
     
@@ -47,9 +54,14 @@ const App = () => (
     }
     
     .badge {
-          background-color: ${PRIMARY_COLOR};
+          background-color: ${SECONDARY_COLOR_DARK};
+          color: #111;
 
     }
+    
+    .alert-info {
+          background-color: ${SECONDARY_COLOR};
+          color: #111;
     `}
     </style>
     <Provider store={store}>

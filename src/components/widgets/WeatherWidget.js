@@ -1,86 +1,40 @@
-import { Row } from "react-bootstrap";
-import React, { useState } from "react";
-import { ResponsiveLine } from "nivo";
+import { Col, Row } from "react-bootstrap";
+import React from "react";
+import { LefLineChart } from "../shared/charts/LefLineChart";
 
-export const WeatherWidget = ({ regionData }) => {
+const fakeWeatherData = {
+  labels: [1990, 2000, 2010],
+  unitLabel: " Grad",
+  datasets: [
+    {
+      label: "Münster Zentrum",
+      data: [15.5, 19.5, 20.1],
+    },
+    { label: "Gievenbeck", data: [10.5, 21.5, 20.4] },
+  ],
+};
+
+export const WeatherWidget = ({ regionData = {} }) => {
+  const { weatherData = [] } = regionData;
+  const { datasets, unitLabel } = fakeWeatherData;
+  let second = datasets[0].data[2];
+  let first = datasets[0].data[0];
   return (
-    <Row style={{ width: "100%", height: 500 }}>
-      <ResponsiveLine
-        data={[
-          {
-            id: 1,
-            data: [
-              { x: 0, y: 5 },
-              { x: 5, y: 15 },
-              { x: 10, y: 5 },
-              { x: 25, y: 25 },
-            ],
-          },
-        ]}
-        margin={{ top: 50, right: 50, bottom: 50, left: 60 }}
-        xScale={{ type: "point" }}
-        yScale={{
-          type: "linear",
-          min: "auto",
-          max: "auto",
-          stacked: false,
-          reverse: false,
-        }}
-        yFormat=" >-.2f"
-        curve="natural"
-        axisTop={null}
-        axisRight={null}
-        axisBottom={{
-          orient: "bottom",
-          tickSize: 5,
-          tickPadding: 5,
-          tickRotation: 0,
-          legend: "Jahr",
-          legendOffset: 36,
-          legendPosition: "middle",
-        }}
-        axisLeft={{
-          orient: "left",
-          tickSize: 5,
-          tickPadding: 5,
-          tickRotation: 0,
-          legend: "Temperatur",
-          legendOffset: -40,
-          legendPosition: "middle",
-        }}
-        pointSize={20}
-        pointColor={{ theme: "background" }}
-        pointBorderWidth={2}
-        pointBorderColor={{ from: "serieColor" }}
-        pointLabelYOffset={-12}
-        useMesh={true}
-        legends={[
-          {
-            anchor: "bottom-right",
-            direction: "column",
-            justify: false,
-            translateX: 100,
-            translateY: 0,
-            itemsSpacing: 0,
-            itemDirection: "left-to-right",
-            itemWidth: 80,
-            itemHeight: 20,
-            itemOpacity: 0.75,
-            symbolSize: 12,
-            symbolShape: "circle",
-            symbolBorderColor: "rgba(0, 0, 0, .5)",
-            effects: [
-              {
-                on: "hover",
-                style: {
-                  itemBackground: "rgba(0, 0, 0, .03)",
-                  itemOpacity: 1,
-                },
-              },
-            ],
-          },
-        ]}
-      />
-    </Row>
+    <Col>
+      <Row>
+        <Col sm={12} lg={8}>
+          <div style={{ width: "100%" }}>
+            <LefLineChart data={fakeWeatherData} />
+          </div>
+        </Col>
+        <Col sm={12} lg={4} className={"mt-sm-2"}>
+          <p>{`Die Durchschnittstemperatur in ${
+            regionData.name
+          } ist von ${first}${unitLabel} auf ${second}${unitLabel} ${
+            first > second ? "gesunken" : "gestiegen"
+          }.`}</p>
+        </Col>
+      </Row>
+    </Col>
   );
 };

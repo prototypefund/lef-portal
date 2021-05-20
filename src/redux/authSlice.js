@@ -50,6 +50,7 @@ export const requestSignIn = (username, password) => (dispatch) => {
 
 export const requestSignOut = () => (dispatch) => {
   userToken = null;
+  localStorage.setItem("token", null);
   localStorage.clear();
   dispatch(updateAuthState({ authState: "loggedOut" }));
 };

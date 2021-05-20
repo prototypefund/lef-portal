@@ -1,5 +1,5 @@
 import { Col, Form, Row } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   requestCreateActionForRegion,
   requestCreateObjectiveForRegion,
@@ -48,21 +48,12 @@ export const AddObjectivesAndActionsDialog = ({
   const [tags, setTags] = useState(
     editedObjective.tags ? editedObjective.tags.join(" ") : "Test"
   );
-  const [objectiveIds, setObjectiveIds] = useState(
-    editedObjective.objectiveIds
-      ? editedObjective.objectiveIds.join(" ")
-      : "6095ab9dd25491398032b409"
+  const [selectedObjectives, setSelectedObjectives] = useState([]);
+
+  const regionsObjectives = useSelector(
+    (state) => state.data.objectivesForRegion[regionData._id] || []
   );
 
-  const regionsActions = useSelector((state) =>
-    state.data.actionsForRegion[regionData._id]
-      ? state.data.actionsForRegion[regionData._id]
-      : []
-  );
-
-  console.debug(regionsActions);
-
-  const [actionIds, setActionIds] = useState([]);
   const editMode = Boolean(!isAction && editedObjective._id);
 
   const resetValues = () => {
@@ -79,7 +70,7 @@ export const AddObjectivesAndActionsDialog = ({
     onClose();
   };
 
-  const filteredActions = regionsActions.filter(
+  /*const filteredActions = regionsActions.filter(
     (a) =>
       Array.isArray(a.objectiveIds) &&
       a.objectiveIds.includes(editedObjective._id)
@@ -88,10 +79,11 @@ export const AddObjectivesAndActionsDialog = ({
   useEffect(() => {
     setActionIds(filteredActions);
   }, [editedObjective._id]);
+*/
 
   const size = "md";
   let optionsMapping = (a) => ({
-    label: a.description,
+    label: a.title,
     value: a._id,
   });
   let content = (
@@ -191,27 +183,23 @@ export const AddObjectivesAndActionsDialog = ({
             </Col>
           </Row>
         )}
-        {!isAction && (
+        {isAction && (
           <Row>
             <Col md={12} lg={6}>
               <Form.Group controlId={"objectives"}>
-                <Form.Label>{"Zugeordnete Maßnahmen"}</Form.Label>
+                <Form.Label>{"Zugeordnete Ziele"}</Form.Label>
                 <MultiSelect
-                  options={regionsActions.map(optionsMapping)}
-                  value={actionIds.map(optionsMapping)}
-                  onChange={(selected) =>
-                    setActionIds(
-                      regionsActions.filter((a) => selected.includes(a._id))
-                    )
-                  }
+                  options={regionsObjectives.map(optionsMapping)}
+                  value={selectedObjectives}
+                  onChange={setSelectedObjectives}
                   labelledBy="actions"
-                  placeholder={"Keine Maßnahmen zugeordnet"}
+                  placeholder={"Keine Ziele zugeordnet"}
                   selectDeselectLabel={"Alle/Keine auswählen"}
                   hasSelectAll={false}
                   overrideStrings={{
                     allItemsAreSelected: "(alle ausgewählt)",
                     clearSearch: "",
-                    noOptions: "Keine Maßnahmen vorhanden",
+                    noOptions: "Keine Ziele vorhanden",
                     search: "Suche",
                     selectAll: "Alle auswählen",
                     selectSomeItems: "Auswählen..",
@@ -225,8 +213,6 @@ export const AddObjectivesAndActionsDialog = ({
     </div>
   );
   const tagsArray = tags && tags !== "" ? tags.split(" ") : [];
-  const objectiveIdsArray =
-    objectiveIds && objectiveIds !== "" ? objectiveIds.split(" ") : [];
   return (
     <LefModal
       size={"lg"}
@@ -256,7 +242,7 @@ export const AddObjectivesAndActionsDialog = ({
                       budget,
                       tags,
                       regionData._id,
-                      [editedObjective._id]
+                      selectedObjectives.map((o) => o.value)
                     )
                 : editMode
                 ? requestUpdateObjective({
@@ -266,7 +252,6 @@ export const AddObjectivesAndActionsDialog = ({
                     title,
                     description,
                     tags: tagsArray,
-                    actions: actionIds,
                   })
                 : requestCreateObjectiveForRegion(
                     startDate,

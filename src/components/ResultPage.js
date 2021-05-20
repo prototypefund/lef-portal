@@ -4,6 +4,7 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import { ObjectivesWidget } from "./widgets/ObjectivesWidget";
 import React, { useEffect } from "react";
 import {
+  requestGetAllActionsForRegion,
   requestGetAllObjectivesForRegion,
   requestGetRegion,
 } from "../redux/authSlice";
@@ -11,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeftCircleFill } from "react-bootstrap-icons";
 import { PRIMARY_COLOR } from "../assets/colors";
 import { WeatherWidget } from "./widgets/WeatherWidget";
+import { AttitudeWidget } from "./widgets/AttitudeWidget";
 
 export const ResultPage = ({ regionId, onBack = () => {} }) => {
   const dispatch = useDispatch();
@@ -18,6 +20,7 @@ export const ResultPage = ({ regionId, onBack = () => {} }) => {
   useEffect(() => {
     dispatch(requestGetRegion(regionId));
     dispatch(requestGetAllObjectivesForRegion(regionId));
+    dispatch(requestGetAllActionsForRegion(regionId));
   }, []);
 
   const regionData =
@@ -34,26 +37,35 @@ export const ResultPage = ({ regionId, onBack = () => {} }) => {
     {
       id: 2,
       question:
-        "Wie hat sich das Wetter in %s in den letzten Jahrzehnten verändert?",
+        "Hat sich das Wetter in %s in den letzten Jahrzehnten verändert?",
       component: <WeatherWidget regionData={regionData} />,
     },
+    {
+      id: 3,
+      question:
+        "Hat sich das Verhalten und die Einstellung der Bürger:innen in Münster mit Hinblick auf den Klimaschutz in den letzten Jahren verändert?",
+      component: <AttitudeWidget regionData={regionData} />,
+    },
   ];
+  let header = (
+    <Row>
+      <Col>
+        <div className={"d-flex align-items-center mb-1"}>
+          <div className={"flex-grow-0"}>
+            <Button variant={"link"} className={"mr-1"} onClick={onBack}>
+              <ArrowLeftCircleFill size={25} color={PRIMARY_COLOR} />
+            </Button>
+          </div>
+          <div className={"flex-grow-1"}>
+            <Heading size={"h4"} text={`Dein Klimacheck für: ${name}`} />
+          </div>
+        </div>
+      </Col>
+    </Row>
+  );
   return (
     <Container fluid>
-      <Row>
-        <Col>
-          <div className={"d-flex align-items-center mb-1"}>
-            <div className={"flex-grow-0"}>
-              <Button variant={"link"} className={"mr-1"} onClick={onBack}>
-                <ArrowLeftCircleFill size={25} color={PRIMARY_COLOR} />
-              </Button>
-            </div>
-            <div className={"flex-grow-1"}>
-              <Heading size={"h4"} text={`Dein Klimacheck für: ${name}`} />
-            </div>
-          </div>
-        </Col>
-      </Row>
+      {header}
 
       <Row>
         <Col>
