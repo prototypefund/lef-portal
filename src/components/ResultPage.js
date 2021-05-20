@@ -10,7 +10,7 @@ import {
 } from "../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeftCircleFill } from "react-bootstrap-icons";
-import { PRIMARY_COLOR } from "../assets/colors";
+import { PRIMARY_COLOR, PRIMARY_COLOR_DARK } from "../assets/colors";
 import { WeatherWidget } from "./widgets/WeatherWidget";
 import { AttitudeWidget } from "./widgets/AttitudeWidget";
 
@@ -53,7 +53,7 @@ export const ResultPage = ({ regionId, onBack = () => {} }) => {
         <div className={"d-flex align-items-center mb-1"}>
           <div className={"flex-grow-0"}>
             <Button variant={"link"} className={"mr-1"} onClick={onBack}>
-              <ArrowLeftCircleFill size={25} color={PRIMARY_COLOR} />
+              <ArrowLeftCircleFill size={25} color={PRIMARY_COLOR_DARK} />
             </Button>
           </div>
           <div className={"flex-grow-1"}>

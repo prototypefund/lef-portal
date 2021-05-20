@@ -10,8 +10,9 @@ import {
   COLOR_TEXT_BRIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
+  BACKGROUND_COLOR,
   SECONDARY_COLOR,
-  SECONDARY_COLOR_DARK,
+  COLOR_TEXT_DARK,
 } from "./assets/colors";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 
@@ -30,22 +31,22 @@ const App = () => (
       {`
     .btn-primary {
       background-color: ${PRIMARY_COLOR};
-      color: ${COLOR_TEXT_BRIGHT};
+      color: ${COLOR_TEXT_DARK};
       border: none;
     }
     
     .btn-primary:hover {
       background-color: ${PRIMARY_COLOR_DARK};
-      color: ${COLOR_TEXT_BRIGHT};
+      color: ${COLOR_TEXT_DARK};
       border: none;
     }
     
     .navbar {
-        color: ${PRIMARY_COLOR};
+        color: ${COLOR_TEXT_DARK};
     }
     
     a {
-        color: ${PRIMARY_COLOR}
+        color: ${COLOR_TEXT_DARK}
         }
 
     .btn-xxl {
@@ -54,7 +55,7 @@ const App = () => (
     }
     
     .badge {
-          background-color: ${SECONDARY_COLOR_DARK};
+          background-color: ${BACKGROUND_COLOR};
           color: #111;
 
     }

@@ -101,7 +101,7 @@ export const ObjectivesWidget = (props) => {
               >
                 <h6
                   style={{
-                    backgroundColor: PRIMARY_COLOR,
+                    backgroundColor: PRIMARY_COLOR_DARK,
                     width: "fit-content",
                     padding: "5px 12px",
                     borderRadius: 5,

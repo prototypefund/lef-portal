@@ -2,19 +2,20 @@ import { QuestionCircleFilled } from "@ant-design/icons";
 import React from "react";
 import { Col, Row } from "react-bootstrap";
 import * as PropTypes from "prop-types";
-import { PRIMARY_COLOR, SECONDARY_COLOR } from "../../assets/colors";
+import { PRIMARY_COLOR, BACKGROUND_COLOR } from "../../assets/colors";
 
+const textColor = "#222";
 const Question = (props) => (
   <Col
     className={"d-flex alert alert-secondary align-items-center"}
     style={{
       border: `2px solid ${PRIMARY_COLOR}`,
       backgroundColor: PRIMARY_COLOR,
-      color: "#EFEFEF",
+      color: textColor,
     }}
   >
     <div className={"mr-3"}>
-      <QuestionCircleFilled style={{ fontSize: 35, color: "#EEE" }} />
+      <QuestionCircleFilled style={{ fontSize: 35, color: textColor }} />
     </div>
     <div style={{ whiteSpace: "pre-wrap" }}>{props.question}</div>
   </Col>
