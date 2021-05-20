@@ -45,6 +45,11 @@ const App = () => (
       padding: 1rem 1.5rem;
       font-size: 1.5rem;
     }
+    
+    .badge {
+          background-color: ${PRIMARY_COLOR};
+
+    }
     `}
     </style>
     <Provider store={store}>

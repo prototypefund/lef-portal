@@ -4,7 +4,7 @@ import { Heading } from "./shared/Heading";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { requestGetAllRegions } from "../redux/authSlice";
+import { requestCreateRegion, requestGetAllRegions } from "../redux/authSlice";
 
 export const StartPage = ({ onCitySelect = () => {} }) => {
   const regions = useSelector((state) => state.data.regionData);
@@ -62,6 +62,13 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
             Meinen Standort verwenden
           </Button>
         </div>
+        {/*<Button
+          onClick={() =>
+            dispatch(requestCreateRegion("Münster", [48153, 48154]))
+          }
+        >
+          Neue Region
+        </Button>*/}
         <div className={"col-lg"}>
           <MapChart lat={latitude} lon={longitude} />
         </div>
