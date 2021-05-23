@@ -1,4 +1,4 @@
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { LefLineChart } from "../shared/charts/LefLineChart";
 import React from "react";
 
@@ -13,7 +13,7 @@ const fakeElectionData = {
   ],
 };
 
-export const AttitudeWidget = (props) => {
+export const AttitudeWidget = () => {
   return (
     <Col>
       <Row>

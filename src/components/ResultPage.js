@@ -1,77 +1,64 @@
 import { ResultEntry } from "./resultPageComponents/ResultEntry";
 import { Heading } from "./shared/Heading";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import { ObjectivesWidget } from "./widgets/ObjectivesWidget";
-import React, { useEffect } from "react";
-import {
-  requestGetAllActionsForRegion,
-  requestGetAllObjectivesForRegion,
-  requestGetRegion,
-} from "../redux/authSlice";
+import React, { useEffect, useState } from "react";
+import { requestGetRegion } from "../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeftCircleFill } from "react-bootstrap-icons";
-import { PRIMARY_COLOR, PRIMARY_COLOR_DARK } from "../assets/colors";
-import { WeatherWidget } from "./widgets/WeatherWidget";
-import { AttitudeWidget } from "./widgets/AttitudeWidget";
+import { PRIMARY_COLOR_DARK } from "../assets/colors";
+import { getWidget } from "./widgets/getWidget";
+import { EditButton } from "./shared/EditButton";
 
 export const ResultPage = ({ regionId, onBack = () => {} }) => {
   const dispatch = useDispatch();
+  const userIsAdmin =
+    useSelector((state) => state.auth.authState) === "loggedIn";
+  const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
     dispatch(requestGetRegion(regionId));
-    dispatch(requestGetAllObjectivesForRegion(regionId));
-    dispatch(requestGetAllActionsForRegion(regionId));
-  }, []);
+  }, [dispatch, regionId]);
 
   const regionData =
     useSelector((state) => state.data.regionData[regionId]) || {};
   const { name } = regionData;
 
   const widgets = [
-    {
-      id: 1,
-      question:
-        "Welche Meilensteine hat %s schon erreicht?\nWelche Ziele hat sich %s für die Zukunft gesetzt?",
-      component: <ObjectivesWidget regionData={regionData} />,
-    },
-    {
-      id: 2,
-      question:
-        "Hat sich das Wetter in %s in den letzten Jahrzehnten verändert?",
-      component: <WeatherWidget regionData={regionData} />,
-    },
-    {
-      id: 3,
-      question:
-        "Hat sich das Verhalten und die Einstellung der Bürger:innen in Münster mit Hinblick auf den Klimaschutz in den letzten Jahren verändert?",
-      component: <AttitudeWidget regionData={regionData} />,
-    },
+    getWidget(1, regionData, editMode),
+    getWidget(2, regionData, editMode),
+    getWidget(3, regionData, editMode),
   ];
+
   let header = (
     <Row>
-      <Col>
-        <div className={"d-flex align-items-center mb-1"}>
-          <div className={"flex-grow-0"}>
-            <Button variant={"link"} className={"mr-1"} onClick={onBack}>
-              <ArrowLeftCircleFill size={25} color={PRIMARY_COLOR_DARK} />
-            </Button>
-          </div>
-          <div className={"flex-grow-1"}>
-            <Heading size={"h4"} text={`Dein Klimacheck für: ${name}`} />
-          </div>
+      <div className={"d-flex align-items-center mb-1"}>
+        <div className={"flex-grow-0"}>
+          <Button variant={"link"} className={"mr-1"} onClick={onBack}>
+            <ArrowLeftCircleFill size={25} color={PRIMARY_COLOR_DARK} />
+          </Button>
         </div>
-      </Col>
+        <div className={"flex-grow-1"}>
+          <Heading size={"h3"} text={`Dein Klimacheck für: ${name}`} />
+        </div>
+      </div>
+      {userIsAdmin && (
+        <EditButton
+          onClick={() => {
+            setEditMode(!editMode);
+          }}
+        />
+      )}
     </Row>
   );
   return (
-    <Container fluid>
+    <Container fluid style={{ maxWidth: 800 }}>
       {header}
 
       <Row>
         <Col>
-          {widgets.map((entry) => (
+          {widgets.map((entry, k) => (
             <ResultEntry
-              key={entry.id}
+              key={k}
               question={entry.question.replaceAll("%s", name)}
               component={entry.component}
             />

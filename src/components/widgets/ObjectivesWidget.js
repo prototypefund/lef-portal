@@ -1,52 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Badge,
-  Button,
-  ButtonGroup,
-  Col,
-  Container,
-  Row,
-} from "react-bootstrap";
-import { PencilFill } from "react-bootstrap-icons";
+import { Button, ButtonGroup, Col, Container, Row } from "react-bootstrap";
 import * as PropTypes from "prop-types";
-import {
-  AddObjectivesAndActionsDialog,
-  getYYYYMMDD,
-} from "../resultPageComponents/AddObjectivesAndActionsDialog";
+import { AddObjectivesAndActionsDialog } from "../resultPageComponents/AddObjectivesAndActionsDialog";
 import {
   COLOR_TEXT_BRIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
 } from "../../assets/colors";
 import { Carousel } from "react-responsive-carousel";
+import {
+  requestGetAllActionsForRegion,
+  requestGetAllObjectivesForRegion,
+} from "../../redux/authSlice";
+import { EditButton } from "../shared/EditButton";
+import { ActionDisplay } from "./ActionDisplay";
 
-const ActionDisplay = ({ action = {} }) => {
-  const { description, startDate, endDate, budget } = action;
-  return (
-    <Row xs={12} className={"w-100 mb-1"}>
-      <Col xs={6} sm={4}>
-        <Row>
-          <Col xs={6}>
-            <Badge variant={"light"}>{getYYYYMMDD(startDate)}</Badge>
-          </Col>
-          <Col xs={6}>
-            <Badge variant={"light"}>{getYYYYMMDD(endDate)}</Badge>
-          </Col>
-        </Row>
-      </Col>
-      <Col xs={12} sm={8}>
-        {`${description} (${budget}€)`}
-      </Col>
-    </Row>
-  );
-};
-
-ActionDisplay.propTypes = { action: PropTypes.any };
 export const ObjectivesWidget = (props) => {
   const dispatch = useDispatch();
-  const adminMode = false;
-  const { regionData } = props;
+  const { regionData, editMode } = props;
   const { _id } = regionData;
   const regionsObjectives = useSelector(
     (state) => state.data.objectivesForRegion[_id] || []
@@ -58,16 +30,15 @@ export const ObjectivesWidget = (props) => {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [isActionMode, setIsActionMode] = useState(false);
   const [editedObjective, setEditedObjective] = useState({});
+  const [editedAction, setEditedAction] = useState({});
 
-  /* useEffect(() => {
-            // TODO remove due to new function getAllObjectivesForRegion
-            objectiveIds.forEach((objectiveId) => {
-              dispatch(requestGetObjective(objectiveId));
-            });
-            dispatch(requestGetAllActionsForRegion(regionData._id));
-          }, [objectiveIds]);*/
+  useEffect(() => {
+    if (_id) {
+      dispatch(requestGetAllObjectivesForRegion(_id));
+      dispatch(requestGetAllActionsForRegion(_id));
+    }
+  }, [_id, dispatch]);
 
-  const isSmallScreen = true;
   let mappedObjectives = (huge) =>
     regionsObjectives
       .filter((o) => o)
@@ -76,7 +47,18 @@ export const ObjectivesWidget = (props) => {
         const endDate = new Date(objective.endDate);
         const filteredActions = regionsActions
           .filter((action) => action.objectiveIds.includes(objective._id))
-          .map((action) => <ActionDisplay action={action} />);
+          .map((action) => (
+            <ActionDisplay
+              key={action._id}
+              action={action}
+              editMode={editMode}
+              onEditAction={(actionId) => {
+                setIsActionMode(true);
+                setShowAddDialog(true);
+                setEditedAction(regionsActions.find((a) => a._id === actionId));
+              }}
+            />
+          ));
         return (
           <div
             key={objective._id}
@@ -115,28 +97,25 @@ export const ObjectivesWidget = (props) => {
 
             <Container style={huge ? { paddingRight: 80 } : {}}>
               <Row>
-                <Col xs={12} className={"d-flex align-items-center mr-4 pl-0"}>
+                <Col xs={12} className={"d-flex align-items-center mr-4 pl-0 "}>
                   <span
-                    className={"h3"}
+                    className={"h4"}
                     style={{ width: "fit-content" }}
                   >{`${objective.title}`}</span>
-                  {adminMode && (
-                    <Button
-                      variant={"link"}
-                      className={"ml-2 mb-2"}
-                      size={"sm"}
+                  {editMode && (
+                    <EditButton
                       onClick={() => {
                         setIsActionMode(false);
-                        setEditedObjective(objective._id);
+                        setEditedObjective(
+                          regionsObjectives.find((o) => o._id === objective._id)
+                        );
                         setShowAddDialog(true);
                       }}
-                    >
-                      <PencilFill />
-                    </Button>
+                    />
                   )}
                 </Col>
               </Row>
-              <Row style={{ height: 150 }}>
+              <Row>
                 <Col className={"pl-0"}>
                   <p>{`${objective.description}`}</p>
                 </Col>
@@ -154,17 +133,12 @@ export const ObjectivesWidget = (props) => {
                 </Col>
               </Row>
               {filteredActions.length > 0 && (
-                <Col className={"mt-3 pl-0"}>
+                <Col className={"mt-4 mb-4 pl-0"}>
                   <Row>
-                    <h4>Maßnahmen</h4>
+                    <span className={"h5"}>Maßnahmen</span>
                   </Row>
                   <Row>{filteredActions}</Row>
                 </Col>
-              )}
-              {adminMode && (
-                <Row>
-                  <Col></Col>
-                </Row>
               )}
             </Container>
           </div>
@@ -174,14 +148,19 @@ export const ObjectivesWidget = (props) => {
   return (
     <Row style={{ maxWidth: "99vw" }}>
       <div
-        className={"alert alert-info d-flex"}
+        className={"d-flex"}
         style={{
           width: "100%",
           overflow: "auto",
         }}
       >
         <div className={"w-100 d-sm-block d-md-none"}>
-          <Carousel autoPlay={false} showStatus={false} showIndicators={false}>
+          <Carousel
+            showThumbs={false}
+            autoPlay={false}
+            showStatus={false}
+            showIndicators={false}
+          >
             {mappedObjectives(false)}
           </Carousel>
         </div>
@@ -192,6 +171,7 @@ export const ObjectivesWidget = (props) => {
         <AddObjectivesAndActionsDialog
           isAction={isActionMode}
           editedObjective={editedObjective}
+          editedAction={editedAction}
           regionData={regionData}
           show={showAddDialog}
           onClose={() => {
@@ -201,8 +181,8 @@ export const ObjectivesWidget = (props) => {
         />
       )}
 
-      {adminMode && (
-        <ButtonGroup>
+      {editMode && (
+        <ButtonGroup className={"mt-2"}>
           <Button
             className={"mr-1"}
             onClick={() => {
@@ -225,4 +205,8 @@ export const ObjectivesWidget = (props) => {
       )}
     </Row>
   );
+};
+
+ObjectivesWidget.propTypes = {
+  regionData: PropTypes.object,
 };

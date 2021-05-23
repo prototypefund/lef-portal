@@ -9,14 +9,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { AccountPage } from "./AccountPage";
 import ProtectedRoute from "./ProtectedRoute";
 import { Button, Nav, Navbar } from "react-bootstrap";
-import { requestSignIn } from "../redux/authSlice";
+import { requestGetAllRegions, requestSignOut } from "../redux/authSlice";
+import { WidgetEmbedding } from "./WidgetEmbedding";
+import { useEffect } from "react";
 
-const MainLayout = ({ location = {}, history = {} }) => {
+const MainRouting = ({ location = {}, history = {} }) => {
   const dispatch = useDispatch();
   const { state = {} } = location;
   const authStatus = useSelector((state) => state.auth.authState);
   const loggedIn = authStatus === "loggedIn";
 
+  useEffect(() => {
+    dispatch(requestGetAllRegions());
+  }, [dispatch]);
   const pages = [
     {
       id: "1",
@@ -38,47 +43,53 @@ const MainLayout = ({ location = {}, history = {} }) => {
     {
       id: "4",
       label: "Abmelden",
-      action: () => dispatch(requestSignIn()),
+      action: () => dispatch(requestSignOut()),
       secure: true,
     },
   ];
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      <Navbar bg="light" expand="lg">
-        <Navbar.Brand>
-          <Link to={"/"}>{"LEF"}</Link>
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mr-auto">
-            {pages
-              .filter(
-                (page) =>
-                  !(!loggedIn && page.secure) && !(loggedIn && page.unsecure)
-              )
-              .map((page) => {
-                return page.to ? (
-                  <Link
-                    className={"navbar"}
-                    key={page.id}
-                    to={page.to}
-                    style={page.style}
-                  >
-                    {page.label}
-                  </Link>
-                ) : (
-                  <Button key={page.id} onClick={page.action}>
-                    {page.label}
-                  </Button>
-                );
-              })}
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
+      {!location.pathname.startsWith("/embeddedWidget") && (
+        <Navbar bg="light" expand="lg">
+          <Navbar.Brand>
+            <Link to={"/"}>{"LEF"}</Link>
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="mr-auto">
+              {pages
+                .filter(
+                  (page) =>
+                    !(!loggedIn && page.secure) && !(loggedIn && page.unsecure)
+                )
+                .map((page) => {
+                  return page.to ? (
+                    <Link
+                      className={"navbar"}
+                      key={page.id}
+                      to={page.to}
+                      style={page.style}
+                    >
+                      {page.label}
+                    </Link>
+                  ) : (
+                    <Button key={page.id} onClick={page.action}>
+                      {page.label}
+                    </Button>
+                  );
+                })}
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
+      )}
       <div className={"d-flex flex-grow-1 p-3"}>
         <Switch>
-          <Route path="/impressum">
+          <Route path="/imprint">
             <Imprint />
+          </Route>
+
+          <Route path="/embeddedWidget/:regionId/:widgetId">
+            <WidgetEmbedding />
           </Route>
 
           <Route path={"/result"}>
@@ -106,11 +117,11 @@ const MainLayout = ({ location = {}, history = {} }) => {
           </Route>
         </Switch>
       </div>
-      <div className={"mt-3 text-center mb-1"}>
+      <div className={"mt-3 text-center mb-1"} style={{ fontSize: 10 }}>
         Local Emission Framework 2021 (c)
       </div>
     </div>
   );
 };
 
-export default withRouter(MainLayout);
+export default withRouter(MainRouting);

@@ -1,34 +1,26 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import MapChart from "./MapChart";
 import { Heading } from "./shared/Heading";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { Button } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import { requestCreateRegion, requestGetAllRegions } from "../redux/authSlice";
+import { useSelector } from "react-redux";
 
 export const StartPage = ({ onCitySelect = () => {} }) => {
   const regions = useSelector((state) => state.data.regionData);
-  const dispatch = useDispatch();
   const [coords, setCoords] = useState({});
   const { longitude, latitude } = coords;
-
-  useEffect(() => {}, []);
 
   const getLocation = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
+        // const latitude = position.coords.latitude;
+        // const longitude = position.coords.longitude;
         setCoords(position.coords);
         // TODO find region closest to user location
       },
       () => alert("Dein Standort konnte leider nicht ermittelt werden!")
     );
   };
-
-  useEffect(() => {
-    dispatch(requestGetAllRegions());
-  }, []);
 
   return (
     <div className={"col"}>

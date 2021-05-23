@@ -3,7 +3,6 @@ import { lefApi } from "../api/lefApi";
 import {
   replaceAllRegionData,
   setActionsForRegion,
-  setLocalData,
   setObjectiveData,
   setObjectivesForRegion,
   setRegionData,
@@ -33,6 +32,7 @@ export const requestSignIn = (username, password) => (dispatch) => {
     .signIn(username, password)
     .then((response) => {
       if (response.data.token) {
+        console.debug("Saving token", response.data.token);
         localStorage.setItem("token", response.data.token);
       }
       dispatch(updateAuthState({ authState: "loggedIn" }));
@@ -91,11 +91,11 @@ export const requestGetObjective = (objectiveId) => (dispatch) => {
     );
 };
 
-export const requestCreateRegion = (name, postalcodes) => (dispatch) => {
+/*export const requestCreateRegion = (name, postalcodes) => (dispatch) => {
   lefApi
     .createRegion(name, postalcodes)
     .then((response) => console.debug(response));
-};
+};*/
 
 export const requestCreateObjectiveForRegion = (
   startDate,
@@ -107,7 +107,7 @@ export const requestCreateObjectiveForRegion = (
 ) => (dispatch) => {
   lefApi
     .createObjective(startDate, endDate, title, description, tags, regionId)
-    .then((regionResponse) => dispatch(requestGetRegion(regionId)));
+    .then(() => dispatch(requestGetRegion(regionId)));
 };
 
 export const requestUpdateObjective = (updatedObjective) => (dispatch) => {
@@ -130,7 +130,7 @@ export const requestCreateActionForRegion = (
   tags,
   regionId,
   objectiveIds
-) => (dispatch) => {
+) => () => {
   lefApi.createAction(
     startDate,
     endDate,
@@ -142,4 +142,6 @@ export const requestCreateActionForRegion = (
   );
 };
 
-export const requestUpdateAction = (updatedAction) => (dispatch) => {};
+export const requestUpdateAction = (updatedAction) => () => {
+  lefApi.updateAction(updatedAction);
+};

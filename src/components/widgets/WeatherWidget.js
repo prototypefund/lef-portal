@@ -15,7 +15,7 @@ const fakeWeatherData = {
 };
 
 export const WeatherWidget = ({ regionData = {} }) => {
-  const { weatherData = [] } = regionData;
+  // const { weatherData = [] } = regionData;
   const { datasets, unitLabel } = fakeWeatherData;
   let second = datasets[0].data[2];
   let first = datasets[0].data[0];

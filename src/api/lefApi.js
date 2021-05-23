@@ -3,10 +3,11 @@ const axios = require("axios");
 export const lefApi = {
   signUp: (username, password) => {},
   signIn: (username, password) => {
-    return apiRequest("/token/get", {
+    return Promise.resolve({ data: { token: "myToken" } });
+    /* return apiRequest("/token/get", {
       email: username,
       password: password,
-    });
+    });*/
   },
 
   getRegionData: (regionId) => apiRequest("/region/get", { _id: regionId }),
@@ -54,7 +55,8 @@ export const lefApi = {
       regionId,
       objectiveIds,
     }),
-  updateAction: (updatedAction) => apiRequest("/action/update", updatedAction),
+  updateAction: (updatedAction) =>
+    apiRequest("/action/update", { action: updatedAction }),
 };
 
 const apiRequest = (path, body, token, method = "post") => {

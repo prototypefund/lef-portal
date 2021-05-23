@@ -22,39 +22,49 @@ export const getYYYYMMDD = (date) => {
   ].join("-");
 };
 
+const optionsMapping = (objective) => ({
+  label: objective.title,
+  value: objective._id,
+});
+
 export const AddObjectivesAndActionsDialog = ({
   regionData,
   editedObjective = {},
   show,
   onClose,
   isAction,
+  editedAction = {},
 }) => {
   const dispatch = useDispatch();
-  const [title, setTitle] = useState(editedObjective.title || "Test");
-  const [budget, setBudget] = useState(editedObjective.title || "0");
-  const [startDate, setStartDate] = useState(
-    editedObjective.startDate
-      ? getYYYYMMDD(editedObjective.startDate)
-      : "01.01.2020"
-  );
-  const [endDate, setEndDate] = useState(
-    editedObjective.endDate
-      ? getYYYYMMDD(editedObjective.endDate)
-      : "01.01.2030"
-  );
-  const [description, setDescription] = useState(
-    editedObjective.description || "Test Beschreibung"
-  );
-  const [tags, setTags] = useState(
-    editedObjective.tags ? editedObjective.tags.join(" ") : "Test"
-  );
-  const [selectedObjectives, setSelectedObjectives] = useState([]);
 
   const regionsObjectives = useSelector(
     (state) => state.data.objectivesForRegion[regionData._id] || []
   );
 
-  const editMode = Boolean(!isAction && editedObjective._id);
+  const sourceObject = isAction ? editedAction : editedObjective || {};
+  const [title, setTitle] = useState(sourceObject.title || "Test");
+  const [budget, setBudget] = useState(sourceObject.budget || "0");
+  const [startDate, setStartDate] = useState(
+    sourceObject.startDate ? getYYYYMMDD(sourceObject.startDate) : "01.01.2020"
+  );
+  const [endDate, setEndDate] = useState(
+    sourceObject.endDate ? getYYYYMMDD(sourceObject.endDate) : "01.01.2030"
+  );
+  const [description, setDescription] = useState(
+    sourceObject.description || "Test Beschreibung"
+  );
+  const [tags, setTags] = useState(
+    sourceObject.tags ? sourceObject.tags.join(" ") : "Test"
+  );
+  const [selectedObjectives, setSelectedObjectives] = useState(
+    sourceObject.objectiveIds
+      ? sourceObject.objectiveIds
+          .map((id) => regionsObjectives.find((o) => o._id === id))
+          .map(optionsMapping)
+      : []
+  );
+
+  const editMode = Boolean(sourceObject._id);
 
   const resetValues = () => {
     setDescription("");
@@ -73,19 +83,15 @@ export const AddObjectivesAndActionsDialog = ({
   /*const filteredActions = regionsActions.filter(
     (a) =>
       Array.isArray(a.objectiveIds) &&
-      a.objectiveIds.includes(editedObjective._id)
+      a.objectiveIds.includes(sourceObject._id)
   );
 
   useEffect(() => {
     setActionIds(filteredActions);
-  }, [editedObjective._id]);
+  }, [sourceObject._id]);
 */
 
   const size = "md";
-  let optionsMapping = (a) => ({
-    label: a.title,
-    value: a._id,
-  });
   let content = (
     <div>
       <Form>
@@ -233,7 +239,16 @@ export const AddObjectivesAndActionsDialog = ({
             dispatch(
               isAction
                 ? editMode
-                  ? requestUpdateAction()
+                  ? requestUpdateAction({
+                      ...editedAction,
+                      startDate,
+                      endDate,
+                      title,
+                      description,
+                      tags: tagsArray,
+                      budget,
+                      objectiveIds: selectedObjectives.map((o) => o.value),
+                    })
                   : requestCreateActionForRegion(
                       startDate,
                       endDate,

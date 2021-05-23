@@ -4,15 +4,14 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import reducers from "./../src/redux/rootReducers";
 import { createLogger } from "redux-logger";
-import MainContent from "./components/MainLayout";
+import MainContent from "./components/MainRouting";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-  COLOR_TEXT_BRIGHT,
+  BACKGROUND_COLOR,
+  COLOR_TEXT_DARK,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
-  BACKGROUND_COLOR,
   SECONDARY_COLOR,
-  COLOR_TEXT_DARK,
 } from "./assets/colors";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 
@@ -52,6 +51,10 @@ const App = () => (
     .btn-xxl {
       padding: 1rem 1.5rem;
       font-size: 1.5rem;
+    }
+    
+    .btn-link, .btn-link:hover {
+    color: ${PRIMARY_COLOR_DARK}
     }
     
     .badge {

@@ -13,7 +13,7 @@ export const LefModal = ({ show, title, buttons = [], content, ...rest }) => {
         {buttons.map((button, i) => {
           const { label, variant, ...rest } = button;
           return (
-            <Button {...rest} variant={button.variant || "primary"}>
+            <Button key={i} {...rest} variant={button.variant || "primary"}>
               {button.label || ""}
             </Button>
           );
