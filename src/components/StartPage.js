@@ -3,12 +3,14 @@ import MapChart from "./MapChart";
 import { Heading } from "./shared/Heading";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { Button } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { requestCreateRegion } from "../redux/authSlice";
 
 export const StartPage = ({ onCitySelect = () => {} }) => {
   const regions = useSelector((state) => state.data.regionData);
   const [coords, setCoords] = useState({});
   const { longitude, latitude } = coords;
+  const dispatch = useDispatch();
 
   const getLocation = () => {
     navigator.geolocation.getCurrentPosition(
@@ -22,6 +24,7 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
     );
   };
 
+  let sortedRegions = [...regions];
   return (
     <div className={"col"}>
       <div className={"row"}>
@@ -38,10 +41,12 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
             id={"citySelection"}
             onChange={(values) => onCitySelect(values[0].value)}
             placeholder={"Stadt / Unternehmen"}
-            options={regions.map((region) => ({
-              label: region.name,
-              value: region._id,
-            }))}
+            options={sortedRegions
+              .sort((a, b) => (a.name < b.name ? -1 : 1))
+              .map((region) => ({
+                label: region.name,
+                value: region._id,
+              }))}
             emptyLabel={"Keine Ergebnisse."}
           />
 
@@ -56,11 +61,16 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
         </div>
         {/*<Button
           onClick={() =>
-            dispatch(requestCreateRegion("Münster", [48153, 48154]))
+            dispatch(
+              requestCreateRegion("Dülmen", [
+                59399,
+              ])
+            )
           }
         >
           Neue Region
-        </Button>*/}
+        </Button>
+        */}
         <div className={"col-lg"}>
           <MapChart lat={latitude} lon={longitude} />
         </div>

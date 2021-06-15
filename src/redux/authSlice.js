@@ -91,11 +91,11 @@ export const requestGetObjective = (objectiveId) => (dispatch) => {
     );
 };
 
-/*export const requestCreateRegion = (name, postalcodes) => (dispatch) => {
+export const requestCreateRegion = (name, postalcodes) => (dispatch) => {
   lefApi
     .createRegion(name, postalcodes)
     .then((response) => console.debug(response));
-};*/
+};
 
 export const requestCreateObjectiveForRegion = (
   startDate,

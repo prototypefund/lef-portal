@@ -15,10 +15,11 @@ const WIDGETS = (regionData, editMode) => ({
   },
   3: {
     question:
-      "Hat sich das Verhalten und die Einstellung der Bürger:innen in Münster mit Hinblick auf den Klimaschutz in den letzten Jahren verändert?",
+      "Hat sich das Verhalten und die Einstellung der Bürger:innen in %s mit Hinblick auf den Klimaschutz in den letzten Jahren verändert?",
     component: <AttitudeWidget regionData={regionData} />,
   },
 });
 
-export const getWidget = (id, regionData, editMode) =>
-  WIDGETS(regionData, editMode)[id];
+export const getWidget = (id, regionData, editMode) => {
+  return WIDGETS(regionData, editMode)[id];
+};

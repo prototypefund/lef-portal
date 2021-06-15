@@ -11,11 +11,14 @@ import { EditButton } from "./shared/EditButton";
 import { useParams } from "react-router-dom";
 
 const LefSpinner = () => (
-  <>
+  <Container
+    fluid
+    className={"align-items-center justify-content-center d-flex"}
+  >
     <Spinner animation="border" role="status">
       <span className="sr-only">Lade Daten...</span>
     </Spinner>
-  </>
+  </Container>
 );
 
 export const ResultPage = ({ onBack = () => {} }) => {
@@ -30,7 +33,12 @@ export const ResultPage = ({ onBack = () => {} }) => {
   }, [dispatch, regionId]);
 
   const regionData =
-    useSelector((state) => state.data.regionData[regionId]) || {};
+    useSelector((state) => {
+      let regionDataArray = state.data.regionData;
+      if (Array.isArray(regionDataArray)) {
+        return regionDataArray.find((d) => d._id === regionId);
+      }
+    }) || {};
   const { name, _id } = regionData;
 
   const widgets = [
@@ -66,7 +74,7 @@ export const ResultPage = ({ onBack = () => {} }) => {
 
       <Row>
         <Col>
-          {false ? (
+          {!_id ? (
             <LefSpinner />
           ) : (
             widgets.map((entry, k) => (

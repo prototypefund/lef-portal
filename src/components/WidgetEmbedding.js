@@ -10,6 +10,7 @@ export function WidgetEmbedding() {
   const regionData =
     useSelector((state) => state.data.regionData[regionId]) || {};
 
+  console.debug({ regionData });
   useEffect(() => {
     dispatch(requestGetRegion(regionId));
   }, [dispatch, regionId]);
