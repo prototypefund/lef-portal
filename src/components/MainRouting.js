@@ -92,8 +92,8 @@ const MainRouting = ({ location = {}, history = {} }) => {
             <WidgetEmbedding />
           </Route>
 
-          <Route path={"/result"}>
-            <ResultPage regionId={state.city} onBack={() => history.goBack()} />
+          <Route path={"/result/:regionId"}>
+            <ResultPage onBack={() => history.goBack()} />
           </Route>
 
           <Route path={"/signIn"}>
@@ -112,7 +112,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
 
           <Route path="/">
             <StartPage
-              onCitySelect={(city) => history.push("/result", { city })}
+              onCitySelect={(city) => history.push(`/result/${city}`)}
             />
           </Route>
         </Switch>

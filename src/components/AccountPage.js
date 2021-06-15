@@ -32,7 +32,7 @@ export const AccountPage = ({ myRegionIds = ["60a578af68fbf1545cdd7b18"] }) => {
                   <Button>
                     <Link
                       className={"navbar"}
-                      // to={page.to}
+                      to={`/result/${r._id}`}
                       // style={page.style}
                     >
                       Bearbeiten

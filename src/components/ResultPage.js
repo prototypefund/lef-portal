@@ -1,6 +1,6 @@
 import { ResultEntry } from "./resultPageComponents/ResultEntry";
 import { Heading } from "./shared/Heading";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Container, Row, Spinner } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import { requestGetRegion } from "../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,12 +8,22 @@ import { ArrowLeftCircleFill } from "react-bootstrap-icons";
 import { PRIMARY_COLOR_DARK } from "../assets/colors";
 import { getWidget } from "./widgets/getWidget";
 import { EditButton } from "./shared/EditButton";
+import { useParams } from "react-router-dom";
 
-export const ResultPage = ({ regionId, onBack = () => {} }) => {
+const LefSpinner = () => (
+  <>
+    <Spinner animation="border" role="status">
+      <span className="sr-only">Lade Daten...</span>
+    </Spinner>
+  </>
+);
+
+export const ResultPage = ({ onBack = () => {} }) => {
   const dispatch = useDispatch();
   const userIsAdmin =
     useSelector((state) => state.auth.authState) === "loggedIn";
   const [editMode, setEditMode] = useState(false);
+  const { regionId } = useParams();
 
   useEffect(() => {
     dispatch(requestGetRegion(regionId));
@@ -21,7 +31,7 @@ export const ResultPage = ({ regionId, onBack = () => {} }) => {
 
   const regionData =
     useSelector((state) => state.data.regionData[regionId]) || {};
-  const { name } = regionData;
+  const { name, _id } = regionData;
 
   const widgets = [
     getWidget(1, regionData, editMode),
@@ -56,13 +66,17 @@ export const ResultPage = ({ regionId, onBack = () => {} }) => {
 
       <Row>
         <Col>
-          {widgets.map((entry, k) => (
-            <ResultEntry
-              key={k}
-              question={entry.question.replaceAll("%s", name)}
-              component={entry.component}
-            />
-          ))}
+          {false ? (
+            <LefSpinner />
+          ) : (
+            widgets.map((entry, k) => (
+              <ResultEntry
+                key={k}
+                question={entry.question.replaceAll("%s", name)}
+                component={entry.component}
+              />
+            ))
+          )}
         </Col>
       </Row>
     </Container>
