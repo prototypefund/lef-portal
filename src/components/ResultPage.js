@@ -9,6 +9,7 @@ import { PRIMARY_COLOR_DARK } from "../assets/colors";
 import { getWidget } from "./widgets/getWidget";
 import { EditButton } from "./shared/EditButton";
 import { useParams } from "react-router-dom";
+import { getRegionDataFromState } from "../redux/dataSlice";
 
 const LefSpinner = () => (
   <Container
@@ -32,19 +33,15 @@ export const ResultPage = ({ onBack = () => {} }) => {
     dispatch(requestGetRegion(regionId));
   }, [dispatch, regionId]);
 
-  const regionData =
-    useSelector((state) => {
-      let regionDataArray = state.data.regionData;
-      if (Array.isArray(regionDataArray)) {
-        return regionDataArray.find((d) => d._id === regionId);
-      }
-    }) || {};
+  const regionData = useSelector((state) =>
+    getRegionDataFromState(state, regionId)
+  );
   const { name, _id } = regionData;
 
   const widgets = [
     getWidget(1, regionData, editMode),
     getWidget(2, regionData, editMode),
-    getWidget(3, regionData, editMode),
+    getWidget(4, regionData, editMode),
   ];
 
   let header = (

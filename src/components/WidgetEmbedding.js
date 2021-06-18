@@ -3,12 +3,14 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { requestGetRegion } from "../redux/authSlice";
 import { getWidget } from "./widgets/getWidget";
+import { getRegionDataFromState } from "../redux/dataSlice";
 
 export function WidgetEmbedding() {
   const dispatch = useDispatch();
   const { widgetId, regionId } = useParams();
-  const regionData =
-    useSelector((state) => state.data.regionData[regionId]) || {};
+  const regionData = useSelector((state) =>
+    getRegionDataFromState(state, regionId)
+  );
 
   console.debug({ regionData });
   useEffect(() => {
@@ -18,8 +20,8 @@ export function WidgetEmbedding() {
   const widget = getWidget(widgetId, regionData);
 
   return widget ? (
-    <div className={"d-flex flex-grow-1"}>{widget.component}</div>
+    <div className={"d-flex flex-grow-1 m-2"}>{widget.component}</div>
   ) : (
-    <p>Lade Daten..</p>
+    <p>Das angeforderte Widget ist nicht vorhanden.</p>
   );
 }

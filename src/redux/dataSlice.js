@@ -41,3 +41,11 @@ export const {
   setActionsForRegion,
 } = dataSlice.actions;
 export default dataSlice.reducer;
+
+export const getRegionDataFromState = (state, regionId) => {
+  let regionDataArray = state.data.regionData;
+  if (Array.isArray(regionDataArray)) {
+    return regionDataArray.find((d) => d._id === regionId) || {};
+  }
+  return {};
+};

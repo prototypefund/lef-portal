@@ -2,6 +2,7 @@ import { ObjectivesWidget } from "./ObjectivesWidget";
 import { WeatherWidget } from "./WeatherWidget";
 import { AttitudeWidget } from "./AttitudeWidget";
 import React from "react";
+import { CarsWidget } from "./CarsWidget";
 
 const WIDGETS = (regionData, editMode) => ({
   1: {
@@ -17,6 +18,11 @@ const WIDGETS = (regionData, editMode) => ({
     question:
       "Hat sich das Verhalten und die Einstellung der Bürger:innen in %s mit Hinblick auf den Klimaschutz in den letzten Jahren verändert?",
     component: <AttitudeWidget regionData={regionData} />,
+  },
+  4: {
+    question:
+      "Hat sich die Anzahl zugelassener PKW in %s in den letzten Jahren verändert?",
+    component: <CarsWidget regionData={regionData} />,
   },
 });
 
