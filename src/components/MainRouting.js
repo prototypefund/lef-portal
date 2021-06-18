@@ -118,7 +118,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
         </Switch>
       </div>
       <div className={"mt-3 text-center mb-1"} style={{ fontSize: 10 }}>
-        Local Emission Framework 2021 (c)
+        Local Emission Framework 2021 (c) v0.1g
       </div>
     </div>
   );
