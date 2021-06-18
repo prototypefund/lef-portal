@@ -1,6 +1,6 @@
 import { Badge, Col, Row } from "react-bootstrap";
-import { getYYYYMMDD } from "../resultPageComponents/AddObjectivesAndActionsDialog";
-import { EditButton } from "../shared/EditButton";
+import { getYYYYMMDD } from "../../resultPageComponents/AddObjectivesAndActionsDialog";
+import { EditButton } from "../../shared/EditButton";
 import React from "react";
 import * as PropTypes from "prop-types";
 

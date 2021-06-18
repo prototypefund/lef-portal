@@ -14,7 +14,7 @@ import {
   requestGetAllObjectivesForRegion,
 } from "../../redux/authSlice";
 import { EditButton } from "../shared/EditButton";
-import { ActionDisplay } from "./ActionDisplay";
+import { ActionDisplay } from "./objectivesWidgetComponents/ActionDisplay";
 
 export const ObjectivesWidget = (props) => {
   const dispatch = useDispatch();

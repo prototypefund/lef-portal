@@ -19,6 +19,30 @@ const dataSlice = createSlice({
     setObjectiveData(state, action) {
       state.objectiveData[action.payload.objectiveId] = action.payload.data;
     },
+    updateObjectiveForRegion(state, action) {
+      const { payload } = action;
+      const { regionId, objectiveId, objective } = payload;
+      const { objectivesForRegion = {} } = state;
+      const currentObjectives = objectivesForRegion[regionId] || [];
+      const index = currentObjectives.findIndex(
+        (objective) => objective._id === objectiveId
+      );
+      if (index > -1) {
+        state.objectivesForRegion[regionId][index] = objective;
+      } else {
+        state.objectivesForRegion[regionId] = [objective];
+      }
+    },
+    addObjectiveForRegion(state, action) {
+      state.objectivesForRegion[action.payload.regionId].push(
+        action.payload.objective
+      );
+    },
+    addActionForRegion(state, action) {
+      state.actionsForRegion[action.payload.regionId].push(
+        action.payload.action
+      );
+    },
     replaceAllRegionData(state, action) {
       state.regionData = action.payload;
     },
@@ -28,6 +52,20 @@ const dataSlice = createSlice({
     },
     setActionsForRegion(state, action) {
       state.actionsForRegion[action.payload.regionId] = action.payload.actions;
+    },
+    updateActionForRegion(state, action) {
+      const { payload } = action;
+      const { regionId, actionId, action: a } = payload;
+      const { actionsForRegion = {} } = state;
+      const currentActions = actionsForRegion[regionId] || [];
+      const index = currentActions.findIndex(
+        (action) => action._id === actionId
+      );
+      if (index > -1) {
+        state.actionsForRegion[regionId][index] = a;
+      } else {
+        state.actionsForRegion[regionId] = [a];
+      }
     },
   },
 });
@@ -39,6 +77,10 @@ export const {
   setObjectiveData,
   setObjectivesForRegion,
   setActionsForRegion,
+  updateActionForRegion,
+  updateObjectiveForRegion,
+  addObjectiveForRegion,
+  addActionForRegion,
 } = dataSlice.actions;
 export default dataSlice.reducer;
 

@@ -1,11 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { lefApi } from "../api/lefApi";
 import {
+  addActionForRegion,
+  addObjectiveForRegion,
   replaceAllRegionData,
   setActionsForRegion,
   setObjectiveData,
   setObjectivesForRegion,
   setRegionData,
+  updateActionForRegion,
+  updateObjectiveForRegion,
 } from "./dataSlice";
 
 let userToken = localStorage.getItem("token");
@@ -84,11 +88,10 @@ export const requestGetAllActionsForRegion = (regionId) => (dispatch) => {
 };
 
 export const requestGetObjective = (objectiveId) => (dispatch) => {
-  lefApi
-    .getObjectiveById(objectiveId)
-    .then((response) =>
+  lefApi.getObjectiveById(objectiveId);
+  /*.then((response) =>
       dispatch(setObjectiveData({ objectiveId, data: response.data }))
-    );
+    );*/
 };
 
 export const requestCreateRegion = (name, postalcodes) => (dispatch) => {
@@ -107,15 +110,39 @@ export const requestCreateObjectiveForRegion = (
 ) => (dispatch) => {
   lefApi
     .createObjective(startDate, endDate, title, description, tags, regionId)
-    .then(() => dispatch(requestGetRegion(regionId)));
+    .then((response) => {
+      dispatch(
+        addObjectiveForRegion({
+          regionId: response.data.regionId,
+          objective: response.data,
+        })
+      );
+    });
 };
 
 export const requestUpdateObjective = (updatedObjective) => (dispatch) => {
   lefApi.updateObjective(updatedObjective).then((response) => {
-    dispatch(
-      setObjectiveData({
-        objectiveId: updatedObjective._id,
-        data: response.data,
+    const { data = {} } = response;
+    const { regionId, _id } = data;
+    return dispatch(
+      updateObjectiveForRegion({
+        regionId: regionId,
+        objectiveId: _id,
+        objective: data,
+      })
+    );
+  });
+};
+
+export const requestUpdateAction = (updatedAction) => (dispatch) => {
+  lefApi.updateAction(updatedAction).then((response) => {
+    const { data = {} } = response;
+    const { regionId, _id } = data;
+    return dispatch(
+      updateActionForRegion({
+        regionId: regionId,
+        actionId: _id,
+        action: data,
       })
     );
   });
@@ -130,18 +157,23 @@ export const requestCreateActionForRegion = (
   tags,
   regionId,
   objectiveIds
-) => () => {
-  lefApi.createAction(
-    startDate,
-    endDate,
-    description,
-    tags,
-    budget,
-    regionId,
-    objectiveIds
-  );
-};
-
-export const requestUpdateAction = (updatedAction) => () => {
-  lefApi.updateAction(updatedAction);
+) => (dispatch) => {
+  lefApi
+    .createAction(
+      startDate,
+      endDate,
+      description,
+      tags,
+      budget,
+      regionId,
+      objectiveIds
+    )
+    .then((response) => {
+      dispatch(
+        addActionForRegion({
+          regionId: response.data.regionId,
+          action: response.data,
+        })
+      );
+    });
 };
