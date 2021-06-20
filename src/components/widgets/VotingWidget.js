@@ -1,6 +1,8 @@
 import { Col, Row } from "react-bootstrap";
 import { LefLineChart } from "../shared/charts/LefLineChart";
-import React from "react";
+import React, { useEffect } from "react";
+import { requestGetVotingForDistrict } from "../../redux/votingSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const fakeElectionData = {
   labels: [2005, 2010, 2015],
@@ -13,13 +15,20 @@ const fakeElectionData = {
   ],
 };
 
-export const AttitudeWidget = () => {
+export const VotingWidget = ({ votingId, districtId, districtName }) => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(requestGetVotingForDistrict(votingId, districtId, districtName));
+  });
+
+  const votingData = useSelector((state) => state.voting[votingId]);
+
   return (
     <Col>
       <Row>
         <Col sm={12} lg={8}>
           <div style={{ width: "100%" }}>
-            <LefLineChart data={fakeElectionData} />
+            <LefLineChart data={votingData || fakeElectionData} />
           </div>
         </Col>
         <Col sm={12} lg={4} className={"mt-sm-2"}>

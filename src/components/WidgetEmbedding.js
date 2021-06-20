@@ -5,15 +5,15 @@ import { requestGetRegion } from "../redux/authSlice";
 import { getRegionDataFromState } from "../redux/dataSlice";
 import { WidgetContainer } from "./WidgetContainer";
 import { ActionDisplay } from "./widgets/objectivesWidgetComponents/ActionDisplay";
-import { WeatherWidget } from "./widgets/WeatherWidget";
+import { ClimateWidget } from "./widgets/ClimateWidget";
 import { CarsWidget } from "./widgets/CarsWidget";
-import { AttitudeWidget } from "./widgets/AttitudeWidget";
+import { VotingWidget } from "./widgets/VotingWidget";
 
 const Widgets = {
   1: ActionDisplay,
-  2: WeatherWidget,
+  2: ClimateWidget,
   3: CarsWidget,
-  4: AttitudeWidget,
+  4: VotingWidget,
 };
 
 export function WidgetEmbedding() {
@@ -23,7 +23,6 @@ export function WidgetEmbedding() {
     getRegionDataFromState(state, regionId)
   );
 
-  console.debug({ regionData });
   useEffect(() => {
     dispatch(requestGetRegion(regionId));
   }, [dispatch, regionId]);

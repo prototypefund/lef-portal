@@ -9,11 +9,7 @@ import { PRIMARY_COLOR_DARK } from "../assets/colors";
 import { EditButton } from "./shared/EditButton";
 import { useParams } from "react-router-dom";
 import { getRegionDataFromState } from "../redux/dataSlice";
-import { ObjectivesWidget } from "./widgets/ObjectivesWidget";
 import { WidgetContainer } from "./WidgetContainer";
-import { AttitudeWidget } from "./widgets/AttitudeWidget";
-import { CarsWidget } from "./widgets/CarsWidget";
-import { WeatherWidget } from "./widgets/WeatherWidget";
 import { WIDGETS } from "./widgets/getWidget";
 
 const LefSpinner = () => (
@@ -43,18 +39,22 @@ export const ResultPage = ({ onBack = () => {} }) => {
   );
   const { name, _id } = regionData;
 
-  const widgets = [WIDGETS[1], WIDGETS[2], WIDGETS[3], WIDGETS[4]].map(
-    (widget) => ({
-      component: (
-        <WidgetContainer
-          component={widget.component}
-          editMode={editMode}
-          regionData={regionData}
-        />
-      ),
-      question: widget.question,
-    })
-  );
+  const widgets = [
+    WIDGETS[1],
+    WIDGETS[2],
+    WIDGETS[3],
+    WIDGETS[4],
+    WIDGETS[5],
+  ].map((widget) => ({
+    component: (
+      <WidgetContainer
+        component={widget.component}
+        editMode={editMode}
+        regionData={regionData}
+      />
+    ),
+    question: widget.question,
+  }));
 
   let header = (
     <Row>

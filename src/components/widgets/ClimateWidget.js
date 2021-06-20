@@ -1,6 +1,8 @@
 import { Col, Row } from "react-bootstrap";
-import React from "react";
+import React, { useEffect } from "react";
 import { LefLineChart } from "../shared/charts/LefLineChart";
+import { requestGetClimateDataForRegion } from "../../redux/climateSlice";
+import { useDispatch } from "react-redux";
 
 const fakeWeatherData = {
   labels: [1990, 2000, 2010],
@@ -14,11 +16,18 @@ const fakeWeatherData = {
   ],
 };
 
-export const WeatherWidget = ({ regionData = {} }) => {
-  // const { weatherData = [] } = regionData;
+export const ClimateWidget = ({ year, months, regionData }) => {
+  const dispatch = useDispatch();
+
   const { datasets, unitLabel } = fakeWeatherData;
   let second = datasets[0].data[2];
   let first = datasets[0].data[0];
+
+  const weatherStationId = null; // TODO retrieve weatherStationId by regionData
+
+  useEffect(() => {
+    dispatch(requestGetClimateDataForRegion(weatherStationId, year, months));
+  }, []);
   return (
     <Col>
       <Row>

@@ -57,6 +57,12 @@ export const lefApi = {
     }),
   updateAction: (updatedAction) =>
     apiRequest("/action/update", { action: updatedAction }),
+
+  getClimateChart: (weatherStationId, year, months) =>
+    apiRequest("/climatechart/get", { weatherStationId, year, months }),
+
+  getVotingData: (votingId, districtId, districtName) =>
+    apiRequest("/voting/get", { _id: votingId, districtId, districtName }),
 };
 
 const apiRequest = (path, body, token, method = "post") => {

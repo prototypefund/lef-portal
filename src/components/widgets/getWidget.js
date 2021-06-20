@@ -1,8 +1,8 @@
 import { ObjectivesWidget } from "./ObjectivesWidget";
-import { WeatherWidget } from "./WeatherWidget";
-import { AttitudeWidget } from "./AttitudeWidget";
-import React from "react";
+import { ClimateWidget } from "./ClimateWidget";
+import { VotingWidget } from "./VotingWidget";
 import { CarsWidget } from "./CarsWidget";
+import { WarmingStripeWidget } from "./WarmingStripeWidget";
 
 export const WIDGETS = {
   1: {
@@ -12,16 +12,20 @@ export const WIDGETS = {
   },
   2: {
     question: "Hat sich das Wetter in %s in den letzten Jahrzehnten verändert?",
-    component: WeatherWidget,
+    component: ClimateWidget,
   },
   3: {
     question:
       "Hat sich das Verhalten und die Einstellung der Bürger:innen in %s mit Hinblick auf den Klimaschutz in den letzten Jahren verändert?",
-    component: AttitudeWidget,
+    component: VotingWidget,
   },
   4: {
     question:
       "Hat sich die Anzahl zugelassener PKW in %s in den letzten Jahren verändert?",
     component: CarsWidget,
+  },
+  5: {
+    question: "Wie haben sich die Durchschnittstemperaturen verändert?",
+    component: WarmingStripeWidget,
   },
 };
