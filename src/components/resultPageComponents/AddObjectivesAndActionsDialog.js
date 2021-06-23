@@ -1,14 +1,14 @@
 import { Col, Form, Row } from "react-bootstrap";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { LefModal } from "../shared/LefModal";
+import MultiSelect from "react-multi-select-component";
 import {
   requestCreateActionForRegion,
   requestCreateObjectiveForRegion,
   requestUpdateAction,
   requestUpdateObjective,
-} from "../../redux/authSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { LefModal } from "../shared/LefModal";
-import MultiSelect from "react-multi-select-component";
+} from "../../redux/dataSlice";
 
 export const getYYYYMMDD = (date) => {
   const dateObj = new Date(date);

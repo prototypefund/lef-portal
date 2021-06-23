@@ -5,11 +5,12 @@ export const lefApi = {
   signIn: (username, password) => {
     return Promise.resolve({ data: { token: "myToken" } });
     /* return apiRequest("/token/get", {
-      email: username,
-      password: password,
-    });*/
+                  email: username,
+                  password: password,
+                });*/
   },
 
+  // REGIONS
   getRegionData: (regionId) => apiRequest("/region/get", { _id: regionId }),
   getAllRegions: () => apiRequest("/region/get", { allRegions: true }),
   createRegion: (name, postalcodes = []) =>
@@ -20,6 +21,7 @@ export const lefApi = {
   updateRegion: (updatedRegion) =>
     apiRequest("/region/update", { region: updatedRegion }),
 
+  // OBJECTIVES
   getObjectiveById: (objectiveId) =>
     apiRequest("/objective/get", { _id: objectiveId }),
   getAllObjectivesForRegion: (regionId) =>
@@ -35,7 +37,10 @@ export const lefApi = {
     }),
   updateObjective: (updatedObjective) =>
     apiRequest("/objective/update", { objective: updatedObjective }),
+  deleteObjective: (objectiveId) =>
+    apiRequest("/objective/delete", { _id: objectiveId }),
 
+  // ACTIONS
   getAllActionsForRegion: (regionId) => apiRequest("/action/get", { regionId }),
   createAction: (
     startDate,
@@ -63,6 +68,7 @@ export const lefApi = {
 
   getVotingData: (votingId, districtId, districtName) =>
     apiRequest("/voting/get", { _id: votingId, districtId, districtName }),
+  deleteAction: (actionId) => apiRequest("/action/delete", { _id: actionId }),
 };
 
 const apiRequest = (path, body, token, method = "post") => {

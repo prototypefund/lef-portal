@@ -9,9 +9,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { AccountPage } from "./AccountPage";
 import ProtectedRoute from "./ProtectedRoute";
 import { Button, Nav, Navbar } from "react-bootstrap";
-import { requestGetAllRegions, requestSignOut } from "../redux/authSlice";
+import { requestSignOut } from "../redux/authSlice";
 import { WidgetEmbedding } from "./WidgetEmbedding";
 import { useEffect } from "react";
+import { requestGetAllRegions } from "../redux/dataSlice";
 
 const MainRouting = ({ location = {}, history = {} }) => {
   const dispatch = useDispatch();

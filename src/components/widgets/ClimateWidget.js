@@ -10,7 +10,7 @@ const fakeWeatherData = {
   datasets: [
     {
       label: "gesamt",
-      data: [15.5, 19.5, 20.1],
+      data: [17.2, 17.3, 17.5],
     },
     { label: "regional", data: [10.5, 21.5, 20.4] },
   ],

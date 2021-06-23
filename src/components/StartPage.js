@@ -4,7 +4,7 @@ import { Heading } from "./shared/Heading";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { requestCreateRegion } from "../redux/authSlice";
+import { requestCreateRegion } from "../redux/dataSlice";
 
 export const StartPage = ({ onCitySelect = () => {} }) => {
   const regions = useSelector((state) => state.data.regionData);

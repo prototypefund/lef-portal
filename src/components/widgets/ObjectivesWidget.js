@@ -9,13 +9,24 @@ import {
   PRIMARY_COLOR_DARK,
 } from "../../assets/colors";
 import { Carousel } from "react-responsive-carousel";
-import {
-  requestGetAllActionsForRegion,
-  requestGetAllObjectivesForRegion,
-} from "../../redux/authSlice";
 import { EditButton } from "../shared/EditButton";
 import { ActionDisplay } from "./objectivesWidgetComponents/ActionDisplay";
+import { DeleteButton } from "../shared/DeleteButton";
+import {
+  requestDeleteAction,
+  requestDeleteObjective,
+  requestGetAllActionsForRegion,
+  requestGetAllObjectivesForRegion,
+} from "../../redux/dataSlice";
+import { ConfirmDialog } from "../shared/ConfirmDialog";
 
+const OBJECTIVE_DELETE = "OBJECTIVE_DELETE";
+const ACTION_DELETE = "ACTION_DELETE";
+
+ConfirmDialog.propTypes = {
+  show: PropTypes.bool,
+  onClick: PropTypes.func,
+};
 export const ObjectivesWidget = (props) => {
   const dispatch = useDispatch();
   const { regionData, editMode } = props;
@@ -31,6 +42,8 @@ export const ObjectivesWidget = (props) => {
   const [isActionMode, setIsActionMode] = useState(false);
   const [editedObjective, setEditedObjective] = useState({});
   const [editedAction, setEditedAction] = useState({});
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [confirmParameter, setConfirmParameter] = useState({});
 
   useEffect(() => {
     if (_id) {
@@ -56,6 +69,15 @@ export const ObjectivesWidget = (props) => {
                 setIsActionMode(true);
                 setShowAddDialog(true);
                 setEditedAction(regionsActions.find((a) => a._id === actionId));
+              }}
+              onDeleteAction={(action) => {
+                setConfirmParameter({
+                  type: ACTION_DELETE,
+                  action,
+                  text:
+                    "Sind Sie sicher, dass Sie diese Maßnahme löschen wollen?",
+                });
+                setConfirmDialogOpen(true);
               }}
             />
           ));
@@ -103,15 +125,26 @@ export const ObjectivesWidget = (props) => {
                     style={{ width: "fit-content" }}
                   >{`${objective.title}`}</span>
                   {editMode && (
-                    <EditButton
-                      onClick={() => {
-                        setIsActionMode(false);
-                        setEditedObjective(
-                          regionsObjectives.find((o) => o._id === objective._id)
-                        );
-                        setShowAddDialog(true);
-                      }}
-                    />
+                    <>
+                      <EditButton
+                        onClick={() => {
+                          setIsActionMode(false);
+                          setEditedObjective(objective);
+                          setShowAddDialog(true);
+                        }}
+                      />
+                      <DeleteButton
+                        onClick={() => {
+                          setConfirmParameter({
+                            type: OBJECTIVE_DELETE,
+                            objective,
+                            text:
+                              "Sind Sie sicher, dass Sie diese Ziel löschen wollen?",
+                          });
+                          setConfirmDialogOpen(true);
+                        }}
+                      />
+                    </>
                   )}
                 </Col>
               </Row>
@@ -203,6 +236,27 @@ export const ObjectivesWidget = (props) => {
           </Button>
         </ButtonGroup>
       )}
+      <ConfirmDialog
+        title={"Aktion bestätigen"}
+        content={<p>{confirmParameter.text}</p>}
+        show={confirmDialogOpen}
+        onClose={(result) => {
+          if (result) {
+            switch (confirmParameter.type) {
+              case OBJECTIVE_DELETE:
+                dispatch(requestDeleteObjective(confirmParameter.objective));
+                break;
+              case ACTION_DELETE:
+                dispatch(requestDeleteAction(confirmParameter.action));
+                break;
+              default:
+                break;
+            }
+          }
+          setConfirmDialogOpen(false);
+          setConfirmParameter({});
+        }}
+      />
     </Row>
   );
 };

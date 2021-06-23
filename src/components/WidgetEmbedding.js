@@ -1,8 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { requestGetRegion } from "../redux/authSlice";
-import { getRegionDataFromState } from "../redux/dataSlice";
+import { getRegionDataFromState, requestGetRegion } from "../redux/dataSlice";
 import { WidgetContainer } from "./WidgetContainer";
 import { ActionDisplay } from "./widgets/objectivesWidgetComponents/ActionDisplay";
 import { ClimateWidget } from "./widgets/ClimateWidget";

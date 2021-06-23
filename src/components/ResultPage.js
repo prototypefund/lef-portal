@@ -2,13 +2,12 @@ import { ResultEntry } from "./resultPageComponents/ResultEntry";
 import { Heading } from "./shared/Heading";
 import { Button, Col, Container, Row, Spinner } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
-import { requestGetRegion } from "../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeftCircleFill } from "react-bootstrap-icons";
 import { PRIMARY_COLOR_DARK } from "../assets/colors";
 import { EditButton } from "./shared/EditButton";
 import { useParams } from "react-router-dom";
-import { getRegionDataFromState } from "../redux/dataSlice";
+import { getRegionDataFromState, requestGetRegion } from "../redux/dataSlice";
 import { WidgetContainer } from "./WidgetContainer";
 import { WIDGETS } from "./widgets/getWidget";
 
@@ -41,10 +40,10 @@ export const ResultPage = ({ onBack = () => {} }) => {
 
   const widgets = [
     WIDGETS[1],
-    WIDGETS[2],
-    WIDGETS[3],
+    // WIDGETS[2],
+    // WIDGETS[3],
     WIDGETS[4],
-    WIDGETS[5],
+    // WIDGETS[5],
   ].map((widget) => ({
     component: (
       <WidgetContainer

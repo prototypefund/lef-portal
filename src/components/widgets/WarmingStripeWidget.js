@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import { WarmingStripe } from "./WarmingStripe";
-import { Heading } from "../shared/Heading";
 
 /*
 {
