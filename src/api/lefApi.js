@@ -75,7 +75,7 @@ const apiRequest = (path, body, token, method = "post") => {
   console.debug("ApiRequest:", path, body);
   const config = {
     method,
-    url: `https://us-central1-lef-backend.cloudfunctions.net/app ${path}`,
+    url: `https://us-central1-lef-backend.cloudfunctions.net/app${path}`,
     headers: {
       //
       ...(token && {
