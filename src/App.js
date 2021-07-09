@@ -7,8 +7,9 @@ import { createLogger } from "redux-logger";
 import MainContent from "./components/MainRouting";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-  BACKGROUND_COLOR,
+  INTERACTIVE_ELEMENT_COLOR,
   COLOR_TEXT_DARK,
+  NAVIGATION_COLOR,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
   SECONDARY_COLOR,
@@ -28,6 +29,12 @@ const App = () => (
   <div className="App">
     <style type="text/css">
       {`
+    .btn-navigation {
+      background-color: ${NAVIGATION_COLOR};
+      color: ${COLOR_TEXT_DARK};
+      border: none;
+    }
+    
     .btn-primary {
       background-color: ${PRIMARY_COLOR};
       color: ${COLOR_TEXT_DARK};
@@ -44,6 +51,10 @@ const App = () => (
         color: ${COLOR_TEXT_DARK};
     }
     
+    .navbar:hover {
+        color: ${NAVIGATION_COLOR};
+    }
+    
     a {
         color: ${COLOR_TEXT_DARK}
         }
@@ -58,7 +69,7 @@ const App = () => (
     }
     
     .badge {
-          background-color: ${BACKGROUND_COLOR};
+          background-color: ${INTERACTIVE_ELEMENT_COLOR};
           color: #111;
 
     }

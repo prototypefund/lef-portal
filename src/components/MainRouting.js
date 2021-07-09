@@ -1,22 +1,24 @@
 import { Link, Route, Switch } from "react-router-dom";
 import { withRouter } from "react-router";
 import { StartPage } from "./StartPage";
-import { ResultPage } from "./ResultPage";
+import ResultPage from "./ResultPage";
 import { Imprint } from "./Imprint";
 import { SignInPage } from "./SignInPage";
 import { SignUpPage } from "./SignUpPage";
 import { useDispatch, useSelector } from "react-redux";
 import { AccountPage } from "./AccountPage";
 import ProtectedRoute from "./ProtectedRoute";
-import { Button, Nav, Navbar } from "react-bootstrap";
+import { Nav, Navbar } from "react-bootstrap";
 import { requestSignOut } from "../redux/authSlice";
 import { WidgetEmbedding } from "./WidgetEmbedding";
 import { useEffect } from "react";
 import { requestGetAllRegions } from "../redux/dataSlice";
 
+export const getCityPath = (city) => `/result/${city}`;
+
 const MainRouting = ({ location = {}, history = {} }) => {
   const dispatch = useDispatch();
-  const { state = {} } = location;
+  // const { state = {} } = location;
   const authStatus = useSelector((state) => state.auth.authState);
   const loggedIn = authStatus === "loggedIn";
 
@@ -51,7 +53,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       {!location.pathname.startsWith("/embeddedWidget") && (
-        <Navbar bg="light" expand="lg">
+        <Navbar bg={"light"} expand="lg" className={"shadow"}>
           <Navbar.Brand>
             <Link to={"/"}>{"LEF"}</Link>
           </Navbar.Brand>
@@ -74,9 +76,13 @@ const MainRouting = ({ location = {}, history = {} }) => {
                       {page.label}
                     </Link>
                   ) : (
-                    <Button key={page.id} onClick={page.action}>
+                    <div
+                      key={page.id}
+                      onClick={page.action}
+                      className={"btn btn-navigation"}
+                    >
                       {page.label}
-                    </Button>
+                    </div>
                   );
                 })}
             </Nav>
@@ -113,7 +119,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
 
           <Route path="/">
             <StartPage
-              onCitySelect={(city) => history.push(`/result/${city}`)}
+              onCitySelect={(city) => history.push(getCityPath(city))}
             />
           </Route>
         </Switch>

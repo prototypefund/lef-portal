@@ -19,6 +19,7 @@ import {
   requestGetAllObjectivesForRegion,
 } from "../../redux/dataSlice";
 import { ConfirmDialog } from "../shared/ConfirmDialog";
+import { Heading } from "../shared/Heading";
 
 const OBJECTIVE_DELETE = "OBJECTIVE_DELETE";
 const ACTION_DELETE = "ACTION_DELETE";
@@ -148,23 +149,29 @@ export const ObjectivesWidget = (props) => {
                   )}
                 </Col>
               </Row>
+
               <Row>
-                <Col className={"pl-0"}>
-                  <p>{`${objective.description}`}</p>
-                </Col>
-              </Row>
-              <Row>
-                <Col className={"pl-0"}>
-                  <div className={"d-flex"}>
+                <Col className={"d-flex pl-2"}>
+                  <Row>
                     {objective.tags &&
                       objective.tags.map((tag, i) => (
                         <Row className={"badge badge-info m-1 p-2"} key={i}>
                           {tag}
                         </Row>
                       ))}
-                  </div>
+                  </Row>
                 </Col>
               </Row>
+
+              <Row>
+                <Col className={"pl-0"}>
+                  <p
+                    className={"overflow-auto pr-3"}
+                    style={{ height: 300 }}
+                  >{`${objective.description}`}</p>
+                </Col>
+              </Row>
+
               {filteredActions.length > 0 && (
                 <Col className={"mt-4 mb-4 pl-0"}>
                   <Row>
@@ -179,12 +186,12 @@ export const ObjectivesWidget = (props) => {
       });
 
   return (
-    <Row style={{ maxWidth: "99vw" }}>
+    <Row style={{ maxWidth: "99vw", minHeight: 300, padding: 10 }}>
       <div
         className={"d-flex"}
         style={{
           width: "100%",
-          overflow: "auto",
+          // overflow: "auto",
         }}
       >
         <div className={"w-100 d-sm-block d-md-none"}>

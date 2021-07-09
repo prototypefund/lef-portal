@@ -1,13 +1,5 @@
 import { Heading } from "./shared/Heading";
-import {
-  Button,
-  Card,
-  CardGroup,
-  Col,
-  Container,
-  Form,
-  Row,
-} from "react-bootstrap";
+import { Button, Card, CardGroup, Col, Form, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 

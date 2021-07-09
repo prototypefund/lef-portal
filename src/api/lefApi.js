@@ -77,9 +77,9 @@ const apiRequest = (path, body, token, method = "post") => {
     method,
     url: `https://us-central1-lef-backend.cloudfunctions.net/app${path}`,
     headers: {
-      //
+      // "Content-Type": "application/x-www-form-urlencoded",
+      "Access-Control-Allow-Origin": "*",
       ...(token && {
-        "Access-Control-Allow-Origin": "*",
         Authorization: `Bearer ${token}`,
       }),
     },

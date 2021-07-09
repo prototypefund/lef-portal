@@ -21,7 +21,7 @@ export const WIDGETS = {
   },
   4: {
     question:
-      "Hat sich die Anzahl zugelassener PKW in %s in den letzten Jahren verändert?",
+      "Hat sich die Anzahl neu zugelassener PKW in %s in den letzten Jahren verändert?",
     component: CarsWidget,
   },
   5: {

@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { WarmingStripe } from "./WarmingStripe";
+import { Col, Row } from "react-bootstrap";
 
 /*
 {
@@ -105,9 +106,13 @@ export const WarmingStripeWidget = ({ regionData }) => {
   const { weatherStation, weatherStationId, climateData } = climateChart;
 
   return (
-    <>
-      <p>{`WarmingStripes für ${weatherStation}`}</p>
-      <WarmingStripe climateData={climateData} />
-    </>
+    <Col>
+      <Row>
+        <p>{`WarmingStripes für ${weatherStation}`}</p>
+      </Row>
+      <Row>
+        <WarmingStripe climateData={climateData} />
+      </Row>
+    </Col>
   );
 };

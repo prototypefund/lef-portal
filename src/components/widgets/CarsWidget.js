@@ -28,7 +28,7 @@ export const CarsWidget = ({ regionData = {} }) => {
           </div>
         </Col>
         <Col sm={12} lg={4} className={"mt-sm-2"}>
-          <p>{`Die Anzahl zugelassener PKW in ${
+          <p>{`Die Anzahl neu zugelassener PKW in ${
             regionData.name
           } ist von ${first}${unitLabel} auf ${second}${unitLabel} ${
             first > second ? "gesunken" : "gestiegen"

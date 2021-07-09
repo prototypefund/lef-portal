@@ -1,15 +1,18 @@
 import { ResultEntry } from "./resultPageComponents/ResultEntry";
 import { Heading } from "./shared/Heading";
-import { Button, Col, Container, Row, Spinner } from "react-bootstrap";
+import { Col, Container, Row, Spinner } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ArrowLeftCircleFill } from "react-bootstrap-icons";
-import { PRIMARY_COLOR_DARK } from "../assets/colors";
 import { EditButton } from "./shared/EditButton";
 import { useParams } from "react-router-dom";
 import { getRegionDataFromState, requestGetRegion } from "../redux/dataSlice";
 import { WidgetContainer } from "./WidgetContainer";
 import { WIDGETS } from "./widgets/getWidget";
+import { Typeahead } from "react-bootstrap-typeahead";
+import { getTypeAheadOptions } from "./StartPage";
+import { getCityPath } from "./MainRouting";
+
+import { withRouter } from "react-router";
 
 const LefSpinner = () => (
   <Container
@@ -22,7 +25,7 @@ const LefSpinner = () => (
   </Container>
 );
 
-export const ResultPage = ({ onBack = () => {} }) => {
+const ResultPage = ({ onBack = () => {}, history }) => {
   const dispatch = useDispatch();
   const userIsAdmin =
     useSelector((state) => state.auth.authState) === "loggedIn";
@@ -36,14 +39,15 @@ export const ResultPage = ({ onBack = () => {} }) => {
   const regionData = useSelector((state) =>
     getRegionDataFromState(state, regionId)
   );
-  const { name, _id } = regionData;
+  const regions = useSelector((state) => state.data.regionData);
+  const { name = "Musterstadt", _id } = regionData;
 
   const widgets = [
     WIDGETS[1],
     // WIDGETS[2],
     // WIDGETS[3],
     WIDGETS[4],
-    // WIDGETS[5],
+    WIDGETS[5],
   ].map((widget) => ({
     component: (
       <WidgetContainer
@@ -55,18 +59,46 @@ export const ResultPage = ({ onBack = () => {} }) => {
     question: widget.question,
   }));
 
-  let header = (
+  let typeAheadOptions = getTypeAheadOptions(regions);
+  let selectedRegion = typeAheadOptions.find((option) => option.value === _id);
+  let header = _id && (
     <Row>
-      <div className={"d-flex align-items-center mb-1"}>
-        <div className={"flex-grow-0"}>
+      <Col className={"d-flex align-items-center mb-1"}>
+        {/*<div className={"flex-grow-0"}>
           <Button variant={"link"} className={"mr-1"} onClick={onBack}>
             <ArrowLeftCircleFill size={25} color={PRIMARY_COLOR_DARK} />
           </Button>
-        </div>
-        <div className={"flex-grow-1"}>
-          <Heading size={"h3"} text={`Dein Klimacheck für: ${name}`} />
-        </div>
-      </div>
+        </div>*/}
+        <Row
+          className={"flex-grow-1 col d-flex"}
+          style={{ whiteSpace: "pre-wrap" }}
+        >
+          <Heading size={"h5"} text={`Dein Klimacheck für: `} />
+          <Row className={"w-100 mb-2"}>
+            <Typeahead
+              onFocus={(event) => event.target.select()}
+              onChange={(selectedValues) =>
+                selectedValues.length > 0 &&
+                history.push(getCityPath(selectedValues[0].value))
+              }
+              selectHintOnEnter
+              defaultSelected={selectedRegion ? [selectedRegion] : []}
+              id={"citySelection"}
+              placeholder={"Stadt / Unternehmen"}
+              options={typeAheadOptions}
+              emptyLabel={"Keine Ergebnisse."}
+              inputProps={{
+                style: {
+                  textAlign: "left",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  fontSize: "2.8rem",
+                },
+              }}
+            />
+          </Row>
+        </Row>
+      </Col>
       {userIsAdmin && (
         <EditButton
           onClick={() => {
@@ -79,7 +111,6 @@ export const ResultPage = ({ onBack = () => {} }) => {
   return (
     <Container fluid style={{ maxWidth: 800 }}>
       {header}
-
       <Row>
         <Col>
           {!_id ? (
@@ -98,3 +129,5 @@ export const ResultPage = ({ onBack = () => {} }) => {
     </Container>
   );
 };
+
+export default withRouter(ResultPage);
