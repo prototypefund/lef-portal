@@ -1,4 +1,4 @@
-import { Badge, Col, Row } from "react-bootstrap";
+import { Badge, Card, Col, Row, Accordion } from "react-bootstrap";
 import { getYYYYMMDD } from "../../resultPageComponents/AddObjectivesAndActionsDialog";
 import { EditButton } from "../../shared/EditButton";
 import React from "react";
@@ -11,33 +11,62 @@ export const ActionDisplay = ({
   onEditAction,
   onDeleteAction,
 }) => {
+  let badgeStyle = {
+    // backgroundColor: "white",
+    padding: 0,
+    marginBottom: 5,
+    fontSize: 11,
+    whiteSpace: "no-wrap",
+    width: "100%",
+  };
+
   const { description, startDate, endDate, budget, _id } = action;
   return (
-    <Row xs={12} className={"w-100 mb-1"}>
-      <Col xs={6} sm={editMode ? 3 : 3}>
-        <Col xs={12}>
-          <Row xs={12} className={"mb-1"}>
-            <Badge variant={"light"}>{getYYYYMMDD(startDate)}</Badge>
-          </Row>
-          <Row xs={12}>
-            <Badge variant={"light"}>{getYYYYMMDD(endDate)}</Badge>
-          </Row>
-        </Col>
-      </Col>
-      <Col xs={editMode ? 9 : 12} sm={editMode ? 6 : 9}>
-        {`${description} (${budget}€)`}
-      </Col>
-      {editMode && (
-        <Col xs={3}>
-          <EditButton onClick={() => onEditAction(_id)} />
-          <DeleteButton
-            onClick={() => {
-              onDeleteAction(action);
-            }}
-          />
-        </Col>
-      )}
-    </Row>
+    <div className={"mb-2"} style={{ cursor: "pointer" }}>
+      <Card>
+        <Accordion.Toggle
+          as={"div"}
+          variant="link"
+          eventKey={action._id}
+          className={"w-100"}
+        >
+          <Card.Header className={"w-100"}>
+            <Row className={"text-left align-items-baseline"}>
+              <Col xs={4}>
+                <div style={{ ...badgeStyle }}>{`${getYYYYMMDD(
+                  action.startDate
+                )} - ${getYYYYMMDD(action.endDate)}`}</div>
+              </Col>
+              <Col xs={6}>{action._id}</Col>
+            </Row>
+          </Card.Header>
+        </Accordion.Toggle>
+
+        <Accordion.Collapse eventKey={action._id}>
+          <Card.Body>
+            <Row xs={12} className={"w-100"}>
+              <Col
+                xs={editMode ? 9 : 12}
+                sm={editMode ? 6 : 9}
+                className={"text-left"}
+              >
+                {`${description} (${budget}€)`}
+              </Col>
+              {editMode && (
+                <Col xs={3}>
+                  <EditButton onClick={() => onEditAction(_id)} />
+                  <DeleteButton
+                    onClick={() => {
+                      onDeleteAction(action);
+                    }}
+                  />
+                </Col>
+              )}
+            </Row>
+          </Card.Body>
+        </Accordion.Collapse>
+      </Card>
+    </div>
   );
 };
 

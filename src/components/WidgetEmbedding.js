@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getRegionDataFromState, requestGetRegion } from "../redux/dataSlice";
 import { WidgetContainer } from "./WidgetContainer";
@@ -7,6 +7,8 @@ import { ActionDisplay } from "./widgets/objectivesWidgetComponents/ActionDispla
 import { ClimateWidget } from "./widgets/ClimateWidget";
 import { CarsWidget } from "./widgets/CarsWidget";
 import { VotingWidget } from "./widgets/VotingWidget";
+import { ThemeContext } from "./theme/ThemeContext";
+import { ThemeProvider } from "react-bootstrap";
 
 const Widgets = {
   1: ActionDisplay,
@@ -17,10 +19,16 @@ const Widgets = {
 
 export function WidgetEmbedding() {
   const dispatch = useDispatch();
-  const { widgetId, regionId } = useParams();
+  const { theme, updateTheme } = useContext(ThemeContext);
+  const { widgetId, regionId, colorPalette, fontStyle } = useParams();
+
   const regionData = useSelector((state) =>
     getRegionDataFromState(state, regionId)
   );
+
+  useEffect(() => {
+    updateTheme(colorPalette, fontStyle);
+  }, []);
 
   useEffect(() => {
     dispatch(requestGetRegion(regionId));

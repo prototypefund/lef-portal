@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   ComposableMap,
   Geographies,
@@ -6,12 +6,8 @@ import {
   Marker,
   ZoomableGroup,
 } from "react-simple-maps";
-import {
-  COLOR_TEXT_BRIGHT,
-  NAVIGATION_COLOR,
-  SECONDARY_COLOR,
-} from "../assets/colors";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { ThemeContext } from "./theme/ThemeContext";
 
 const plzUrl = "https://emission-framework.org/assets/plz-gebiete_simpl.json";
 
@@ -28,18 +24,9 @@ const cities = [
   },
 ];
 
-const getStyle = (geo, allPostalcodes) => ({
-  fill: allPostalcodes.includes(geo.properties.plz)
-    ? NAVIGATION_COLOR
-    : COLOR_TEXT_BRIGHT,
-  outline: "#FFF",
-  stroke: "#646464",
-  strokeWidth: 0.1,
-  // strokeDasharray: "1,1",
-  strokeLinejoin: "round",
-});
-
 const MapChart = ({ lon, lat, regions, onRegionClick }) => {
+  const { theme } = useContext(ThemeContext);
+  const { COLOR_TEXT_BRIGHT, NAVIGATION_COLOR } = theme.colors;
   const allPostalcodes = regions
     .map((region) => region.postalcodes)
     .reduce((a, b) => [...a, ...b], []);
@@ -48,6 +35,18 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
     region.postalcodes.forEach((plz) => {
       postalcodeToRegionMap[plz] = region;
     });
+  });
+
+  const getStyle = (geo, allPostalcodes) => ({
+    fill: allPostalcodes.includes(geo.properties.plz)
+      ? NAVIGATION_COLOR
+      : COLOR_TEXT_BRIGHT,
+    outline: "#FFF",
+    stroke: "#646464",
+    strokeWidth: 0.1,
+    // strokeDasharray: "1,1",
+    strokeLinejoin: "round",
+    fillOpacity: 0.8,
   });
 
   return (
@@ -61,6 +60,35 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
       }}
     >
       <ZoomableGroup zoom={1}>
+        {/*
+        {cities.map((city) => (
+          <Marker
+            key={`${city.lon}/${city.lat}`}
+            coordinates={[city.lon, city.lat]}
+          >
+            <circle r={5} fill={SECONDARY_COLOR} />
+            <text
+              textAnchor="middle"
+              y={4}
+              x={35}
+              style={{
+                fontFamily: "system-ui",
+                fill: "#5D5A6D",
+                fontSize: 10,
+              }}
+            >
+              {city.label}
+            </text>
+          </Marker>
+        ))}
+*/}
+
+        {lon && lat && (
+          <Marker coordinates={[lon, lat]}>
+            <circle r={20} fill={"green"} fillOpacity={1} />
+          </Marker>
+        )}
+
         <Geographies geography={plzUrl}>
           {({ geographies }) =>
             geographies.map((geo, j) => {
@@ -94,35 +122,6 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
             })
           }
         </Geographies>
-
-        {/*
-        {cities.map((city) => (
-          <Marker
-            key={`${city.lon}/${city.lat}`}
-            coordinates={[city.lon, city.lat]}
-          >
-            <circle r={5} fill={SECONDARY_COLOR} />
-            <text
-              textAnchor="middle"
-              y={4}
-              x={35}
-              style={{
-                fontFamily: "system-ui",
-                fill: "#5D5A6D",
-                fontSize: 10,
-              }}
-            >
-              {city.label}
-            </text>
-          </Marker>
-        ))}
-*/}
-
-        {lon && lat && (
-          <Marker coordinates={[lon, lat]}>
-            <circle r={10} fill={NAVIGATION_COLOR} />
-          </Marker>
-        )}
       </ZoomableGroup>
     </ComposableMap>
   );

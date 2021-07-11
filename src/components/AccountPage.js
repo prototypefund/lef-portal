@@ -2,6 +2,9 @@ import { Heading } from "./shared/Heading";
 import { Button, Card, CardGroup, Col, Form, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { LefModal } from "./shared/LefModal";
+import EmbeddingWizard from "./embedding/embeddingWizard";
+import { useState } from "react";
 
 export const AccountPage = ({
   myRegionIds = [
@@ -11,6 +14,7 @@ export const AccountPage = ({
   ],
 }) => {
   const regions = useSelector((state) => state.data.regionData);
+  const [showEmbeddingDialog, setShowEmbeddingDialog] = useState(false);
   const myRegions = myRegionIds
     .map((id) => regions.find((r) => r._id === id))
     .filter((r) => r);
@@ -36,7 +40,7 @@ export const AccountPage = ({
       <Form.Group>
         <Button>Daten ändern</Button>
       </Form.Group>
-      <Row>
+      <Row className={"mt-3"}>
         <Col>
           <div className={"mb-2"}>
             <Heading size={"h4"} text={"Verknüpfte Regionen"} />
@@ -88,11 +92,39 @@ export const AccountPage = ({
           </CardGroup>
         </Col>
       </Row>
-      <Row>
+      <Row className={"mt-3"}>
         <Col>
-          {/*<Heading size={"h4"} text={"Persönliche Einstellungen"} />*/}
+          <Heading size={"h4"} text={"Einbettung"} />
+          <p className={"mt-2"}>
+            Sie können einzelne Elemente oder Diagramme aus dem Klimacheck in
+            Ihre eigene Website einbinden.
+          </p>
+          <Button className={""} onClick={() => setShowEmbeddingDialog(true)}>
+            {"Einbettung konfigurieren"}
+          </Button>
         </Col>
       </Row>
+
+      <LefModal
+        size={"xl"}
+        show={showEmbeddingDialog}
+        title={"Design festlegen"}
+        content={<EmbeddingWizard />}
+        buttons={[
+          {
+            label: "Abbrechen",
+            variant: "secondary",
+            onClick: () => setShowEmbeddingDialog(false),
+          },
+          {
+            label: "Einbettungscode kopieren",
+            onClick() {
+              // TODO copy code to clipboard
+              return setShowEmbeddingDialog(false);
+            },
+          },
+        ]}
+      />
     </Col>
   );
 };

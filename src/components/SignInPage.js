@@ -42,7 +42,11 @@ export function SignInPage() {
                 placeholder={"Ihr Passwort"}
               />
 
-              <Button variant="primary" onClick={onFinish} className={"mt-3"}>
+              <Button
+                variant="navigation"
+                onClick={onFinish}
+                className={"mt-3"}
+              >
                 Anmelden
               </Button>
             </Form.Group>

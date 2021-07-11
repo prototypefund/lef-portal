@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, ButtonGroup, Col, Container, Row } from "react-bootstrap";
+import {
+  Accordion,
+  Button,
+  ButtonGroup,
+  Col,
+  Container,
+  Row,
+} from "react-bootstrap";
 import * as PropTypes from "prop-types";
 import { AddObjectivesAndActionsDialog } from "../resultPageComponents/AddObjectivesAndActionsDialog";
-import {
-  COLOR_TEXT_BRIGHT,
-  PRIMARY_COLOR,
-  PRIMARY_COLOR_DARK,
-} from "../../assets/colors";
 import { Carousel } from "react-responsive-carousel";
 import { EditButton } from "../shared/EditButton";
 import { ActionDisplay } from "./objectivesWidgetComponents/ActionDisplay";
@@ -19,7 +21,7 @@ import {
   requestGetAllObjectivesForRegion,
 } from "../../redux/dataSlice";
 import { ConfirmDialog } from "../shared/ConfirmDialog";
-import { Heading } from "../shared/Heading";
+import { ThemeContext } from "../theme/ThemeContext";
 
 const OBJECTIVE_DELETE = "OBJECTIVE_DELETE";
 const ACTION_DELETE = "ACTION_DELETE";
@@ -29,6 +31,8 @@ ConfirmDialog.propTypes = {
   onClick: PropTypes.func,
 };
 export const ObjectivesWidget = (props) => {
+  const { theme } = useContext(ThemeContext);
+  const { COLOR_TEXT_BRIGHT, PRIMARY_COLOR_DARK } = theme.colors;
   const dispatch = useDispatch();
   const { regionData, editMode } = props;
   const { _id } = regionData;
@@ -57,31 +61,41 @@ export const ObjectivesWidget = (props) => {
     regionsObjectives
       .filter((o) => o)
       .sort((a, b) => new Date(a.endDate) - new Date(b.endDate))
-      .map((objective) => {
+      .map((objective, j) => {
+        const isLast = j === regionsObjectives.length - 1;
         const endDate = new Date(objective.endDate);
-        const filteredActions = regionsActions
-          .filter((action) => action.objectiveIds.includes(objective._id))
-          .map((action) => (
-            <ActionDisplay
-              key={action._id}
-              action={action}
-              editMode={editMode}
-              onEditAction={(actionId) => {
-                setIsActionMode(true);
-                setShowAddDialog(true);
-                setEditedAction(regionsActions.find((a) => a._id === actionId));
-              }}
-              onDeleteAction={(action) => {
-                setConfirmParameter({
-                  type: ACTION_DELETE,
-                  action,
-                  text:
-                    "Sind Sie sicher, dass Sie diese Maßnahme löschen wollen?",
-                });
-                setConfirmDialogOpen(true);
-              }}
-            />
-          ));
+
+        const filteredActions = regionsActions.filter((action) =>
+          action.objectiveIds.includes(objective._id)
+        );
+        const filteredActionsAccordion = (
+          <Accordion className={"w-100"}>
+            {filteredActions.map((action, k) => (
+              <ActionDisplay
+                key={action._id}
+                action={action}
+                editMode={editMode}
+                onEditAction={(actionId) => {
+                  setIsActionMode(true);
+                  setShowAddDialog(true);
+                  setEditedAction(
+                    regionsActions.find((a) => a._id === actionId)
+                  );
+                }}
+                onDeleteAction={(action) => {
+                  setConfirmParameter({
+                    type: ACTION_DELETE,
+                    action,
+                    text:
+                      "Sind Sie sicher, dass Sie diese Maßnahme löschen wollen?",
+                  });
+                  setConfirmDialogOpen(true);
+                }}
+              />
+            ))}
+          </Accordion>
+        );
+
         return (
           <div
             key={objective._id}
@@ -90,7 +104,9 @@ export const ObjectivesWidget = (props) => {
           >
             <div
               style={{
-                borderBottom: `2px dashed ${PRIMARY_COLOR}`,
+                borderBottom: `2px dashed ${
+                  isLast ? "transparent" : PRIMARY_COLOR_DARK
+                }`,
                 width: "100%",
                 marginTop: 15,
                 marginBottom: 15,
@@ -155,7 +171,19 @@ export const ObjectivesWidget = (props) => {
                   <Row>
                     {objective.tags &&
                       objective.tags.map((tag, i) => (
-                        <Row className={"badge badge-info m-1 p-2"} key={i}>
+                        <Row
+                          className={"badge badge-info m-1"}
+                          style={{
+                            backgroundColor: "white",
+                            paddingLeft: 15,
+                            paddingRight: 15,
+                            paddingTop: 5,
+                            paddingBottom: 5,
+                            border: "1px solid #EFEFEF",
+                            fontSize: 14,
+                          }}
+                          key={i}
+                        >
                           {tag}
                         </Row>
                       ))}
@@ -177,7 +205,7 @@ export const ObjectivesWidget = (props) => {
                   <Row>
                     <span className={"h5"}>Maßnahmen</span>
                   </Row>
-                  <Row>{filteredActions}</Row>
+                  <Row>{filteredActionsAccordion}</Row>
                 </Col>
               )}
             </Container>

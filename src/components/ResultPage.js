@@ -73,29 +73,47 @@ const ResultPage = ({ onBack = () => {}, history }) => {
           className={"flex-grow-1 col d-flex"}
           style={{ whiteSpace: "pre-wrap" }}
         >
-          <Heading size={"h5"} text={`Dein Klimacheck für: `} />
+          <Heading
+            size={"h5"}
+            text={`Dein Klimacheck für: `}
+            style={{ margin: 0 }}
+          />
           <Row className={"w-100 mb-2"}>
-            <Typeahead
-              onFocus={(event) => event.target.select()}
-              onChange={(selectedValues) =>
-                selectedValues.length > 0 &&
-                history.push(getCityPath(selectedValues[0].value))
-              }
-              selectHintOnEnter
-              defaultSelected={selectedRegion ? [selectedRegion] : []}
-              id={"citySelection"}
-              placeholder={"Stadt / Unternehmen"}
-              options={typeAheadOptions}
-              emptyLabel={"Keine Ergebnisse."}
-              inputProps={{
-                style: {
-                  textAlign: "left",
-                  backgroundColor: "transparent",
-                  border: "none",
-                  fontSize: "2.8rem",
-                },
+            <span
+              style={{
+                display: "inline-block",
+                // borderBottom: "1px solid #DDD",
               }}
-            />
+            >
+              <Typeahead
+                onFocus={(event) => event.target.select()}
+                onChange={(selectedValues) =>
+                  selectedValues.length > 0 &&
+                  history.push(getCityPath(selectedValues[0].value))
+                }
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.target.blur();
+                  }
+                }}
+                selectHintOnEnter
+                defaultSelected={selectedRegion ? [selectedRegion] : []}
+                id={"citySelection"}
+                placeholder={"Stadt / Unternehmen"}
+                highlightOnlyResult
+                options={typeAheadOptions}
+                emptyLabel={"Keine Ergebnisse."}
+                inputProps={{
+                  style: {
+                    textAlign: "left",
+                    backgroundColor: "transparent",
+                    border: "none",
+                    fontSize: "3.4rem",
+                    textDecoration: "underline",
+                  },
+                }}
+              />
+            </span>
           </Row>
         </Row>
       </Col>

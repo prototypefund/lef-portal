@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import MapChart from "./MapChart";
 import { Heading } from "./shared/Heading";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import { requestCreateRegion } from "../redux/dataSlice";
+import { useSelector } from "react-redux";
+import { ThemeContext } from "./theme/ThemeContext";
+import { Display } from "react-bootstrap-icons";
+// import { requestCreateRegion } from "../redux/dataSlice";
 
 export const getTypeAheadOptions = (regions) => {
   let sortedRegions = [...regions];
@@ -17,10 +19,12 @@ export const getTypeAheadOptions = (regions) => {
 };
 
 export const StartPage = ({ onCitySelect = () => {} }) => {
+  const { theme } = useContext(ThemeContext);
   const regions = useSelector((state) => state.data.regionData);
   const [coords, setCoords] = useState({});
+  const [typeaheadText, setTypeaheadText] = useState("");
   const { longitude, latitude } = coords;
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const getLocation = () => {
     navigator.geolocation.getCurrentPosition(
@@ -55,71 +59,95 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
         >
           Neue Region
         </Button>*/}
-      <Row className={"mb-3"}>
-        <div className={"col"}>
-          <Heading text={"Dein Klimacheck"} size={"h1"} />
-        </div>
-      </Row>
-      <div
+
+      <Container
         // fluid={"sm"}
-        className={"d-flex align-items-center justify-content-center m-0 p-0"}
+        // className={"d-flex align-items-center justify-content-center m-0 p-0"}
+        style={{ maxWidth: 1400 }}
         // style={{ height: 600 }}
       >
-        <Row xs={12} className={"w-100 "}>
-          <Col
-            xs={12}
-            md={6}
-            className={
-              "d-flex align-items-center justify-content-center flex-column p-0"
-            }
-          >
-            <Row xs={12} className={"mt-5"}>
-              <Heading
-                size={"h2"}
-                text={"Wie läuft der Klimaschutz in/bei .."}
-              />
-            </Row>
-            <Col>
-              <Row className={"w-100"}>
-                <Typeahead
-                  style={{ width: "100%" }}
-                  id={"citySelection"}
-                  onChange={(values) => onCitySelect(values[0].value)}
-                  placeholder={"Stadt / Unternehmen"}
-                  options={getTypeAheadOptions(regions)}
-                  emptyLabel={"Keine Ergebnisse."}
-                />
+        <Col>
+          <Row className={"mb-3 w-100"} xs={12}>
+            {/*<Heading text={"Dein Klimacheck"} size={"h1"} />*/}
+          </Row>
+          <Row xs={12} className={"w-100"}>
+            <Col
+              xs={12}
+              md={6}
+              className={
+                "d-flex align-items-center justify-content-center flex-column p-0"
+              }
+            >
+              <Row xs={12} className={"mt-5 w-100"}>
+                <p className={"display-3"}>Wie läuft der Klimaschutz in..</p>
               </Row>
-              <Row>
-                <Button
-                  className={"mt-1"}
-                  size={"sm"}
-                  variant={"primary"}
-                  onClick={() => getLocation()}
-                >
-                  Meinen Standort verwenden
-                </Button>
-              </Row>
+              <Col>
+                <Row className={"w-100"}>
+                  <Typeahead
+                    // isLoading={regions.length === 0}
+                    value={typeaheadText}
+                    open={typeaheadText.length > 0}
+                    onInputChange={(text) => setTypeaheadText(text)}
+                    autoFocus
+                    highlightOnlyResult
+                    style={{ width: "100%" }}
+                    id={"citySelection"}
+                    onChange={(values) => onCitySelect(values[0].value)}
+                    placeholder={"Stadt / Unternehmen"}
+                    options={getTypeAheadOptions(regions)}
+                    emptyLabel={"Keine Ergebnisse."}
+                  />
+                </Row>
+                <Row>
+                  <Button
+                    className={"mt-3"}
+                    size={"sm"}
+                    variant={"primary"}
+                    onClick={() => getLocation()}
+                  >
+                    Meinen Standort verwenden
+                  </Button>
+                </Row>
+              </Col>
+
+              <Row className={"mt-5 mr-3"}>{infoBox}</Row>
             </Col>
 
-            <Row className={"mt-5 mr-3"}>{infoBox}</Row>
-          </Col>
-
-          <Col
-            className={"border border-light bg-light"}
-            xs={12}
-            md={6}
-            // style={{ minHeight: 600 }}
-          >
-            <MapChart
-              lat={latitude}
-              lon={longitude}
-              regions={regions}
-              onRegionClick={(regionId) => onCitySelect(regionId)}
-            />
-          </Col>
-        </Row>
-      </div>
+            <Col
+              className={"border border-light bg-light"}
+              xs={12}
+              md={6}
+              // style={{ minHeight: 600 }}
+            >
+              <div
+                style={{ bottom: 0, fontSize: 12 }}
+                className={"position-absolute w-100 d-flex align-items-center"}
+              >
+                <div className={"w-100 p-2"}>
+                  <span
+                    style={{
+                      backgroundColor: theme.colors.NAVIGATION_COLOR,
+                      color: "#FFF",
+                      marginRight: 7,
+                      padding: 5,
+                      borderRadius: 5,
+                    }}
+                  >
+                    {"Diese Regionen"}
+                  </span>
+                  <span>sind schon dabei</span>
+                </div>
+              </div>
+              <MapChart
+                lat={latitude}
+                lon={longitude}
+                regions={regions}
+                onRegionClick={(regionId) => onCitySelect(regionId)}
+              />
+            </Col>
+          </Row>
+        </Col>
+      </Container>
 
       <Row className={"mt-4"}></Row>
     </div>

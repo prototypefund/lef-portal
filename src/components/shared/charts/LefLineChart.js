@@ -1,6 +1,6 @@
 import { Line } from "react-chartjs-2";
-import React from "react";
-import { DIAGRAM_COLORS } from "../../../assets/colors";
+import React, { useContext } from "react";
+import { ThemeContext } from "../../theme/ThemeContext";
 
 const options = {
   scales: {
@@ -15,6 +15,8 @@ const options = {
 };
 
 export function LefLineChart({ data }) {
+  const { theme } = useContext(ThemeContext);
+  const { DIAGRAM_COLORS = [] } = theme.colors;
   return (
     <Line
       data={{

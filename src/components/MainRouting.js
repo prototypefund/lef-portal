@@ -1,4 +1,4 @@
-import { Link, Route, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import { withRouter } from "react-router";
 import { StartPage } from "./StartPage";
 import ResultPage from "./ResultPage";
@@ -8,11 +8,13 @@ import { SignUpPage } from "./SignUpPage";
 import { useDispatch, useSelector } from "react-redux";
 import { AccountPage } from "./AccountPage";
 import ProtectedRoute from "./ProtectedRoute";
-import { Nav, Navbar } from "react-bootstrap";
 import { requestSignOut } from "../redux/authSlice";
 import { WidgetEmbedding } from "./WidgetEmbedding";
 import { useEffect } from "react";
 import { requestGetAllRegions } from "../redux/dataSlice";
+import { Header } from "./Header";
+import { themes } from "./theme/themes";
+import { ThemeContext } from "./theme/ThemeContext";
 
 export const getCityPath = (city) => `/result/${city}`;
 
@@ -26,16 +28,18 @@ const MainRouting = ({ location = {}, history = {} }) => {
     dispatch(requestGetAllRegions());
   }, [dispatch]);
   const pages = [
-    {
+    /*  {
       id: "1",
       label: "Klimacheck",
       to: "/",
     },
+  */
     {
       id: "3",
       label: "Anmelden",
       to: "/signIn",
       unsecure: true,
+      button: true,
     },
     {
       id: "5",
@@ -48,46 +52,13 @@ const MainRouting = ({ location = {}, history = {} }) => {
       label: "Abmelden",
       action: () => dispatch(requestSignOut()),
       secure: true,
+      button: true,
     },
   ];
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       {!location.pathname.startsWith("/embeddedWidget") && (
-        <Navbar bg={"light"} expand="lg" className={"shadow"}>
-          <Navbar.Brand>
-            <Link to={"/"}>{"LEF"}</Link>
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="mr-auto">
-              {pages
-                .filter(
-                  (page) =>
-                    !(!loggedIn && page.secure) && !(loggedIn && page.unsecure)
-                )
-                .map((page) => {
-                  return page.to ? (
-                    <Link
-                      className={"navbar"}
-                      key={page.id}
-                      to={page.to}
-                      style={page.style}
-                    >
-                      {page.label}
-                    </Link>
-                  ) : (
-                    <div
-                      key={page.id}
-                      onClick={page.action}
-                      className={"btn btn-navigation"}
-                    >
-                      {page.label}
-                    </div>
-                  );
-                })}
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
+        <Header pages={pages} loggedIn={loggedIn} />
       )}
       <div className={"d-flex flex-grow-1 p-3"}>
         <Switch>
@@ -95,7 +66,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
             <Imprint />
           </Route>
 
-          <Route path="/embeddedWidget/:regionId/:widgetId">
+          <Route path="/embeddedWidget/:regionId/:widgetId/:colorPalette/:fontStyle">
             <WidgetEmbedding />
           </Route>
 

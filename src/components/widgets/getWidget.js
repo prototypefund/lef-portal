@@ -25,7 +25,7 @@ export const WIDGETS = {
     component: CarsWidget,
   },
   5: {
-    question: "Wie haben sich die Durchschnittstemperaturen verändert?",
+    question: "Wie haben sich die Durchschnittstemperaturen in %s verändert?",
     component: WarmingStripeWidget,
   },
 };
