@@ -2,15 +2,14 @@ import { Heading } from "./shared/Heading";
 import { Button, Card, CardGroup, Col, Form, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { LefModal } from "./shared/LefModal";
-import EmbeddingWizard from "./embedding/embeddingWizard";
+import EmbeddingWizard from "./embedding/EmbeddingWizard";
 import { useState } from "react";
 
 export const AccountPage = ({
   myRegionIds = [
-    "60a578af68fbf1545cdd7b18",
-    "60c7f17bad79fd36606229ea",
-    "60c7f08bad79fd36606229e8",
+    "60e8b3ff73d1e45df9f9bf0e",
+    "60e8b44273d1e4a2cef9bf12",
+    "60e8c26d32e57e89a4f33945",
   ],
 }) => {
   const regions = useSelector((state) => state.data.regionData);
@@ -67,11 +66,7 @@ export const AccountPage = ({
                         </div>
                       </Card.Text>
                       <Button size={"sm"}>
-                        <Link
-                          className={"navbar"}
-                          to={`/result/${r._id}`}
-                          // style={page.style}
-                        >
+                        <Link className={"navbar"} to={`/result/${r._id}`}>
                           Bearbeiten
                         </Link>
                       </Button>
@@ -105,25 +100,15 @@ export const AccountPage = ({
         </Col>
       </Row>
 
-      <LefModal
-        size={"xl"}
-        show={showEmbeddingDialog}
-        title={"Design festlegen"}
-        content={<EmbeddingWizard />}
-        buttons={[
-          {
-            label: "Abbrechen",
-            variant: "secondary",
-            onClick: () => setShowEmbeddingDialog(false),
-          },
-          {
-            label: "Einbettungscode kopieren",
-            onClick() {
-              // TODO copy code to clipboard
-              return setShowEmbeddingDialog(false);
-            },
-          },
-        ]}
+      <EmbeddingWizard
+        regions={regions}
+        open={showEmbeddingDialog}
+        onClose={(embeddingCode) => {
+          setShowEmbeddingDialog(false);
+          if (embeddingCode) {
+            navigator.clipboard.writeText(embeddingCode);
+          }
+        }}
       />
     </Col>
   );

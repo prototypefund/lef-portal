@@ -9,20 +9,7 @@ import {
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ThemeContext } from "./theme/ThemeContext";
 
-const plzUrl = "https://emission-framework.org/assets/plz-gebiete_simpl.json";
-
-const cities = [
-  {
-    lon: 7.626263414093006,
-    lat: 51.96068624131465,
-    label: "Münster",
-  },
-  {
-    lon: 13.729963643455521,
-    lat: 51.05513892485769,
-    label: "Dresden",
-  },
-];
+const plzUrl = "../assets/plz-gebiete_simpl.json";
 
 const MapChart = ({ lon, lat, regions, onRegionClick }) => {
   const { theme } = useContext(ThemeContext);
