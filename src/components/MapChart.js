@@ -54,7 +54,14 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
         scale: 5800,
       }}
     >
-      <ZoomableGroup zoom={lon ? 4 : 1} center={[rotateLon, rotateLat]}>
+      <ZoomableGroup
+        zoom={lon ? 4 : 1}
+        center={[rotateLon, rotateLat]}
+        translateExtent={[
+          [0, 0],
+          [800, 900],
+        ]}
+      >
         {/*
         {cities.map((city) => (
           <Marker
