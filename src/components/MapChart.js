@@ -10,6 +10,10 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ThemeContext } from "./theme/ThemeContext";
 
 const data = require("../assets/plz-gebiete_simpl.json");
+const states = require("../assets/3_mittel.geo.json");
+
+const defaultLon = 10.5;
+const defaultLat = 51.2;
 
 const MapChart = ({ lon, lat, regions, onRegionClick }) => {
   const { theme } = useContext(ThemeContext);
@@ -36,13 +40,16 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
     fillOpacity: 0.8,
   });
 
+  let rotateLon = lon || defaultLon;
+  let rotateLat = lat || defaultLat;
+  console.debug({ rotateLon, rotateLat });
   return (
     <ComposableMap
       // width={500}
       height={900}
       projection="geoAzimuthalEqualArea"
       projectionConfig={{
-        rotate: [-10.5, -51.2, 0],
+        rotate: [-rotateLon, -rotateLat, 0],
         scale: 5800,
       }}
     >
@@ -76,37 +83,59 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
           </Marker>
         )}
 
-        <Geographies geography={data}>
+        <Geographies geography={states}>
           {({ geographies }) =>
             geographies.map((geo, j) => {
               const geosRegion = postalcodeToRegionMap[geo.properties.plz];
-              const renderTooltip = (props) => (
-                <Tooltip id="tooltip" {...props}>
-                  {`${geo.properties.note}${
-                    geosRegion ? ` (${geosRegion.name})` : ""
-                  }`}
-                </Tooltip>
-              );
               return (
-                <OverlayTrigger
-                  placement="right"
-                  delay={{ show: 250, hide: 400 }}
-                  overlay={renderTooltip}
-                >
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    style={{
-                      default: getStyle(geo, allPostalcodes),
-                      pressed: getStyle(geo, allPostalcodes),
-                    }}
-                    onClick={(event) =>
-                      geosRegion && onRegionClick(geosRegion._id)
-                    }
-                  />
-                </OverlayTrigger>
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  style={{
+                    default: getStyle(geo, allPostalcodes),
+                    hover: getStyle(geo, allPostalcodes),
+                  }}
+                  onClick={(event) =>
+                    geosRegion && onRegionClick(geosRegion._id)
+                  }
+                />
               );
             })
+          }
+        </Geographies>
+        <Geographies geography={data}>
+          {({ geographies }) =>
+            geographies
+              .filter((geo) => allPostalcodes.includes(geo.properties.plz))
+              .map((geo, j) => {
+                const geosRegion = postalcodeToRegionMap[geo.properties.plz];
+                const renderTooltip = (props) => (
+                  <Tooltip id="tooltip" {...props}>
+                    {`${geo.properties.note}${
+                      geosRegion ? ` (${geosRegion.name})` : ""
+                    }`}
+                  </Tooltip>
+                );
+                return (
+                  <OverlayTrigger
+                    placement="right"
+                    delay={{ show: 250, hide: 400 }}
+                    overlay={renderTooltip}
+                  >
+                    <Geography
+                      key={geo.rsmKey}
+                      geography={geo}
+                      style={{
+                        default: getStyle(geo, allPostalcodes),
+                        pressed: getStyle(geo, allPostalcodes),
+                      }}
+                      onClick={(event) =>
+                        geosRegion && onRegionClick(geosRegion._id)
+                      }
+                    />
+                  </OverlayTrigger>
+                );
+              })
           }
         </Geographies>
       </ZoomableGroup>
