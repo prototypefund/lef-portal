@@ -12,7 +12,7 @@ const EmbeddingWizard = ({ regions, open, onClose }) => {
     regions.length > 0 ? regions[0]._id : null
   );
   let pleaseChoose = "Bitte auswählen..";
-  let embeddingCode = `http://localhost:3000/embeddedWidget/${regionId}/${widgetId}/${previewColorPalette}/${previewFontStyle}`;
+  let embeddingCode = `https://portal.emission-framework.org/embeddedWidget/${regionId}/${widgetId}/${previewColorPalette}/${previewFontStyle}`;
   return (
     <LefModal
       size={"xl"}
