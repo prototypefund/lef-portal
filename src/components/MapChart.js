@@ -9,7 +9,8 @@ import {
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ThemeContext } from "./theme/ThemeContext";
 
-const data = require("../assets/plz-gebiete_simpl.json");
+// const countries = "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
+const zipcodeAreas = require("../assets/plz-gebiete_simpl.json");
 const states = require("../assets/3_mittel.geo.json");
 
 const defaultLon = 10.5;
@@ -53,7 +54,7 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
         scale: 5800,
       }}
     >
-      <ZoomableGroup zoom={1}>
+      <ZoomableGroup zoom={lon ? 4 : 1} center={[rotateLon, rotateLat]}>
         {/*
         {cities.map((city) => (
           <Marker
@@ -103,7 +104,7 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
             })
           }
         </Geographies>
-        <Geographies geography={data}>
+        <Geographies geography={zipcodeAreas}>
           {({ geographies }) =>
             geographies
               .filter((geo) => allPostalcodes.includes(geo.properties.plz))
