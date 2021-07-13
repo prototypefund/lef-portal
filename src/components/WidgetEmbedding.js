@@ -8,7 +8,6 @@ import { ClimateWidget } from "./widgets/ClimateWidget";
 import { CarsWidget } from "./widgets/CarsWidget";
 import { VotingWidget } from "./widgets/VotingWidget";
 import { ThemeContext } from "./theme/ThemeContext";
-import { ThemeProvider } from "react-bootstrap";
 
 const Widgets = {
   1: ActionDisplay,

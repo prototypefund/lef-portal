@@ -9,7 +9,7 @@ import {
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ThemeContext } from "./theme/ThemeContext";
 
-const plzUrl = "../assets/plz-gebiete_simpl.json";
+const data = require("../assets/plz-gebiete_simpl.json");
 
 const MapChart = ({ lon, lat, regions, onRegionClick }) => {
   const { theme } = useContext(ThemeContext);
@@ -76,7 +76,7 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
           </Marker>
         )}
 
-        <Geographies geography={plzUrl}>
+        <Geographies geography={data}>
           {({ geographies }) =>
             geographies.map((geo, j) => {
               const geosRegion = postalcodeToRegionMap[geo.properties.plz];
