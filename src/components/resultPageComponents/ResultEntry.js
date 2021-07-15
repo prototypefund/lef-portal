@@ -26,8 +26,9 @@ export const ResultEntry = ({ question, component }) => {
         <Question question={question} />
       </Row>
       <div
-        className={"d-flex align-items-center mt-2 alert pl-4 pr-4 pt-4 pb-4"}
+        className={"d-flex align-items-center mt-2 alert p-sm-1 p-md-4"}
         style={{
+          paddingRight: 0,
           border: `2px solid ${COLOR_TEXT_BRIGHT}`,
           backgroundColor: LIGHT_BACKGROUND_COLOR,
           color: textColor,

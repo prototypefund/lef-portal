@@ -13,8 +13,7 @@ import { WidgetEmbedding } from "./WidgetEmbedding";
 import { useEffect } from "react";
 import { requestGetAllRegions } from "../redux/dataSlice";
 import { Header } from "./Header";
-import { themes } from "./theme/themes";
-import { ThemeContext } from "./theme/ThemeContext";
+import { Toast } from "react-bootstrap";
 
 export const getCityPath = (city) => `/result/${city}`;
 
@@ -22,6 +21,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
   const dispatch = useDispatch();
   // const { state = {} } = location;
   const authStatus = useSelector((state) => state.auth.authState);
+  const toasts = useSelector((state) => state.notifications);
   const loggedIn = authStatus === "loggedIn";
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
       {!location.pathname.startsWith("/embeddedWidget") && (
         <Header pages={pages} loggedIn={loggedIn} />
       )}
-      <div className={"d-flex flex-grow-1 p-3"}>
+      <div className={"d-flex flex-grow-1 pt-3 p-sm-1 p-md-3"}>
         <Switch>
           <Route path="/imprint">
             <Imprint />
@@ -97,6 +97,20 @@ const MainRouting = ({ location = {}, history = {} }) => {
       </div>
       <div className={"mt-3 text-center mb-1"} style={{ fontSize: 10 }}>
         Local Emission Framework 2021 (c) v0.1
+      </div>
+      <div
+        className="p-3"
+        style={{ position: "absolute", bottom: 10, right: 10 }}
+      >
+        {toasts.map((toast) => (
+          <Toast key={toast.id}>
+            <Toast.Header closeButton={false}>
+              <strong className="mr-2">{toast.title}</strong>
+              <small>{new Date(toast.timestamp).toLocaleTimeString()}</small>
+            </Toast.Header>
+            <Toast.Body>{toast.message}</Toast.Body>
+          </Toast>
+        ))}
       </div>
     </div>
   );

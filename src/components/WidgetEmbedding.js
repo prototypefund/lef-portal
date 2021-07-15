@@ -3,22 +3,12 @@ import { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getRegionDataFromState, requestGetRegion } from "../redux/dataSlice";
 import { WidgetContainer } from "./WidgetContainer";
-import { ActionDisplay } from "./widgets/objectivesWidgetComponents/ActionDisplay";
-import { ClimateWidget } from "./widgets/ClimateWidget";
-import { CarsWidget } from "./widgets/CarsWidget";
-import { VotingWidget } from "./widgets/VotingWidget";
 import { ThemeContext } from "./theme/ThemeContext";
-
-const Widgets = {
-  1: ActionDisplay,
-  2: ClimateWidget,
-  3: CarsWidget,
-  4: VotingWidget,
-};
+import { WIDGETS } from "./widgets/getWidget";
 
 export function WidgetEmbedding() {
   const dispatch = useDispatch();
-  const { theme, updateTheme } = useContext(ThemeContext);
+  const { updateTheme } = useContext(ThemeContext);
   const { widgetId, regionId, colorPalette, fontStyle } = useParams();
 
   const regionData = useSelector((state) =>
@@ -30,10 +20,14 @@ export function WidgetEmbedding() {
   }, []);
 
   useEffect(() => {
-    dispatch(requestGetRegion(regionId));
+    if (regionId) {
+      dispatch(requestGetRegion(regionId));
+    }
   }, [dispatch, regionId]);
 
-  let widget = Widgets[widgetId] || undefined;
+  let widget = WIDGETS[widgetId] ? WIDGETS[widgetId].component : undefined;
+
+  console.debug(regionData);
 
   return widget ? (
     <div className={"d-flex flex-grow-1 m-2"}>

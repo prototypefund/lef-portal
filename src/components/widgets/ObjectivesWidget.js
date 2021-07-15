@@ -214,7 +214,10 @@ export const ObjectivesWidget = (props) => {
       });
 
   return (
-    <Row style={{ maxWidth: "99vw", minHeight: 300, padding: 10 }}>
+    <Row
+      style={{ maxWidth: "100%", minHeight: 300 }}
+      className={"p-sm-1 p-md-2"}
+    >
       <div
         className={"d-flex"}
         style={{

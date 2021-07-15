@@ -33,7 +33,9 @@ const ResultPage = ({ onBack = () => {}, history }) => {
   const { regionId } = useParams();
 
   useEffect(() => {
-    dispatch(requestGetRegion(regionId));
+    if (regionId) {
+      dispatch(requestGetRegion(regionId));
+    }
   }, [dispatch, regionId]);
 
   const regionData = useSelector((state) =>

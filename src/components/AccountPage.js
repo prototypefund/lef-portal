@@ -103,11 +103,8 @@ export const AccountPage = ({
       <EmbeddingWizard
         regions={regions}
         open={showEmbeddingDialog}
-        onClose={(embeddingCode) => {
+        onClose={() => {
           setShowEmbeddingDialog(false);
-          if (embeddingCode) {
-            navigator.clipboard.writeText(embeddingCode);
-          }
         }}
       />
     </Col>
