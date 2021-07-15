@@ -6,8 +6,8 @@ import { LefModal } from "../shared/LefModal";
 import { addNotificationMessage } from "../../redux/notificationSlice";
 import { useDispatch } from "react-redux";
 
-//const ROOT_URL = `https://portal.emission-framework.org`;
-const ROOT_URL = `http://localhost:3000`;
+const ROOT_URL = `https://portal.emission-framework.org`;
+// const ROOT_URL = `http://localhost:3000`;
 
 const EmbeddingWizard = ({ regions, open, onClose }) => {
   const dispatch = useDispatch();

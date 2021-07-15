@@ -1,11 +1,10 @@
-import { useCallback, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import MapChart from "./MapChart";
 import { Heading } from "./shared/Heading";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { ThemeContext } from "./theme/ThemeContext";
-import { Display } from "react-bootstrap-icons";
 // import { requestCreateRegion } from "../redux/dataSlice";
 
 export const getTypeAheadOptions = (regions) => {
