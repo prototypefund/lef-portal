@@ -8,7 +8,7 @@ import MainContent from "./components/MainRouting";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { useState } from "react";
-import { createTheme, themes } from "./components/theme/themes"; // requires a loader
+import { createTheme } from "./components/theme/themes"; // requires a loader
 import { ThemeContext } from "./components/theme/ThemeContext";
 
 const logger = createLogger({
@@ -22,7 +22,6 @@ const store = configureStore({
 
 const App = () => {
   const [currentTheme, setCurrentTheme] = useState(createTheme());
-  console.debug(currentTheme);
   const {
     INTERACTIVE_ELEMENT_COLOR,
     COLOR_TEXT_DARK,

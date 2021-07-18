@@ -22,7 +22,7 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
   const allPostalcodes = regions
     .map((region) => region.postalcodes)
     .reduce((a, b) => [...a, ...b], []);
-  let postalcodeToRegionMap = {};
+  const postalcodeToRegionMap = {};
   regions.forEach((region) => {
     region.postalcodes.forEach((plz) => {
       postalcodeToRegionMap[plz] = region;
@@ -41,9 +41,8 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
     fillOpacity: 0.8,
   });
 
-  let rotateLon = lon || defaultLon;
-  let rotateLat = lat || defaultLat;
-  console.debug({ rotateLon, rotateLat });
+  const rotateLon = lon || defaultLon;
+  const rotateLat = lat || defaultLat;
   return (
     <ComposableMap
       // width={500}
@@ -62,29 +61,6 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
           [800, 900],
         ]}
       >
-        {/*
-        {cities.map((city) => (
-          <Marker
-            key={`${city.lon}/${city.lat}`}
-            coordinates={[city.lon, city.lat]}
-          >
-            <circle r={5} fill={SECONDARY_COLOR} />
-            <text
-              textAnchor="middle"
-              y={4}
-              x={35}
-              style={{
-                fontFamily: "system-ui",
-                fill: "#5D5A6D",
-                fontSize: 10,
-              }}
-            >
-              {city.label}
-            </text>
-          </Marker>
-        ))}
-*/}
-
         {lon && lat && (
           <Marker coordinates={[lon, lat]}>
             <circle r={20} fill={"green"} fillOpacity={1} />

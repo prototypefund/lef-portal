@@ -23,7 +23,6 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
   const [coords, setCoords] = useState({});
   const [typeaheadText, setTypeaheadText] = useState("");
   const { longitude, latitude } = coords;
-  console.debug({ longitude, latitude });
   // const dispatch = useDispatch();
 
   const getLocation = () => {
