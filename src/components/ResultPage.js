@@ -120,11 +120,13 @@ const ResultPage = ({ onBack = () => {}, history }) => {
         </Row>
       </Col>
       {userIsAdmin && (
-        <EditButton
-          onClick={() => {
-            setEditMode(!editMode);
-          }}
-        />
+        <div className={"d-none d-sm-flex"}>
+          <EditButton
+            onClick={() => {
+              setEditMode(!editMode);
+            }}
+          />
+        </div>
       )}
     </Row>
   );

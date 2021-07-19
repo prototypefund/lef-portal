@@ -103,7 +103,11 @@ export const WarmingStripeWidget = ({ regionData }) => {
   const { _id: regionId } = regionData;
   const climateChart =
     useSelector((state) => state.climate[regionId]) || fakeData;
-  const { weatherStation, weatherStationId, climateData } = climateChart;
+  const {
+    weatherStation,
+    // weatherStationId,
+    climateData,
+  } = climateChart;
 
   return (
     <Col>

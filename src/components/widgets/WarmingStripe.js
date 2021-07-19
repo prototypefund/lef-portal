@@ -41,7 +41,7 @@ const WARMING_COLORS = [
   "#67000d",
 ];
 
-const YEAR_RANGE = [1881, 2018];
+// const YEAR_RANGE = [1881, 2018];
 const REFERENCE_RANGE = [1961, 1990];
 
 export const WarmingStripe = ({ climateData = [] }) => {

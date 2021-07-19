@@ -1,9 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { lefApi } from "../api/lefApi";
 import { getRandomId } from "../utils/utils";
-import { add } from "husky";
-
-let userToken = localStorage.getItem("token");
 
 const notificationSlice = createSlice({
   name: "notification",

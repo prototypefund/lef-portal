@@ -120,6 +120,7 @@ const EmbeddingWizard = ({ regions, open, onClose }) => {
                   src={embeddingCode}
                   frameBorder="0"
                   style={{
+                    padding: 10,
                     width: "100%",
                     minHeight: 500,
                     border: "1px solid grey",

@@ -1,4 +1,4 @@
-import { Badge, Card, Col, Row, Accordion } from "react-bootstrap";
+import { Accordion, Card, Col, Row } from "react-bootstrap";
 import { getYYYYMMDD } from "../../resultPageComponents/AddObjectivesAndActionsDialog";
 import { EditButton } from "../../shared/EditButton";
 import React from "react";
@@ -27,22 +27,22 @@ export const ActionDisplay = ({
         <Accordion.Toggle
           as={"div"}
           variant="link"
-          eventKey={action._id}
+          eventKey={_id}
           className={"w-100"}
         >
           <Card.Header className={"w-100"}>
             <Row className={"text-left align-items-baseline"}>
               <Col xs={4}>
                 <div style={{ ...badgeStyle }}>{`${getYYYYMMDD(
-                  action.startDate
-                )} - ${getYYYYMMDD(action.endDate)}`}</div>
+                  startDate
+                )} - ${getYYYYMMDD(endDate)}`}</div>
               </Col>
-              <Col xs={6}>{action._id}</Col>
+              <Col xs={6}>{_id}</Col>
             </Row>
           </Card.Header>
         </Accordion.Toggle>
 
-        <Accordion.Collapse eventKey={action._id}>
+        <Accordion.Collapse eventKey={_id}>
           <Card.Body>
             <Row xs={12} className={"w-100"}>
               <Col

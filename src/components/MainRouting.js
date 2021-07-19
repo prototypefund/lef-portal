@@ -9,17 +9,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { AccountPage } from "./AccountPage";
 import ProtectedRoute from "./ProtectedRoute";
 import { requestSignOut } from "../redux/authSlice";
-import { WidgetEmbedding } from "./WidgetEmbedding";
 import { useEffect } from "react";
 import { requestGetAllRegions } from "../redux/dataSlice";
 import { Header } from "./Header";
 import { Toast } from "react-bootstrap";
+import { WidgetEmbeddingPage } from "./WidgetEmbeddingPage";
 
 export const getCityPath = (city) => `/result/${city}`;
 
 const MainRouting = ({ location = {}, history = {} }) => {
   const dispatch = useDispatch();
-  // const { state = {} } = location;
   const authStatus = useSelector((state) => state.auth.authState);
   const toasts = useSelector((state) => state.notifications);
   const loggedIn = authStatus === "loggedIn";
@@ -28,12 +27,6 @@ const MainRouting = ({ location = {}, history = {} }) => {
     dispatch(requestGetAllRegions());
   }, [dispatch]);
   const pages = [
-    /*  {
-      id: "1",
-      label: "Klimacheck",
-      to: "/",
-    },
-  */
     {
       id: "3",
       label: "Anmelden",
@@ -67,7 +60,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
           </Route>
 
           <Route path="/embeddedWidget/:regionId/:widgetId/:colorPalette/:fontStyle">
-            <WidgetEmbedding />
+            <WidgetEmbeddingPage />
           </Route>
 
           <Route path={"/result/:regionId"}>

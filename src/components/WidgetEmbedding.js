@@ -1,4 +1,3 @@
-import { useParams } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getRegionDataFromState, requestGetRegion } from "../redux/dataSlice";
@@ -6,10 +5,14 @@ import { WidgetContainer } from "./WidgetContainer";
 import { ThemeContext } from "./theme/ThemeContext";
 import { WIDGETS } from "./widgets/getWidget";
 
-export function WidgetEmbedding() {
+export function WidgetEmbedding({
+  colorPalette,
+  fontStyle,
+  regionId,
+  widgetId,
+}) {
   const dispatch = useDispatch();
   const { updateTheme } = useContext(ThemeContext);
-  const { widgetId, regionId, colorPalette, fontStyle } = useParams();
 
   const regionData = useSelector((state) =>
     getRegionDataFromState(state, regionId)
@@ -17,7 +20,7 @@ export function WidgetEmbedding() {
 
   useEffect(() => {
     updateTheme(colorPalette, fontStyle);
-  }, []);
+  }, [updateTheme, colorPalette, fontStyle]);
 
   useEffect(() => {
     if (regionId) {
@@ -26,8 +29,6 @@ export function WidgetEmbedding() {
   }, [dispatch, regionId]);
 
   let widget = WIDGETS[widgetId] ? WIDGETS[widgetId].component : undefined;
-
-  console.debug(regionData);
 
   return widget ? (
     <div className={"d-flex flex-grow-1 m-2"}>

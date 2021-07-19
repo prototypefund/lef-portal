@@ -128,7 +128,7 @@ export const AddObjectivesAndActionsDialog = ({
           <Form.Control
             size={size}
             as={"textarea"}
-            rows={3}
+            rows={4}
             onChange={(e) => setDescription(e.target.value)}
             type={"textarea"}
             placeholder={

@@ -25,7 +25,6 @@ export const requestSignIn = (username, password) => (dispatch) => {
     .signIn(username, password)
     .then((response) => {
       if (response.data) {
-        console.debug("Saving token", response.data);
         localStorage.setItem("token", response.data);
       }
       dispatch(updateAuthState({ authState: "loggedIn" }));

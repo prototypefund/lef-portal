@@ -22,6 +22,7 @@ import {
 } from "../../redux/dataSlice";
 import { ConfirmDialog } from "../shared/ConfirmDialog";
 import { ThemeContext } from "../theme/ThemeContext";
+import { LefModal } from "../shared/LefModal";
 
 const OBJECTIVE_DELETE = "OBJECTIVE_DELETE";
 const ACTION_DELETE = "ACTION_DELETE";
@@ -47,6 +48,11 @@ export const ObjectivesWidget = (props) => {
   const [isActionMode, setIsActionMode] = useState(false);
   const [editedObjective, setEditedObjective] = useState({});
   const [editedAction, setEditedAction] = useState({});
+  const [
+    selectedObjectiveDescription,
+    setSelectedObjectiveDescription,
+  ] = useState(undefined);
+
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [confirmParameter, setConfirmParameter] = useState({});
 
@@ -62,6 +68,7 @@ export const ObjectivesWidget = (props) => {
       .filter((o) => o)
       .sort((a, b) => new Date(a.endDate) - new Date(b.endDate))
       .map((objective, j) => {
+        const { description } = objective;
         const isLast = j === regionsObjectives.length - 1;
         const endDate = new Date(objective.endDate);
 
@@ -70,7 +77,7 @@ export const ObjectivesWidget = (props) => {
         );
         const filteredActionsAccordion = (
           <Accordion className={"w-100"}>
-            {filteredActions.map((action, k) => (
+            {filteredActions.map((action) => (
               <ActionDisplay
                 key={action._id}
                 action={action}
@@ -96,17 +103,43 @@ export const ObjectivesWidget = (props) => {
           </Accordion>
         );
 
+        let descriptionLength = huge ? 500 : 200;
+        let truncated = description.length > descriptionLength;
+        const objectiveDescription = (
+          <>
+            <span
+              className={"overflow-auto pr-3"}
+              style={{ height: huge ? 300 : 100 }}
+            >
+              {`${description.substr(0, descriptionLength)}${
+                truncated ? "... " : ""
+              }`}
+              {truncated && (
+                <Button
+                  style={{ verticalAlign: "initial" }}
+                  className={"d-inline m-0 p-0 align-self-auto border-0"}
+                  variant={"link"}
+                  onClick={() => setSelectedObjectiveDescription(description)}
+                >
+                  mehr
+                </Button>
+              )}
+            </span>{" "}
+          </>
+        );
         return (
           <div
             key={objective._id}
-            className={"p-0 text-justify"}
-            {...(huge && { style: { minWidth: 600 } })}
+            className={"p-4 text-left"}
+            style={huge ? { minWidth: 600 } : { margin: 25 }}
           >
             <div
               style={{
-                borderBottom: `2px dashed ${
-                  isLast ? "transparent" : PRIMARY_COLOR_DARK
-                }`,
+                ...(huge && {
+                  borderBottom: `2px dashed ${
+                    isLast ? "transparent" : PRIMARY_COLOR_DARK
+                  }`,
+                }),
                 width: "100%",
                 marginTop: 15,
                 marginBottom: 15,
@@ -116,7 +149,7 @@ export const ObjectivesWidget = (props) => {
               <Col
                 xs={12}
                 style={{
-                  top: -30,
+                  top: huge ? -30 : -25,
                   color: COLOR_TEXT_BRIGHT,
                 }}
               >
@@ -141,7 +174,7 @@ export const ObjectivesWidget = (props) => {
                     className={"h4"}
                     style={{ width: "fit-content" }}
                   >{`${objective.title}`}</span>
-                  {editMode && (
+                  {editMode && huge && (
                     <>
                       <EditButton
                         onClick={() => {
@@ -192,12 +225,7 @@ export const ObjectivesWidget = (props) => {
               </Row>
 
               <Row>
-                <Col className={"pl-0"}>
-                  <p
-                    className={"overflow-auto pr-3"}
-                    style={{ height: 300 }}
-                  >{`${objective.description}`}</p>
-                </Col>
+                <Col className={"pl-0"}>{objectiveDescription}</Col>
               </Row>
 
               {filteredActions.length > 0 && (
@@ -225,7 +253,7 @@ export const ObjectivesWidget = (props) => {
           // overflow: "auto",
         }}
       >
-        <div className={"w-100 d-sm-block d-md-none"}>
+        <div className={"w-100 d-sm-block d-md-none m-0 p-0"}>
           <Carousel
             showThumbs={false}
             autoPlay={false}
@@ -251,6 +279,18 @@ export const ObjectivesWidget = (props) => {
           }}
         />
       )}
+
+      <LefModal
+        centered
+        show={selectedObjectiveDescription}
+        content={<>{selectedObjectiveDescription}</>}
+        buttons={[
+          {
+            label: "Schließen",
+            onClick: () => setSelectedObjectiveDescription(undefined),
+          },
+        ]}
+      />
 
       {editMode && (
         <ButtonGroup className={"mt-2"}>

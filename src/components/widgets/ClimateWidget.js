@@ -27,7 +27,7 @@ export const ClimateWidget = ({ year, months, regionData }) => {
 
   useEffect(() => {
     dispatch(requestGetClimateDataForRegion(weatherStationId, year, months));
-  }, []);
+  }, [dispatch, months, year]);
   return (
     <Col>
       <Row>
