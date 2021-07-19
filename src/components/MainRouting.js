@@ -64,7 +64,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
           </Route>
 
           <Route path={"/result/:regionId"}>
-            <ResultPage onBack={() => history.goBack()} />
+            <ResultPage />
           </Route>
 
           <Route path={"/signIn"}>

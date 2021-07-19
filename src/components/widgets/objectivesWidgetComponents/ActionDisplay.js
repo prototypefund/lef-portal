@@ -20,7 +20,7 @@ export const ActionDisplay = ({
     width: "100%",
   };
 
-  const { description, startDate, endDate, budget, _id } = action;
+  const { description, startDate, endDate, budget, _id, title } = action;
   return (
     <div className={"mb-2"} style={{ cursor: "pointer" }}>
       <Card>
@@ -37,7 +37,7 @@ export const ActionDisplay = ({
                   startDate
                 )} - ${getYYYYMMDD(endDate)}`}</div>
               </Col>
-              <Col xs={6}>{_id}</Col>
+              <Col xs={6}>{title || "Maßnahme"}</Col>
             </Row>
           </Card.Header>
         </Accordion.Toggle>
