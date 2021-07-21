@@ -1,24 +1,38 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { lefApi } from "../api/lefApi";
 
+let localUserId = "";
+
 export const getCurrentUserToken = () => localStorage.getItem("token");
+export const getCurrentUserId = () => localUserId;
 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
     authState: getCurrentUserToken() ? "loggedIn" : "loggedOut",
     message: "",
+    user: {},
   },
   reducers: {
     updateAuthState: (state, action) => {
       const { authState, message } = action.payload;
       return { authState, message };
     },
+    setUserData: (state, action) => {
+      if (action.payload.user) state.user = action.payload.user;
+    },
   },
 });
 
-export const { updateAuthState } = authSlice.actions;
+export const { updateAuthState, setUserData } = authSlice.actions;
 export default authSlice.reducer;
+
+export const requestGetUser = () => (dispatch) => {
+  lefApi.getUser(getCurrentUserToken()).then((response) => {
+    localUserId = response.data._id;
+    return dispatch(setUserData({ user: response.data }));
+  });
+};
 
 export const requestSignIn = (username, password) => (dispatch) => {
   lefApi

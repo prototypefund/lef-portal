@@ -20,9 +20,10 @@ const EmbeddingWizard = ({ regions, open, onClose }) => {
   useEffect(() => {
     if (regions.length > 0) setRegionId(regions[0]._id);
   }, [regions]);
-  let embeddingCode = `${ROOT_URL}/embeddedWidget/${regionId}/${widgetId}/${previewColorPalette}/${previewFontStyle}`;
+  let embeddingUrl = `${ROOT_URL}/embeddedWidget/${regionId}/${widgetId}/${previewColorPalette}/${previewFontStyle}`;
+  let iFrameCode = `<iframe src="${embeddingUrl}" style="width: 100%; min-height: 500px; border: 1px solid grey">`;
   let copyEmbeddingCodeToClipboard = () => {
-    navigator.clipboard.writeText(embeddingCode);
+    navigator.clipboard.writeText(iFrameCode);
     dispatch(
       addNotificationMessage(
         "Einbettungscode kopiert",
@@ -92,19 +93,19 @@ const EmbeddingWizard = ({ regions, open, onClose }) => {
                     <option value={"monospace"}>Festbreitenschrift</option>
                   </Form.Control>
                 </Form.Group>
-                <Form.Group className={"mt-5"}>
-                  <Form.Label>Einbettungscode</Form.Label>
-                </Form.Group>
-                <Form.Group as={Row} controlId="formEmbeddingCode">
+                <Form.Group as={Row} className={"mt-5"}>
                   <Col>
+                    <Form.Label>Einbettungscode</Form.Label>
+                  </Col>
+                  <Col xs={12}>
                     <Form.Control
                       type={"text"}
                       onSelect={(e) => e.target.select()}
-                      value={embeddingCode}
+                      value={iFrameCode}
                       readOnly
                     />
                   </Col>
-                  <Col>
+                  <Col className={"mt-2 d-flex justify-content-end"}>
                     <Button onClick={copyEmbeddingCodeToClipboard}>
                       In Zwischenablage kopieren
                     </Button>
@@ -117,7 +118,7 @@ const EmbeddingWizard = ({ regions, open, onClose }) => {
               {regionId && widgetId && (
                 <iframe
                   title={"preview"}
-                  src={embeddingCode}
+                  src={embeddingUrl}
                   frameBorder="0"
                   style={{
                     padding: 10,

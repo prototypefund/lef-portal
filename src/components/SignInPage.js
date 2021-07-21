@@ -1,24 +1,33 @@
+import { withRouter } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { requestSignIn } from "../redux/authSlice";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { Heading } from "./shared/Heading";
+import { PATHS } from "./MainRouting";
 
-export function SignInPage() {
+const SignInPage = ({ history }) => {
   const dispatch = useDispatch();
   const authMessage = useSelector((state) => state.auth.message);
   const authState = useSelector((state) => state.auth.authState);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const loggedIn = authState === "loggedIn";
 
   const onFinish = () => {
     dispatch(requestSignIn(email, password));
   };
 
+  useEffect(() => {
+    if (loggedIn) {
+      history.push(PATHS.ACCOUNT);
+    }
+  }, [authState]);
+
   return (
     <div>
-      {authState === "loggedIn" ? (
+      {loggedIn ? (
         <p>Erfolgreich eingeloggt.</p>
       ) : (
         <div>
@@ -58,4 +67,6 @@ export function SignInPage() {
       )}
     </div>
   );
-}
+};
+
+export default withRouter(SignInPage);

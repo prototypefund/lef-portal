@@ -3,12 +3,12 @@ import { withRouter } from "react-router";
 import { StartPage } from "./StartPage";
 import ResultPage from "./ResultPage";
 import { Imprint } from "./Imprint";
-import { SignInPage } from "./SignInPage";
+import SignInPage from "./SignInPage";
 import { SignUpPage } from "./SignUpPage";
 import { useDispatch, useSelector } from "react-redux";
 import { AccountPage } from "./AccountPage";
 import ProtectedRoute from "./ProtectedRoute";
-import { requestSignOut } from "../redux/authSlice";
+import { requestGetUser, requestSignOut } from "../redux/authSlice";
 import { useEffect } from "react";
 import { requestGetAllRegions } from "../redux/dataSlice";
 import { Header } from "./Header";
@@ -16,6 +16,14 @@ import { Toast } from "react-bootstrap";
 import { WidgetEmbeddingPage } from "./WidgetEmbeddingPage";
 
 export const getCityPath = (city) => `/result/${city}`;
+export const PATHS = {
+  ACCOUNT: "/account",
+  RESULT: "/result/:regionId",
+  SIGN_IN: "/signIn",
+  SIGN_UP: "/signUp",
+  IMPRINT: "/imprint",
+  EMBEDDING: "/embeddedWidget/:regionId/:widgetId/:colorPalette/:fontStyle",
+};
 
 const MainRouting = ({ location = {}, history = {} }) => {
   const dispatch = useDispatch();
@@ -26,18 +34,25 @@ const MainRouting = ({ location = {}, history = {} }) => {
   useEffect(() => {
     dispatch(requestGetAllRegions());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (loggedIn) {
+      dispatch(requestGetUser());
+    }
+  }, [authStatus, dispatch]);
+
   const pages = [
     {
       id: "3",
       label: "Anmelden",
-      to: "/signIn",
+      to: PATHS.SIGN_IN,
       unsecure: true,
       button: true,
     },
     {
       id: "5",
       label: "Mein Konto",
-      to: "/account",
+      to: PATHS.ACCOUNT,
       secure: true,
     },
     {
@@ -55,29 +70,29 @@ const MainRouting = ({ location = {}, history = {} }) => {
       )}
       <div className={"d-flex flex-grow-1 pt-3 p-sm-1 p-md-3"}>
         <Switch>
-          <Route path="/imprint">
+          <Route path={PATHS.IMPRINT}>
             <Imprint />
           </Route>
 
-          <Route path="/embeddedWidget/:regionId/:widgetId/:colorPalette/:fontStyle">
+          <Route path={PATHS.EMBEDDING}>
             <WidgetEmbeddingPage />
           </Route>
 
-          <Route path={"/result/:regionId"}>
+          <Route path={PATHS.RESULT}>
             <ResultPage />
           </Route>
 
-          <Route path={"/signIn"}>
+          <Route path={PATHS.SIGN_IN}>
             <SignInPage />
           </Route>
 
-          <Route path={"/signUp"}>
+          <Route path={PATHS.SIGN_UP}>
             <SignUpPage />
           </Route>
 
           <ProtectedRoute
             loggedIn={loggedIn}
-            path={"/account"}
+            path={PATHS.ACCOUNT}
             component={AccountPage}
           />
 

@@ -1,8 +1,9 @@
-import { getCurrentUserToken } from "../redux/authSlice";
+import { getCurrentUserId, getCurrentUserToken } from "../redux/authSlice";
 
 const axios = require("axios");
 
 export const lefApi = {
+  // USER & AUTH
   signUp: (username, password) => {},
   signIn: (username, password) => {
     // return Promise.resolve({ data: { token: "myToken" } });
@@ -11,6 +12,7 @@ export const lefApi = {
       password: password,
     });
   },
+  getUser: (token) => apiRequest("/user/get", {}, true),
 
   // REGIONS
   getRegionData: (regionId) => apiRequest("/region/get", { _id: regionId }),
@@ -103,7 +105,7 @@ const apiRequest = (path, body, secure = false, method = "post") => {
           Authorization: `Bearer ${token}`,
         }),
     },
-    data: body,
+    data: { ...body, ...(secure && { userId: getCurrentUserId() }) },
   };
   return axios(config);
 };

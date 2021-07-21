@@ -18,12 +18,13 @@ import { getCityPath } from "./MainRouting";
 import { withRouter } from "react-router";
 import { LefSpinner } from "./shared/LefSpinner";
 
-const ResultPage = ({ history }) => {
+const ResultPage = ({ history, location }) => {
   const dispatch = useDispatch();
   const userIsAdmin =
     useSelector((state) => state.auth.authState) === "loggedIn";
-  const [editMode, setEditMode] = useState(false);
   const { regionId } = useParams();
+  const { state = {} } = location;
+  const [editMode, setEditMode] = useState(state.startInEditMode);
 
   useEffect(() => {
     if (regionId) {
