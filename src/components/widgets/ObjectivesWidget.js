@@ -130,7 +130,7 @@ export const ObjectivesWidget = (props) => {
         return (
           <div
             key={objective._id}
-            className={"p-4 text-left"}
+            className={`text-left ${!huge ? "p-1" : ""}`}
             style={huge ? { minWidth: 600 } : { margin: 25 }}
           >
             <div

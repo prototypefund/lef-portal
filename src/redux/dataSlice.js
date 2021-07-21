@@ -1,24 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { lefApi } from "../api/lefApi";
 
+const updateRegionInArray = (state, action) => {
+  const currentRegionIndex = state.regionData.findIndex(
+    (r) => r._id === action.payload.regionId
+  );
+  if (currentRegionIndex > -1) {
+    state.regionData[currentRegionIndex] = { ...action.payload.data };
+  } else {
+    state.regionData.push({ ...action.payload.data });
+  }
+};
+
 const dataSlice = createSlice({
   name: "data",
   initialState: {
-    data: {},
     regionData: [],
-    objectiveData: {},
     objectivesForRegion: {},
     actionsForRegion: {},
   },
   reducers: {
-    setLocalData(state, action) {
-      state.data = action.payload;
-    },
     setRegionData(state, action) {
-      state.regionData[action.payload.regionId] = action.payload.data;
+      updateRegionInArray(state, action);
     },
-    setObjectiveData(state, action) {
-      state.objectiveData[action.payload.objectiveId] = action.payload.data;
+    updateRegionData(state, action) {
+      updateRegionInArray(state, action);
     },
     updateObjectiveForRegion(state, action) {
       const { payload } = action;
@@ -96,14 +102,13 @@ const dataSlice = createSlice({
 });
 
 export const {
-  setLocalData,
   setRegionData,
   replaceAllRegionData,
-  setObjectiveData,
   setObjectivesForRegion,
   setActionsForRegion,
   updateActionForRegion,
   updateObjectiveForRegion,
+  updateRegionData,
   addObjectiveForRegion,
   addActionForRegion,
   removeObjectiveForRegion,
@@ -152,6 +157,16 @@ export const requestCreateRegion = (name, postalcodes) => (dispatch) => {
   lefApi
     .createRegion(name, postalcodes)
     .then((response) => console.debug(response));
+};
+
+export const requestUpdateRegion = (updatedRegion) => (dispatch) => {
+  lefApi
+    .updateRegion(updatedRegion)
+    .then((response) =>
+      dispatch(
+        updateRegionData({ regionId: updatedRegion._id, data: response.data })
+      )
+    );
 };
 
 // OBJECTIVES

@@ -10,11 +10,12 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { useState } from "react";
 import { createTheme } from "./components/theme/themes"; // requires a loader
 import { ThemeContext } from "./components/theme/ThemeContext";
+import { notifier } from "./redux/middleware/notifier";
 
 const logger = createLogger({
   timestamp: true,
 });
-const middleware = [...getDefaultMiddleware(), logger];
+const middleware = [...getDefaultMiddleware(), logger, notifier];
 const store = configureStore({
   reducer: reducers,
   middleware,

@@ -1,23 +1,19 @@
 import React, { useContext } from "react";
-import { Col, Row } from "react-bootstrap";
-import * as PropTypes from "prop-types";
-import { Heading } from "../shared/Heading";
+import { Form, FormCheck, Row } from "react-bootstrap";
 import { ThemeContext } from "../theme/ThemeContext";
+import { Question } from "./Question";
+import { useDispatch } from "react-redux";
+import { requestUpdateRegion } from "../../redux/dataSlice";
 
 const textColor = "#222";
 
-const Question = (props) => (
-  <Col>
-    <Heading
-      size={"h4"}
-      style={{ whiteSpace: "pre-wrap", lineHeight: "2.2rem" }}
-      text={props.question}
-    />
-  </Col>
-);
-
-Question.propTypes = { question: PropTypes.any };
-export const ResultEntry = ({ question, component }) => {
+export const ResultEntry = ({
+  question,
+  component,
+  editMode,
+  active,
+  onToggleActive,
+}) => {
   const { theme } = useContext(ThemeContext);
   const { COLOR_TEXT_BRIGHT, LIGHT_BACKGROUND_COLOR } = theme.colors;
   return (
@@ -25,18 +21,30 @@ export const ResultEntry = ({ question, component }) => {
       <Row>
         <Question question={question} />
       </Row>
-      <div
-        className={"d-flex align-items-center mt-2 alert p-sm-1 p-md-4"}
-        style={{
-          paddingRight: 0,
-          border: `2px solid ${COLOR_TEXT_BRIGHT}`,
-          backgroundColor: LIGHT_BACKGROUND_COLOR,
-          color: textColor,
-          overflow: "auto",
-        }}
-      >
-        {component}
-      </div>
+      {editMode && (
+        <div onClick={(event) => onToggleActive(!active)}>
+          <FormCheck
+            type={"switch"}
+            className={"mt-2 mb-3"}
+            checked={active}
+            label={"Widget anzeigen"}
+          />
+        </div>
+      )}
+      {active && (
+        <div
+          className={"d-flex align-items-center mt-2 alert p-sm-1 p-md-4"}
+          style={{
+            paddingRight: 0,
+            border: `2px solid ${COLOR_TEXT_BRIGHT}`,
+            backgroundColor: LIGHT_BACKGROUND_COLOR,
+            color: textColor,
+            overflow: "auto",
+          }}
+        >
+          {component}
+        </div>
+      )}
       <hr style={{ margin: 50 }} />
     </>
   );

@@ -1,12 +1,20 @@
 import { Nav, Navbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import LefLogo from "../assets/lef_logo.jpeg";
 
 export function Header({ pages, loggedIn }) {
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Navbar.Brand>
         <Link to={"/"} className={"navbar-brand"} style={{ fontSize: 25 }}>
-          {"Local Emission Framework"}
+          <img
+            src={LefLogo}
+            alt={"LEF Logo"}
+            style={{ height: 40, marginBottom: 7, marginRight: 15 }}
+          />{" "}
+          <span className={"d-none d-sm-inline"}>
+            {"Local Emission Framework"}
+          </span>
         </Link>
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />

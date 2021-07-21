@@ -38,6 +38,7 @@ export function SignInPage() {
               <Form.Label>Passwort</Form.Label>
               <Form.Control
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && onFinish()}
                 type={"password"}
                 placeholder={"Ihr Passwort"}
               />

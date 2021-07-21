@@ -5,10 +5,14 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { EditButton } from "./shared/EditButton";
 import { useParams } from "react-router-dom";
-import { getRegionDataFromState, requestGetRegion } from "../redux/dataSlice";
+import {
+  getRegionDataFromState,
+  requestGetRegion,
+  requestUpdateRegion,
+} from "../redux/dataSlice";
 import { WidgetContainer } from "./WidgetContainer";
 import { WIDGETS } from "./widgets/getWidget";
-import { Typeahead } from "react-bootstrap-typeahead";
+import { Hint, Input, Typeahead } from "react-bootstrap-typeahead";
 import { getTypeAheadOptions } from "./StartPage";
 import { getCityPath } from "./MainRouting";
 import { withRouter } from "react-router";
@@ -35,7 +39,7 @@ const ResultPage = ({ history }) => {
 
   const widgets = Object.keys(WIDGETS)
     .map((key) => WIDGETS[key])
-    .filter((widget) => !widget.flag || regionData[widget.flag])
+    .filter((widget) => editMode || !widget.flag || regionData[widget.flag])
     .map((widget) => ({
       component: (
         <WidgetContainer
@@ -45,6 +49,7 @@ const ResultPage = ({ history }) => {
         />
       ),
       question: widget.question,
+      flag: widget.flag,
     }));
 
   let typeAheadOptions = getTypeAheadOptions(regions);
@@ -63,6 +68,15 @@ const ResultPage = ({ history }) => {
       <Row>
         <Col className={"mb-1"} xs={9}>
           <Typeahead
+            /*renderInput={({ inputRef, ...inputProps }) => (
+              <Hint
+                shouldSelect={(shouldSelect, e) =>
+                  e.keyCode === 13 || shouldSelect
+                }
+              >
+                <Input {...inputProps} ref={inputRef} />
+              </Hint>
+            )}*/
             onFocus={(event) => event.target.select()}
             onChange={(selectedValues) =>
               selectedValues.length > 0 &&
@@ -73,7 +87,7 @@ const ResultPage = ({ history }) => {
                 event.target.blur();
               }
             }}
-            selectHintOnEnter
+            // selectHintOnEnter
             defaultSelected={selectedRegion ? [selectedRegion] : []}
             id={"citySelection"}
             placeholder={"Stadt / Unternehmen"}
@@ -125,6 +139,13 @@ const ResultPage = ({ history }) => {
                 key={k}
                 question={entry.question.replaceAll("%s", name)}
                 component={entry.component}
+                editMode={editMode}
+                active={regionData[entry.flag]}
+                onToggleActive={(result) =>
+                  dispatch(
+                    requestUpdateRegion({ ...regionData, [entry.flag]: result })
+                  )
+                }
               />
             ))
           ) : (

@@ -93,7 +93,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
       </div>
       <div
         className="p-3"
-        style={{ position: "absolute", bottom: 10, right: 10 }}
+        style={{ position: "fixed", bottom: 10, right: 10, zIndex: 2000 }}
       >
         {toasts.map((toast) => (
           <Toast key={toast.id}>

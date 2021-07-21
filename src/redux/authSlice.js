@@ -45,10 +45,3 @@ export const requestSignOut = () => (dispatch) => {
   localStorage.clear();
   dispatch(updateAuthState({ authState: "loggedOut" }));
 };
-
-export const requestGetObjective = (objectiveId) => (dispatch) => {
-  lefApi.getObjectiveById(objectiveId);
-  /*.then((response) =>
-      dispatch(setObjectiveData({ objectiveId, data: response.data }))
-    );*/
-};
