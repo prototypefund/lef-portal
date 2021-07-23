@@ -18,12 +18,18 @@ import { getCityPath } from "./MainRouting";
 import { withRouter } from "react-router";
 import { LefSpinner } from "./shared/LefSpinner";
 import { AUTH_STATES } from "../redux/authSlice";
+import { isArray } from "chart.js/helpers";
 
 const ResultPage = ({ history, location }) => {
   const dispatch = useDispatch();
-  const userIsAdmin =
+  const loggedIn =
     useSelector((state) => state.auth.authState) === AUTH_STATES.loggedIn;
+  const userData = useSelector((state) => state.auth.user);
   const { regionId } = useParams();
+  const userIsAdmin =
+    loggedIn &&
+    isArray(userData.regionIds) &&
+    userData.regionIds.includes(regionId);
   const { state = {} } = location;
   const [editMode, setEditMode] = useState(state.startInEditMode);
 
