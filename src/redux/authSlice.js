@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { lefApi } from "../api/lefApi";
+import { addNotificationMessage } from "./notificationSlice";
 
 let localUserId = "";
 
@@ -44,11 +45,15 @@ export const requestSignIn = (username, password) => (dispatch) => {
       dispatch(updateAuthState({ authState: "loggedIn" }));
     })
     .catch(function (error) {
+      const { response = {} } = error;
+      const { data = {} } = response;
+      const { error: errorText } = data;
       dispatch(
         updateAuthState({
           authState: "loggedOut",
           message:
-            error && error.message ? error.message : "Ungültige Anmeldedaten.",
+            errorText ||
+            "Es konnte keine Verbindung hergestellt werden. Bitte prüfen Sie Ihre Internetverbindung.",
         })
       );
     });
@@ -58,4 +63,15 @@ export const requestSignOut = () => (dispatch) => {
   localStorage.setItem("token", null);
   localStorage.clear();
   dispatch(updateAuthState({ authState: "loggedOut" }));
+};
+
+export const requestAddRegionToAccount = (regionId, message) => (dispatch) => {
+  // TODO send request to LEF team, then
+  dispatch(
+    addNotificationMessage(
+      "Antrag wurde weitergeleitet.",
+      "Ihr Antrag auf Hinzufügen einer Region wurde dem LEF-Team übermittelt. " +
+        "Nach Prüfung wird die Region Ihrem Account hinzugefügt. Dies kann einige Tage dauern."
+    )
+  );
 };

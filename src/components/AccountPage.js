@@ -1,131 +1,15 @@
 import { Heading } from "./shared/Heading";
-import {
-  Button,
-  ButtonGroup,
-  Card,
-  CardGroup,
-  Col,
-  Form,
-  Row,
-} from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { Button, Card, CardGroup, Col, Form, Row } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import EmbeddingWizard from "./embedding/EmbeddingWizard";
-import { useEffect, useState } from "react";
-import { LefModal } from "./shared/LefModal";
-import * as PropTypes from "prop-types";
-
-function PasswordChangeDialog(props) {
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-
-  useEffect(() => {
-    setOldPassword("");
-    setNewPassword("");
-  }, [props.show]);
-  return (
-    <LefModal
-      show={props.show}
-      buttons={[
-        { label: "Abbrechen", onClick: props.onCancel, variant: "secondary" },
-        {
-          label: "Ok",
-          onClick: () => props.onSubmit(oldPassword, newPassword),
-        },
-      ]}
-      title={"Passwort ändern"}
-      content={
-        <>
-          <Form.Group controlId={"currentPassword"} as={Col}>
-            <Form.Label>Aktuelles Passwort</Form.Label>
-            <Form.Control
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-              type={"password"}
-              placeholder={"Aktuelles Passwort"}
-            />
-          </Form.Group>
-          <Form.Group controlId={"newPassword"} as={Col}>
-            <Form.Label>Neues Passwort</Form.Label>
-            <Form.Control
-              onChange={(e) => setNewPassword(e.target.value)}
-              value={newPassword}
-              type={"password"}
-              placeholder={"Neues Passwort"}
-            />
-          </Form.Group>
-        </>
-      }
-    />
-  );
-}
-
-PasswordChangeDialog.propTypes = {
-  show: PropTypes.bool,
-  onSubmit: PropTypes.func,
-  onCancel: PropTypes.func,
-};
-
-function AddRegionDialog({ show, onCancel, onSubmit }) {
-  const [selectedRegionId, setSelectedRegionId] = useState("");
-  const [message, setMessage] = useState("");
-  const allRegions = useSelector((state) => state.data.regionData);
-
-  useEffect(() => {
-    setSelectedRegionId("");
-    setMessage("");
-  }, [show]);
-  return (
-    <LefModal
-      show={show}
-      buttons={[
-        { label: "Abbrechen", onClick: onCancel, variant: "secondary" },
-        {
-          label: "Ok",
-          onClick: () => onSubmit(selectedRegionId, message),
-        },
-      ]}
-      title={"Passwort ändern"}
-      content={
-        <>
-          <Form.Group controlId={"selectRegion"} as={Col}>
-            <Form.Label>Region auswählen</Form.Label>
-            <Form.Control
-              as="select"
-              // defaultValue={pleaseChoose}
-              value={selectedRegionId}
-              onChange={(e) => setSelectedRegionId(e.target.value)}
-            >
-              {allRegions.map((region) => (
-                <option key={region._id} value={region._id}>
-                  {region.name}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId={"message"} as={Col}>
-            <Form.Label>Nachricht</Form.Label>
-            <Form.Control
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              as={"textarea"}
-              style={{ height: 150 }}
-              placeholder={"Nachricht"}
-            />
-          </Form.Group>
-        </>
-      }
-    />
-  );
-}
-
-AddRegionDialog.propTypes = {
-  show: PropTypes.bool,
-  onSubmit: PropTypes.func,
-  onCancel: PropTypes.func,
-};
+import { useState } from "react";
+import { PasswordChangeDialog } from "./accountPageComponents/PasswordChangeDialog";
+import { AddRegionDialog } from "./accountPageComponents/AddRegionDialog";
+import { requestAddRegionToAccount } from "../redux/authSlice";
 
 export const AccountPage = ({}) => {
+  const dispatch = useDispatch();
   const regions = useSelector((state) => state.data.regionData);
   const userData = useSelector((state) => state.auth.user) || {};
   const { username: userName, email, regionIds = [] } = userData;
@@ -198,13 +82,13 @@ export const AccountPage = ({}) => {
                         </div>
                       </Card.Text>
                       <Row className={"ml-0 mt-4"}>
-                        <Button
+                        {/*<Button
                           size={"sm"}
                           variant={"secondary"}
                           className={"mr-2"}
                         >
                           Entfernen
-                        </Button>
+                        </Button>*/}
                         <Button size={"sm"}>
                           <Link
                             className={"navbar text-decoration-none"}
@@ -273,7 +157,7 @@ export const AccountPage = ({}) => {
         show={showAddRegionDialog}
         onSubmit={(regionId, message) => {
           setShowAddRegionDialog(false);
-          // TODO requestAddRegion
+          dispatch(requestAddRegionToAccount(regionId, message));
         }}
         onCancel={() => setShowAddRegionDialog(false)}
       />
