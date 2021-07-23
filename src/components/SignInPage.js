@@ -1,6 +1,6 @@
 import { withRouter } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { requestSignIn } from "../redux/authSlice";
+import { AUTH_STATES, requestSignIn } from "../redux/authSlice";
 import { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { Heading } from "./shared/Heading";
@@ -13,7 +13,7 @@ const SignInPage = ({ history }) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const loggedIn = authState === "loggedIn";
+  const loggedIn = authState === AUTH_STATES.loggedIn;
 
   const onFinish = () => {
     dispatch(requestSignIn(email, password));

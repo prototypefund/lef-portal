@@ -12,7 +12,7 @@ export const lefApi = {
       password: password,
     });
   },
-  getUser: (token) => apiRequest("/user/get", {}, true),
+  getUser: () => apiRequest("/user/get", {}, true),
 
   // REGIONS
   getRegionData: (regionId) => apiRequest("/region/get", { _id: regionId }),
@@ -81,6 +81,7 @@ export const lefApi = {
 
   getClimateChart: (weatherStationId, year, months) =>
     apiRequest("/climatechart/get", { weatherStationId, year, months }),
+  getAllClimateStations: () => apiRequest("/XYZ", {}),
 
   getVotingData: (votingId, districtId, districtName) =>
     apiRequest("/voting/get", { _id: votingId, districtId, districtName }),
@@ -92,6 +93,9 @@ const apiRequest = (path, body, secure = false, method = "post") => {
   let token = null;
   if (secure) {
     token = getCurrentUserToken();
+    if (!token) {
+      return Promise.reject({ error: "tokenMissing" });
+    }
   }
   console.debug("ApiRequest:", path, body, token);
   const config = {

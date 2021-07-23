@@ -8,12 +8,17 @@ import { SignUpPage } from "./SignUpPage";
 import { useDispatch, useSelector } from "react-redux";
 import { AccountPage } from "./AccountPage";
 import ProtectedRoute from "./ProtectedRoute";
-import { requestGetUser, requestSignOut } from "../redux/authSlice";
+import {
+  AUTH_STATES,
+  requestGetUser,
+  requestSignOut,
+} from "../redux/authSlice";
 import { useEffect } from "react";
 import { requestGetAllRegions } from "../redux/dataSlice";
 import { Header } from "./Header";
-import { Toast } from "react-bootstrap";
+import { Row, Toast } from "react-bootstrap";
 import { WidgetEmbeddingPage } from "./WidgetEmbeddingPage";
+import { LefModal } from "./shared/LefModal";
 
 export const getCityPath = (city) => `/result/${city}`;
 export const PATHS = {
@@ -29,7 +34,8 @@ const MainRouting = ({ location = {}, history = {} }) => {
   const dispatch = useDispatch();
   const authStatus = useSelector((state) => state.auth.authState);
   const toasts = useSelector((state) => state.notifications);
-  const loggedIn = authStatus === "loggedIn";
+  const loggedIn = authStatus === AUTH_STATES.loggedIn;
+  const requestLogIn = authStatus === AUTH_STATES.logInRequest;
 
   useEffect(() => {
     dispatch(requestGetAllRegions());
@@ -42,6 +48,12 @@ const MainRouting = ({ location = {}, history = {} }) => {
   }, [authStatus, dispatch]);
 
   const pages = [
+    /*{
+      id: "1",
+      label: "Token löschen",
+      action: () => localStorage.removeItem("token"),
+      button: true,
+    },*/
     {
       id: "3",
       label: "Anmelden",
@@ -120,6 +132,22 @@ const MainRouting = ({ location = {}, history = {} }) => {
           </Toast>
         ))}
       </div>
+
+      {/*
+      <LefModal
+        show={requestLogIn}
+        title={"Erneut Einloggen"}
+        content={
+          <Row>
+            <p>
+              Sie wurden aufgrund längerer Inaktivität ausgeloggt. Bitte loggen
+              Sie sich erneut ein, um fortzufahren.
+            </p>
+            <SignInPage />
+          </Row>
+        }
+      />
+*/}
     </div>
   );
 };

@@ -12,16 +12,17 @@ import {
 } from "../redux/dataSlice";
 import { WidgetContainer } from "./WidgetContainer";
 import { WIDGETS } from "./widgets/getWidget";
-import { Hint, Input, Typeahead } from "react-bootstrap-typeahead";
+import { Typeahead } from "react-bootstrap-typeahead";
 import { getTypeAheadOptions } from "./StartPage";
 import { getCityPath } from "./MainRouting";
 import { withRouter } from "react-router";
 import { LefSpinner } from "./shared/LefSpinner";
+import { AUTH_STATES } from "../redux/authSlice";
 
 const ResultPage = ({ history, location }) => {
   const dispatch = useDispatch();
   const userIsAdmin =
-    useSelector((state) => state.auth.authState) === "loggedIn";
+    useSelector((state) => state.auth.authState) === AUTH_STATES.loggedIn;
   const { regionId } = useParams();
   const { state = {} } = location;
   const [editMode, setEditMode] = useState(state.startInEditMode);

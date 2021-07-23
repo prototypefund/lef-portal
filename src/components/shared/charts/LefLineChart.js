@@ -3,14 +3,24 @@ import React, { useContext } from "react";
 import { ThemeContext } from "../../theme/ThemeContext";
 
 const options = {
+  responsive: true,
   scales: {
-    yAxes: [
-      {
-        ticks: {
-          beginAtZero: true,
-        },
+    y1: {
+      type: "linear",
+      position: "left",
+      display: true,
+      ticks: {
+        beginAtZero: true,
       },
-    ],
+    },
+    y2: {
+      type: "linear",
+      display: true,
+      position: "right",
+      grid: {
+        drawOnChartArea: false,
+      },
+    },
   },
 };
 
@@ -29,6 +39,7 @@ export function LefLineChart({ data }) {
             borderColor: color,
             label: entry.label,
             data: entry.data,
+            yAxisID: entry.yAxisID,
           };
         }),
       }}

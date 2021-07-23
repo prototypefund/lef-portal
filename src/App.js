@@ -11,11 +11,12 @@ import { useState } from "react";
 import { createTheme } from "./components/theme/themes"; // requires a loader
 import { ThemeContext } from "./components/theme/ThemeContext";
 import { notifier } from "./redux/middleware/notifier";
+import { apiMiddleware } from "./redux/middleware/apiMiddleware";
 
 const logger = createLogger({
   timestamp: true,
 });
-const middleware = [...getDefaultMiddleware(), logger, notifier];
+const middleware = [...getDefaultMiddleware(), logger, notifier, apiMiddleware];
 const store = configureStore({
   reducer: reducers,
   middleware,

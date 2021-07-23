@@ -28,6 +28,7 @@ export const ResultEntry = ({
             className={"mt-2 mb-3"}
             checked={active}
             label={"Widget anzeigen"}
+            onChange={() => {}}
           />
         </div>
       )}

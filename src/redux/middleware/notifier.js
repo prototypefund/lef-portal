@@ -4,8 +4,6 @@ import {
   addObjectiveForRegion,
   removeActionForRegion,
   removeObjectiveForRegion,
-  requestUpdateRegion,
-  setRegionData,
   updateActionForRegion,
   updateObjectiveForRegion,
   updateRegionData,

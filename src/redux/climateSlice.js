@@ -3,15 +3,25 @@ import { lefApi } from "../api/lefApi";
 
 const climateSlice = createSlice({
   name: "weather",
-  initialState: {},
+  initialState: {
+    singleWeatherStations: {},
+    weatherStationList: {},
+  },
   reducers: {
     setClimateChartDataForWeatherStation(state, action) {
-      state[action.payload.weatherStationId] = action.payload.data;
+      state.singleWeatherStations[action.payload.weatherStationId] =
+        action.payload.data;
+    },
+    setClimateStationsList(state, action) {
+      state.weatherStationList = action.payload.data;
     },
   },
 });
 
-export const { setClimateChartDataForWeatherStation } = climateSlice.actions;
+export const {
+  setClimateChartDataForWeatherStation,
+  setClimateStationsList,
+} = climateSlice.actions;
 
 export default climateSlice.reducer;
 
@@ -28,5 +38,11 @@ export const requestGetClimateDataForRegion = (
         data,
       })
     );
+  });
+};
+
+export const requestGetAllClimateStations = () => (dispatch) => {
+  lefApi.getAllClimateStations().then((response) => {
+    return dispatch(setClimateStationsList(response.data));
   });
 };
