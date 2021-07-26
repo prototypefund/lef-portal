@@ -6,7 +6,7 @@ import { Button, Form } from "react-bootstrap";
 import { Heading } from "./shared/Heading";
 import { PATHS } from "./MainRouting";
 
-const SignInPage = ({ history }) => {
+const SignInPage = ({ history, disableRedirect = false }) => {
   const dispatch = useDispatch();
   const authMessage = useSelector((state) => state.auth.message);
   const authState = useSelector((state) => state.auth.authState);
@@ -20,7 +20,7 @@ const SignInPage = ({ history }) => {
   };
 
   useEffect(() => {
-    if (loggedIn) {
+    if (loggedIn && !disableRedirect) {
       history.push(PATHS.ACCOUNT);
     }
   }, [authState]);

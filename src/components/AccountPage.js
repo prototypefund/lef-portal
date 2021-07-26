@@ -7,6 +7,7 @@ import { useState } from "react";
 import { PasswordChangeDialog } from "./accountPageComponents/PasswordChangeDialog";
 import { AddRegionDialog } from "./accountPageComponents/AddRegionDialog";
 import { requestAddRegionToAccount } from "../redux/authSlice";
+import { lefApi } from "../api/lefApi";
 
 export const AccountPage = ({}) => {
   const dispatch = useDispatch();
@@ -100,6 +101,9 @@ export const AccountPage = ({}) => {
                             Bearbeiten
                           </Link>
                         </Button>
+                        {/*<Button onClick={() => lefApi.createClimateChart()}>
+                          CREATE
+                        </Button>*/}
                       </Row>
                     </Card.Body>
                     {/* <Card.Footer> <small className="text-muted"> </small> </Card.Footer>*/}

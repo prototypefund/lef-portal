@@ -2,8 +2,6 @@ import React, { useContext } from "react";
 import { Form, FormCheck, Row } from "react-bootstrap";
 import { ThemeContext } from "../theme/ThemeContext";
 import { Question } from "./Question";
-import { useDispatch } from "react-redux";
-import { requestUpdateRegion } from "../../redux/dataSlice";
 
 const textColor = "#222";
 

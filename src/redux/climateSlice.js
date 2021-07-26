@@ -1,11 +1,21 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { lefApi } from "../api/lefApi";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { callApi, lefApi } from "../api/lefApi";
+
+export const fetchWeatherData = createAsyncThunk(
+  "weather/data",
+  async (id, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const response = await dispatch(callApi(() => lefApi.getClimateChart(id)));
+    return response;
+  }
+);
 
 const climateSlice = createSlice({
   name: "weather",
   initialState: {
     singleWeatherStations: {},
     weatherStationList: {},
+    isFetching: false,
   },
   reducers: {
     setClimateChartDataForWeatherStation(state, action) {
@@ -14,6 +24,15 @@ const climateSlice = createSlice({
     },
     setClimateStationsList(state, action) {
       state.weatherStationList = action.payload.data;
+    },
+  },
+  extraReducers: {
+    [fetchWeatherData.pending]: (state, action) => {
+      state.isFetching = true;
+    },
+    [fetchWeatherData.fulfilled]: (state, action) => {
+      state.isFetching = false;
+      state.singleWeatherStations[action.meta.arg] = action.payload.data;
     },
   },
 });
@@ -25,24 +44,8 @@ export const {
 
 export default climateSlice.reducer;
 
-export const requestGetClimateDataForRegion = (
-  weatherStationId,
-  year,
-  months
-) => (dispatch) => {
-  lefApi.getClimateChart(weatherStationId, year, months).then((response) => {
-    const { data = [] } = response;
-    return dispatch(
-      setClimateChartDataForWeatherStation({
-        weatherStationId,
-        data,
-      })
-    );
-  });
-};
-
 export const requestGetAllClimateStations = () => (dispatch) => {
   lefApi.getAllClimateStations().then((response) => {
-    return dispatch(setClimateStationsList(response.data));
+    return dispatch(setClimateStationsList({ data: response.data }));
   });
 };

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { lefApi } from "../api/lefApi";
+import { callApi, lefApi } from "../api/lefApi";
 import { addNotificationMessage } from "./notificationSlice";
 
 let localUserId = "";
@@ -35,15 +35,20 @@ const authSlice = createSlice({
 export const { updateAuthState, setUserData } = authSlice.actions;
 export default authSlice.reducer;
 
+export const handleApiError = (error) => (dispatch) => {
+  console.debug("ERROR", { error });
+  if (error.response.data === "Unauthorized")
+    dispatch(updateAuthState({ authState: AUTH_STATES.logInRequest }));
+};
+
 export const requestGetUser = () => (dispatch) => {
-  lefApi.getUser().then(
+  dispatch(callApi(() => lefApi.getUser())).then(
     (response) => {
       localUserId = response.data._id;
       return dispatch(setUserData({ user: response.data }));
     },
     (error) => {
       console.debug(error);
-      return dispatch(updateAuthState(AUTH_STATES.logInRequest));
     }
   );
 };

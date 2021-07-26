@@ -1,54 +1,36 @@
-import { Col, Container, Form, Row } from "react-bootstrap";
-import React, { useEffect } from "react";
+import {
+  Col,
+  Container,
+  Form,
+  FormCheck,
+  FormGroup,
+  FormLabel,
+  Row,
+} from "react-bootstrap";
+import React, { useEffect, useState } from "react";
 import { LefLineChart } from "../shared/charts/LefLineChart";
 import {
+  fetchWeatherData,
   requestGetAllClimateStations,
-  requestGetClimateDataForRegion,
 } from "../../redux/climateSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { Typeahead } from "react-bootstrap-typeahead";
+import { isArray } from "chart.js/helpers";
 import { requestUpdateRegion } from "../../redux/dataSlice";
-
-const fakeWeatherData = {
-  climateData: [
-    {
-      year: 2010,
-      monthlyData: [
-        {
-          month: 10,
-          temperatureMean: 13.4,
-          rainfall: 220,
-        },
-        {
-          month: 11,
-          temperatureMean: 12.8,
-          rainfall: 230,
-        },
-      ],
-    },
-    {
-      year: 2011,
-      monthlyData: [
-        {
-          month: 1,
-          temperatureMean: 13.2,
-          rainfall: 225,
-        },
-        {
-          month: 2,
-          temperatureMean: 13.8,
-          rainfall: 210,
-        },
-      ],
-    },
-  ],
-};
+import { LefSpinner } from "../shared/LefSpinner";
 
 export const ClimateWidget = ({ year, months, regionData, editMode }) => {
   const dispatch = useDispatch();
-  const { weatherStationId } = regionData;
+  const { weatherStations = [] } = regionData;
+  const [weatherStationId] = weatherStations;
+  const [showRainfall, setShowRainfall] = useState(true);
+  const [showTemperature, setShowTemperature] = useState(true);
+  const [startYearFilter, setStartYearFilter] = useState();
+  const [endYearFilter, setEndYearFilter] = useState();
   const allWeatherStations = useSelector(
     (state) => state.climate.weatherStationList
   );
+  const isFetching = useSelector((state) => state.climate.isFetching);
   const climateChart = useSelector(
     (state) => state.climate.singleWeatherStations[weatherStationId] || {}
   );
@@ -56,36 +38,52 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
   let temperatureMeans = [];
   let rainfalls = [];
   let labels = [];
-  yearlyData.forEach((yearData) => {
-    const { monthlyData = [], year } = yearData;
-    monthlyData.forEach((monthData) => {
-      const {
-        month: monthNumber,
-        rainfall,
-        temperatureMean,
-        // temperatureMaxMean,
-      } = monthData;
-      temperatureMeans.push(temperatureMean);
-      rainfalls.push(rainfall);
-      labels.push(`${year}|${monthNumber}`);
+  let yearlyDataSorted = [...yearlyData];
+  yearlyDataSorted = yearlyDataSorted.sort((a, b) => a.year - b.year);
+  yearlyDataSorted
+    .filter(
+      (data) => data.year >= startYearFilter && data.year <= endYearFilter
+    )
+    .forEach((yearData) => {
+      const { monthlyData = [], year } = yearData;
+      monthlyData.forEach((monthData) => {
+        const {
+          month: monthNumber,
+          rainfall,
+          temperatureMean,
+          // temperatureMaxMean,
+        } = monthData;
+        temperatureMeans.push(temperatureMean);
+        rainfalls.push(rainfall);
+        labels.push(`${year}|${monthNumber}`);
+      });
     });
-  });
 
+  const rainFallSet = {
+    label: "Niederschlag",
+    data: rainfalls,
+    yAxisID: "y1",
+  };
+  const temperatureSet = {
+    label: "Durchschnittstemperatur",
+    data: temperatureMeans,
+    yAxisID: "y2",
+  };
   const data = {
     labels,
-    datasets: [
-      {
-        label: "Niederschlag",
-        data: rainfalls,
-        yAxisID: "y1",
-      },
-      {
-        label: "Durchschnittstemperatur",
-        data: temperatureMeans,
-        yAxisID: "y2",
-      },
-    ],
+    datasets: [],
   };
+  if (showRainfall) data.datasets.push(rainFallSet);
+  if (showTemperature) data.datasets.push(temperatureSet);
+
+  const years = yearlyData.map((d) => d.year);
+  const minYear = Math.min(...years);
+  const maxYear = Math.max(...years);
+
+  useEffect(() => {
+    setStartYearFilter(minYear);
+    setEndYearFilter(maxYear);
+  }, [yearlyData.length]);
 
   useEffect(() => {
     if (editMode) {
@@ -95,9 +93,13 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
 
   useEffect(() => {
     if (weatherStationId) {
-      dispatch(requestGetClimateDataForRegion(weatherStationId, year, months));
+      // dispatch(requestGetClimateDataForRegion(weatherStationId, year, months));
+      dispatch(fetchWeatherData(weatherStationId));
     }
   }, [dispatch, months, year, weatherStationId]);
+  let sortedWeatherStationsArray = Object.keys(allWeatherStations)
+    .map((key) => allWeatherStations[key])
+    .sort((a, b) => (a.weatherStationName < b.weatherStationName ? -1 : 1));
   let SelectWeatherStation = (
     <>
       <Row className={"align-items-baseline"}>
@@ -105,25 +107,49 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
           <p>Wetterstation auswählen:</p>
         </Col>
         <Col sm={8}>
-          <Form.Control
+          <Typeahead
+            isLoading={allWeatherStations.length === 0}
+            // value={typeaheadText}
+            // open={typeaheadText.length > 0}
+            // onInputChange={(text) => setTypeaheadText(text)}
+            autoFocus
+            highlightOnlyResult
+            // style={{ width: "100%" }}
+            id={"weatherStationSelect"}
+            onChange={(values) =>
+              isArray(values) &&
+              values.length > 0 &&
+              dispatch(
+                requestUpdateRegion({
+                  ...regionData,
+                  weatherStations: [values[0].value],
+                })
+              )
+            }
+            placeholder={"Name der Wetterstation"}
+            options={sortedWeatherStationsArray.map((weatherStation) => ({
+              label: weatherStation.weatherStationName,
+              value: weatherStation._id,
+            }))}
+            emptyLabel={"Keine Ergebnisse."}
+          />
+          {/*<Form.Control
             as="select"
             onChange={(event) =>
               dispatch(
                 requestUpdateRegion({
                   ...regionData,
-                  weatherStationId: event.target.value,
+                  weatherStations: [event.target.value],
                 })
               )
             }
           >
-            {Object.keys(allWeatherStations)
-              .map((key) => allWeatherStations[key])
-              .map((weatherStation) => (
-                <option value={weatherStation._id}>
-                  {weatherStation.name}
-                </option>
-              ))}
-          </Form.Control>
+            {sortedWeatherStationsArray.map((weatherStation) => (
+              <option value={weatherStation._id}>
+                {weatherStation.weatherStationName}
+              </option>
+            ))}
+          </Form.Control>*/}
         </Col>
       </Row>
     </>
@@ -142,6 +168,8 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
           first > second ? "gesunken" : "gestiegen" }.`}</p>
       </Col>*/}
       </Row>
+    ) : isFetching ? (
+      <LefSpinner />
     ) : (
       <p className={"text-center mt-2 alert alert-secondary"}>
         Keine Daten vorhanden.
@@ -149,7 +177,7 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
     );
 
   return (
-    <Container>
+    <Container {...(editMode && { style: { minHeight: 400 } })}>
       {editMode && SelectWeatherStation}
       {weatherStation && (
         <Row>
@@ -158,6 +186,66 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
           </Col>
         </Row>
       )}
+      {!isFetching && (
+        <>
+          <Form.Group controlId={"switchRainfall"}>
+            <FormCheck
+              type={"switch"}
+              className={"mt-2 mb-3"}
+              checked={showRainfall}
+              label={"Niederschlag anzeigen"}
+              onChange={() => setShowRainfall(!showRainfall)}
+            />
+          </Form.Group>
+          <FormGroup controlId={"switchTemperature"}>
+            <FormCheck
+              type={"switch"}
+              className={"mt-2 mb-3"}
+              checked={showTemperature}
+              label={"Durchschnittstemperatur anzeigen"}
+              onChange={() => setShowTemperature(!showTemperature)}
+            />
+          </FormGroup>
+          <Row>
+            <Col>
+              <FormGroup>
+                <FormLabel>{`Beginn: ${startYearFilter}`}</FormLabel>
+                <Form>
+                  <input
+                    min={minYear}
+                    max={maxYear}
+                    value={startYearFilter}
+                    onChange={(e) =>
+                      e.target.value <= endYearFilter &&
+                      setStartYearFilter(e.target.value)
+                    }
+                    className={"w-100"}
+                    type="range"
+                  />
+                </Form>
+              </FormGroup>
+            </Col>
+            <Col>
+              <FormGroup>
+                <FormLabel>{`Ende: ${endYearFilter}`}</FormLabel>
+                <Form>
+                  <input
+                    min={minYear}
+                    max={maxYear}
+                    onChange={(e) =>
+                      e.target.value >= startYearFilter &&
+                      setEndYearFilter(e.target.value)
+                    }
+                    value={endYearFilter}
+                    className={"w-100"}
+                    type="range"
+                  />
+                </Form>
+              </FormGroup>
+            </Col>
+          </Row>
+        </>
+      )}{" "}
       {ClimateChart}
     </Container>
   );

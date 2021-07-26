@@ -21,7 +21,7 @@ export const WIDGETS = {
   3: {
     name: "Wahlverhalten",
     question:
-      "Hat sich das Verhalten und die Einstellung der Bürger:innen in %s mit Hinblick auf den Klimaschutz in den letzten Jahren verändert?",
+      "Hat sich das Verhalten der Bürger:innen in %s mit Hinblick auf das Thema Klimaschutz in den letzten Jahren verändert?",
     component: VotingWidget,
     flag: "votingWidget",
   },

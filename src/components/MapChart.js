@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   ComposableMap,
   Geographies,
@@ -8,6 +8,7 @@ import {
 } from "react-simple-maps";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ThemeContext } from "./theme/ThemeContext";
+import { useSelector } from "react-redux";
 
 // const countries = "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
 const zipcodeAreas = require("../assets/plz-gebiete_simpl.json");
@@ -19,6 +20,7 @@ const defaultLat = 51.2;
 const MapChart = ({ lon, lat, regions, onRegionClick }) => {
   const { theme } = useContext(ThemeContext);
   const { COLOR_TEXT_BRIGHT, NAVIGATION_COLOR } = theme.colors;
+  const [hoveredRegion, setHoveredRegion] = useState(null);
   const allPostalcodes = regions
     .map((region) => region.postalcodes)
     .reduce((a, b) => [...a, ...b], []);
@@ -29,17 +31,25 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
     });
   });
 
-  const getStyle = (geo, allPostalcodes) => ({
-    fill: allPostalcodes.includes(geo.properties.plz)
-      ? NAVIGATION_COLOR
-      : COLOR_TEXT_BRIGHT,
-    outline: "#FFF",
-    stroke: "#646464",
-    strokeWidth: 0.1,
-    // strokeDasharray: "1,1",
-    strokeLinejoin: "round",
-    fillOpacity: 0.8,
-  });
+  const getStyle = (geo, allPostalcodes, geosRegion) => {
+    const isHovered =
+      hoveredRegion &&
+      geosRegion &&
+      geosRegion.postalcodes.includes(hoveredRegion);
+    return {
+      fill: isHovered
+        ? "#444"
+        : allPostalcodes.includes(geo.properties.plz)
+        ? NAVIGATION_COLOR
+        : COLOR_TEXT_BRIGHT,
+      outline: "#FFF",
+      stroke: isHovered ? "#444" : "#646464",
+      strokeWidth: 0.1,
+      // strokeDasharray: "1,1",
+      strokeLinejoin: "round",
+      fillOpacity: 0.8,
+    };
+  };
 
   const rotateLon = lon || defaultLon;
   const rotateLat = lat || defaultLat;
@@ -100,6 +110,7 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
                     }`}
                   </Tooltip>
                 );
+                const style = getStyle(geo, allPostalcodes, geosRegion);
                 return (
                   <OverlayTrigger
                     placement="right"
@@ -110,10 +121,13 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
                       key={geo.rsmKey}
                       geography={geo}
                       style={{
-                        default: getStyle(geo, allPostalcodes),
-                        pressed: getStyle(geo, allPostalcodes),
+                        default: style,
+                        hover: style,
+                        pressed: style,
                       }}
-                      onClick={(event) =>
+                      onMouseEnter={() => setHoveredRegion(geo.properties.plz)}
+                      onMouseLeave={() => setHoveredRegion(null)}
+                      onClick={() =>
                         geosRegion && onRegionClick(geosRegion._id)
                       }
                     />

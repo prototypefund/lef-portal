@@ -5,6 +5,7 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { ThemeContext } from "./theme/ThemeContext";
+import { LefSpinner } from "./shared/LefSpinner";
 // import { requestCreateRegion } from "../redux/dataSlice";
 
 export const getTypeAheadOptions = (regions) => {
@@ -23,6 +24,9 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
   const [coords, setCoords] = useState({});
   const [typeaheadText, setTypeaheadText] = useState("");
   const { longitude, latitude } = coords;
+  const isFetchingRegions = useSelector(
+    (state) => state.data.isFetchingAllRegions
+  );
   // const dispatch = useDispatch();
 
   const getLocation = () => {
@@ -88,7 +92,6 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
               <Col>
                 <Row className={"w-100"}>
                   <Typeahead
-                    // isLoading={regions.length === 0}
                     value={typeaheadText}
                     open={typeaheadText.length > 0}
                     onInputChange={(text) => setTypeaheadText(text)}
@@ -99,7 +102,9 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
                     onChange={(values) => onCitySelect(values[0].value)}
                     placeholder={"Stadt / Unternehmen"}
                     options={getTypeAheadOptions(regions)}
-                    emptyLabel={"Keine Ergebnisse."}
+                    emptyLabel={
+                      isFetchingRegions ? "Lade Daten.." : "Keine Ergebnisse."
+                    }
                   />
                 </Row>
                 <Row>
@@ -124,6 +129,21 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
               // style={{ minHeight: 600 }}
             >
               <div className={"d-none d-md-block"}>
+                {isFetchingRegions && (
+                  <Container
+                    style={{ top: "50%", fontSize: 12 }}
+                    className={
+                      "position-absolute w-100 d-flex align-items-center flex-wrap"
+                    }
+                  >
+                    <Row xs={12} className={"w-100"}>
+                      <LefSpinner />
+                    </Row>
+                    <Row className={"w-100 justify-content-center"}>
+                      Wird geladen..
+                    </Row>
+                  </Container>
+                )}
                 <div
                   style={{ bottom: 0, fontSize: 12 }}
                   className={

@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { lefApi } from "../api/lefApi";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { callApi, lefApi } from "../api/lefApi";
 
 const updateRegionInArray = (state, action) => {
   const currentRegionIndex = state.regionData.findIndex(
@@ -12,12 +12,18 @@ const updateRegionInArray = (state, action) => {
   }
 };
 
+export const fetchAllRegions = createAsyncThunk("regions/getAll", async () => {
+  const response = await lefApi.getAllRegions();
+  return response;
+});
+
 const dataSlice = createSlice({
   name: "data",
   initialState: {
     regionData: [],
     objectivesForRegion: {},
     actionsForRegion: {},
+    isFetchingAllRegions: false,
   },
   reducers: {
     setRegionData(state, action) {
@@ -99,6 +105,15 @@ const dataSlice = createSlice({
       }
     },
   },
+  extraReducers: {
+    [fetchAllRegions.pending]: (state, action) => {
+      state.isFetchingAllRegions = true;
+    },
+    [fetchAllRegions.fulfilled]: (state, action) => {
+      state.isFetchingAllRegions = false;
+      state.regionData = action.payload.data;
+    },
+  },
 });
 
 export const {
@@ -133,12 +148,6 @@ export const requestGetRegion = (regionId) => (dispatch) => {
     );
 };
 
-export const requestGetAllRegions = () => (dispatch) => {
-  lefApi
-    .getAllRegions()
-    .then((response) => dispatch(replaceAllRegionData(response.data)));
-};
-
 export const requestGetAllObjectivesForRegion = (regionId) => (dispatch) => {
   lefApi.getAllObjectivesForRegion(regionId).then((response) => {
     dispatch(setObjectivesForRegion({ regionId, objectives: response.data }));
@@ -160,13 +169,16 @@ export const requestCreateRegion = (name, postalcodes) => (dispatch) => {
 };
 
 export const requestUpdateRegion = (updatedRegion) => (dispatch) => {
-  lefApi
-    .updateRegion(updatedRegion)
-    .then((response) =>
+  dispatch(callApi(() => lefApi.updateRegion(updatedRegion))).then(
+    (response) => {
       dispatch(
         updateRegionData({ regionId: updatedRegion._id, data: response.data })
-      )
-    );
+      );
+    },
+    (error) => {
+      console.debug(error);
+    }
+  );
 };
 
 // OBJECTIVES
@@ -191,17 +203,19 @@ export const requestCreateObjectiveForRegion = (
 };
 
 export const requestUpdateObjective = (updatedObjective) => (dispatch) => {
-  lefApi.updateObjective(updatedObjective).then((response) => {
-    const { data = {} } = response;
-    const { regionId, _id } = data;
-    return dispatch(
-      updateObjectiveForRegion({
-        regionId: regionId,
-        objectiveId: _id,
-        objective: data,
-      })
-    );
-  });
+  dispatch(callApi(() => lefApi.updateObjective(updatedObjective))).then(
+    (response) => {
+      const { data = {} } = response;
+      const { regionId, _id } = data;
+      return dispatch(
+        updateObjectiveForRegion({
+          regionId: regionId,
+          objectiveId: _id,
+          objective: data,
+        })
+      );
+    }
+  );
 };
 
 export const requestDeleteObjective = (objective) => (dispatch) => {

@@ -14,11 +14,11 @@ import {
   requestSignOut,
 } from "../redux/authSlice";
 import { useEffect } from "react";
-import { requestGetAllRegions } from "../redux/dataSlice";
 import { Header } from "./Header";
-import { Row, Toast } from "react-bootstrap";
+import { Col, Row, Toast } from "react-bootstrap";
 import { WidgetEmbeddingPage } from "./WidgetEmbeddingPage";
 import { LefModal } from "./shared/LefModal";
+import { fetchAllRegions } from "../redux/dataSlice";
 
 export const getCityPath = (city) => `/result/${city}`;
 export const PATHS = {
@@ -38,13 +38,13 @@ const MainRouting = ({ location = {}, history = {} }) => {
   const requestLogIn = authStatus === AUTH_STATES.logInRequest;
 
   useEffect(() => {
-    dispatch(requestGetAllRegions());
+    dispatch(fetchAllRegions());
   }, [dispatch]);
 
   useEffect(() => {
-    if (loggedIn) {
-      dispatch(requestGetUser());
-    }
+    // if (loggedIn) {
+    dispatch(requestGetUser());
+    //}
   }, [authStatus, dispatch]);
 
   const pages = [
@@ -133,21 +133,21 @@ const MainRouting = ({ location = {}, history = {} }) => {
         ))}
       </div>
 
-      {/*
       <LefModal
         show={requestLogIn}
         title={"Erneut Einloggen"}
         content={
-          <Row>
-            <p>
+          <Col className={"m-2 pr-4"}>
+            <Row>
               Sie wurden aufgrund längerer Inaktivität ausgeloggt. Bitte loggen
               Sie sich erneut ein, um fortzufahren.
-            </p>
-            <SignInPage />
-          </Row>
+            </Row>
+            <Row className={"mt-4"}>
+              <SignInPage disableRedirect />
+            </Row>
+          </Col>
         }
       />
-*/}
     </div>
   );
 };

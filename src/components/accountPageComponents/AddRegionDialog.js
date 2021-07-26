@@ -22,6 +22,7 @@ export function AddRegionDialog({ show, onCancel, onSubmit }) {
   }, [show]);
   return (
     <LefModal
+      size={"lg"}
       show={show}
       buttons={[
         { label: "Abbrechen", onClick: onCancel, variant: "secondary" },
@@ -52,7 +53,7 @@ export function AddRegionDialog({ show, onCancel, onSubmit }) {
             <p>
               {"Um eine Region (Kommune, Kreis) zu ihrem Account hinzuzufügen, müssen Sie eine berechtigte " +
                 "Vertretungsperson dieser Region sein. Bitte geben Sie nachfolgend einen Link zu einer Website an, " +
-                "aus der ersichtlich wird, dass Sie eine berechtigte Vertretungsperson Ihrer Kommune bzw. Ihres Kreises sind."}
+                "aus der ersichtlich wird, dass Sie eine berechtigte Vertretungsperson Ihrer Kommune bzw. Ihres Kreises sind. Die E-Mailadresse auf der Website muss mit der E-Mailadresse Ihres Kontos hier übereinstimmen."}
             </p>
             <Form.Label>Nachricht</Form.Label>
             <Form.Control

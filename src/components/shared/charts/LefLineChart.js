@@ -1,32 +1,42 @@
 import { Line } from "react-chartjs-2";
 import React, { useContext } from "react";
 import { ThemeContext } from "../../theme/ThemeContext";
+import { isArray } from "chart.js/helpers";
 
-const options = {
-  responsive: true,
-  scales: {
-    y1: {
-      type: "linear",
-      position: "left",
-      display: true,
-      ticks: {
-        beginAtZero: true,
-      },
-    },
-    y2: {
-      type: "linear",
-      display: true,
-      position: "right",
-      grid: {
-        drawOnChartArea: false,
-      },
-    },
-  },
-};
-
-export function LefLineChart({ data }) {
+export function LefLineChart({ data = {} }) {
   const { theme } = useContext(ThemeContext);
   const { DIAGRAM_COLORS = [] } = theme.colors;
+  const usedScales = isArray(data.datasets)
+    ? data.datasets.map((d) => d.yAxisID)
+    : [];
+
+  let options = {
+    responsive: true,
+    scales: {
+      y1: {
+        type: "linear",
+        position: "left",
+        display: true,
+        ticks: {
+          beginAtZero: true,
+        },
+      },
+      y2: {
+        type: "linear",
+        display: true,
+        position: "right",
+        grid: {
+          drawOnChartArea: false,
+        },
+      },
+    },
+  };
+
+  Object.keys(options.scales).forEach((key) => {
+    if (!usedScales.includes(key)) {
+      delete options.scales[key];
+    }
+  });
   return (
     <Line
       data={{

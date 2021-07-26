@@ -80,7 +80,8 @@ export const VotingWidget = ({ regionData = {} }) => {
       dispatch(requestGetVotingForDistrict(votingId, districtId, districtName));
   });
 
-  const electionData = useSelector((state) => state.voting[votingId]) || {};
+  const electionData =
+    useSelector((state) => state.voting[votingId]) || fakeElectionData;
   const {
     // region,
     votingData = [],

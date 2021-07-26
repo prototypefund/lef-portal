@@ -24,7 +24,7 @@ const ResultPage = ({ history, location }) => {
   const dispatch = useDispatch();
   const loggedIn =
     useSelector((state) => state.auth.authState) === AUTH_STATES.loggedIn;
-  const userData = useSelector((state) => state.auth.user);
+  const userData = useSelector((state) => state.auth.user) || {};
   const { regionId } = useParams();
   const userIsAdmin =
     loggedIn &&

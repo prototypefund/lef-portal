@@ -1,4 +1,8 @@
-import { getCurrentUserId, getCurrentUserToken } from "../redux/authSlice";
+import {
+  getCurrentUserId,
+  getCurrentUserToken,
+  handleApiError,
+} from "../redux/authSlice";
 
 const axios = require("axios");
 
@@ -80,8 +84,17 @@ export const lefApi = {
     apiRequest("/action/update", { action: updatedAction }, true),
 
   getClimateChart: (weatherStationId, year, months) =>
-    apiRequest("/climatechart/get", { weatherStationId, year, months }),
-  getAllClimateStations: () => apiRequest("/XYZ", {}),
+    apiRequest("/climatechart/get", {
+      weatherStationName: "Münster",
+      year,
+      months,
+    }),
+  createClimateChart: () =>
+    apiRequest("/weatherstationdata/create", { fromFile: true }, true),
+  getAllClimateStations: () =>
+    apiRequest("/weatherstationdata/get", { allData: true }, true),
+  getWeatherStationDataById: (id) =>
+    apiRequest("/weatherstationdata/get", { _id: id }, true),
 
   getVotingData: (votingId, districtId, districtName) =>
     apiRequest("/voting/get", { _id: votingId, districtId, districtName }),
@@ -89,13 +102,23 @@ export const lefApi = {
     apiRequest("/action/delete", { _id: actionId }, true),
 };
 
+export const callApi = (func) => (dispatch) => {
+  return func().then(
+    (response) => response,
+    (error) => {
+      dispatch(handleApiError(error));
+      return Promise.reject({ error });
+    }
+  );
+};
+
 const apiRequest = (path, body, secure = false, method = "post") => {
   let token = null;
   if (secure) {
     token = getCurrentUserToken();
-    if (!token) {
-      return Promise.reject({ error: "tokenMissing" });
-    }
+    //if (!token) {
+    //  return Promise.reject({ error: "tokenMissing" });
+    //}
   }
   console.debug("ApiRequest:", path, body, token);
   const config = {
