@@ -1,6 +1,8 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { WarmingStripe } from "./WarmingStripe";
 import { Col, Row } from "react-bootstrap";
+import { useEffect } from "react";
+import { fetchWeatherData } from "../../redux/climateSlice";
 
 /*
 {
@@ -100,15 +102,21 @@ const fakeData = {
 };
 
 export const WarmingStripeWidget = ({ regionData }) => {
-  const { _id: regionId } = regionData;
-  const climateChart =
-    useSelector((state) => state.climate.singleWeatherStations[regionId]) ||
-    fakeData;
-  const {
-    weatherStation,
-    // weatherStationId,
-    climateData,
-  } = climateChart;
+  const dispatch = useDispatch();
+  const { weatherStations = [] } = regionData;
+  const [weatherStationId] = weatherStations;
+  const climateChart = useSelector(
+    (state) => state.climate.singleWeatherStations[weatherStationId] || {}
+  );
+  const isFetching = useSelector((state) => state.climate.isFetching);
+  const { weatherStation, climateData: yearlyData = [] } = climateChart;
+
+  useEffect(() => {
+    if (weatherStationId) {
+      // dispatch(requestGetClimateDataForRegion(weatherStationId, year, months));
+      dispatch(fetchWeatherData(weatherStationId));
+    }
+  }, [dispatch, weatherStationId]);
 
   return (
     <Col>
@@ -116,7 +124,7 @@ export const WarmingStripeWidget = ({ regionData }) => {
         <p>{`WarmingStripes für ${weatherStation}`}</p>
       </Row>
       <Row>
-        <WarmingStripe climateData={climateData} />
+        <WarmingStripe climateData={yearlyData} />
       </Row>
     </Col>
   );

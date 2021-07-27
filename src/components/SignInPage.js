@@ -57,7 +57,7 @@ const SignInPage = ({ history, disableRedirect = false }) => {
                 onClick={onFinish}
                 className={"mt-3"}
               >
-                Anmelden
+                Einloggen
               </Button>
             </Form.Group>
           </Form>

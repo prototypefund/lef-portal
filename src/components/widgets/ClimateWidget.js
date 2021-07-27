@@ -1,4 +1,5 @@
 import {
+  Button,
   Col,
   Container,
   Form,
@@ -18,12 +19,15 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import { isArray } from "chart.js/helpers";
 import { requestUpdateRegion } from "../../redux/dataSlice";
 import { LefSpinner } from "../shared/LefSpinner";
+import { LefModal } from "../shared/LefModal";
+import MapChart from "../MapChart";
 
 export const ClimateWidget = ({ year, months, regionData, editMode }) => {
   const dispatch = useDispatch();
   const { weatherStations = [] } = regionData;
   const [weatherStationId] = weatherStations;
   const [showRainfall, setShowRainfall] = useState(true);
+  const [showMapModal, setShowMapModal] = useState(false);
   const [showTemperature, setShowTemperature] = useState(true);
   const [startYearFilter, setStartYearFilter] = useState();
   const [endYearFilter, setEndYearFilter] = useState();
@@ -38,9 +42,7 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
   let temperatureMeans = [];
   let rainfalls = [];
   let labels = [];
-  let yearlyDataSorted = [...yearlyData];
-  yearlyDataSorted = yearlyDataSorted.sort((a, b) => a.year - b.year);
-  yearlyDataSorted
+  yearlyData
     .filter(
       (data) => data.year >= startYearFilter && data.year <= endYearFilter
     )
@@ -100,60 +102,49 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
   let sortedWeatherStationsArray = Object.keys(allWeatherStations)
     .map((key) => allWeatherStations[key])
     .sort((a, b) => (a.weatherStationName < b.weatherStationName ? -1 : 1));
-  let SelectWeatherStation = (
+  const selectWeatherStationTypeahead = (
+    <Typeahead
+      style={{ width: "100%" }}
+      isLoading={allWeatherStations.length === 0}
+      autoFocus
+      highlightOnlyResult
+      id={"weatherStationSelect"}
+      onChange={(values) =>
+        isArray(values) &&
+        values.length > 0 &&
+        dispatch(
+          requestUpdateRegion({
+            ...regionData,
+            weatherStations: [values[0].value],
+          })
+        )
+      }
+      placeholder={"Name der Wetterstation"}
+      options={sortedWeatherStationsArray.map((weatherStation) => ({
+        label: weatherStation.weatherStationName,
+        value: weatherStation._id,
+      }))}
+      emptyLabel={"Keine Ergebnisse."}
+    />
+  );
+  const SelectWeatherStation = (
     <>
       <Row className={"align-items-baseline"}>
         <Col sm={4}>
           <p>Wetterstation auswählen:</p>
         </Col>
         <Col sm={8}>
-          <Typeahead
-            isLoading={allWeatherStations.length === 0}
-            // value={typeaheadText}
-            // open={typeaheadText.length > 0}
-            // onInputChange={(text) => setTypeaheadText(text)}
-            autoFocus
-            highlightOnlyResult
-            // style={{ width: "100%" }}
-            id={"weatherStationSelect"}
-            onChange={(values) =>
-              isArray(values) &&
-              values.length > 0 &&
-              dispatch(
-                requestUpdateRegion({
-                  ...regionData,
-                  weatherStations: [values[0].value],
-                })
-              )
-            }
-            placeholder={"Name der Wetterstation"}
-            options={sortedWeatherStationsArray.map((weatherStation) => ({
-              label: weatherStation.weatherStationName,
-              value: weatherStation._id,
-            }))}
-            emptyLabel={"Keine Ergebnisse."}
-          />
-          {/*<Form.Control
-            as="select"
-            onChange={(event) =>
-              dispatch(
-                requestUpdateRegion({
-                  ...regionData,
-                  weatherStations: [event.target.value],
-                })
-              )
-            }
-          >
-            {sortedWeatherStationsArray.map((weatherStation) => (
-              <option value={weatherStation._id}>
-                {weatherStation.weatherStationName}
-              </option>
-            ))}
-          </Form.Control>*/}
+          <Row>{selectWeatherStationTypeahead}</Row>
+          <Row className={"justify-content-end mt-2"}>
+            <Button onClick={() => setShowMapModal(true)} size={"sm"}>
+              auf Karte auswählen
+            </Button>
+          </Row>
         </Col>
       </Row>
     </>
   );
+
   const ClimateChart =
     labels.length > 0 && temperatureMeans.length > 0 ? (
       <Row>
@@ -162,11 +153,6 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
             <LefLineChart data={data} />
           </div>
         </Col>
-        {/*<Col sm={12} lg={4} className={"mt-sm-2"}>
-        <p>{`Die Durchschnittstemperatur in ${ regionData.name
-        } ist von ${first}${unitLabel} auf ${second}${unitLabel} ${
-          first > second ? "gesunken" : "gestiegen" }.`}</p>
-      </Col>*/}
       </Row>
     ) : isFetching ? (
       <LefSpinner />
@@ -175,6 +161,45 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
         Keine Daten vorhanden.
       </p>
     );
+
+  const regions = useSelector((state) => state.data.regionData);
+
+  const SelectWeatherStationMapModal = (
+    <LefModal
+      title={"Wetterstation auswählen"}
+      buttons={[{ label: "Abbrechen", onClick: () => setShowMapModal(false) }]}
+      show={showMapModal}
+      content={
+        <>
+          <p>
+            {
+              "Tippen Sie die Wetterstation an, deren Daten Sie übernehmen wollen. Sie können per Mausrad in die Karte hereinzoomen."
+            }
+          </p>
+          <MapChart
+            regions={[regionData]}
+            dots={sortedWeatherStationsArray.map((ws) => ({
+              ...ws,
+              lon: ws.longitude,
+              lat: ws.latitude,
+              description: ws.weatherStationName,
+              size: 2,
+              id: ws._id,
+              onClick: () => {
+                setShowMapModal(false);
+                dispatch(
+                  requestUpdateRegion({
+                    ...regionData,
+                    weatherStations: [ws._id],
+                  })
+                );
+              },
+            }))}
+          />
+        </>
+      }
+    />
+  );
 
   return (
     <Container {...(editMode && { style: { minHeight: 400 } })}>
@@ -247,6 +272,7 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
         </>
       )}{" "}
       {ClimateChart}
+      {SelectWeatherStationMapModal}
     </Container>
   );
 };

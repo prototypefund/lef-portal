@@ -42,18 +42,18 @@ const MainRouting = ({ location = {}, history = {} }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    // if (loggedIn) {
-    dispatch(requestGetUser());
-    //}
+    if (loggedIn) {
+      dispatch(requestGetUser());
+    }
   }, [authStatus, dispatch]);
 
   const pages = [
     /*{
-      id: "1",
-      label: "Token löschen",
-      action: () => localStorage.removeItem("token"),
-      button: true,
-    },*/
+          id: "1",
+          label: "Token löschen",
+          action: () => localStorage.removeItem("token"),
+          button: true,
+        },*/
     {
       id: "3",
       label: "Anmelden",
@@ -134,6 +134,12 @@ const MainRouting = ({ location = {}, history = {} }) => {
       </div>
 
       <LefModal
+        buttons={[
+          {
+            label: "Ausloggen",
+            onClick: () => dispatch(requestSignOut()),
+          },
+        ]}
         show={requestLogIn}
         title={"Erneut Einloggen"}
         content={

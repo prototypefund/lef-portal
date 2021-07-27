@@ -8,7 +8,6 @@ import {
 } from "react-simple-maps";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ThemeContext } from "./theme/ThemeContext";
-import { useSelector } from "react-redux";
 
 // const countries = "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
 const zipcodeAreas = require("../assets/plz-gebiete_simpl.json");
@@ -17,10 +16,11 @@ const states = require("../assets/3_mittel.geo.json");
 const defaultLon = 10.5;
 const defaultLat = 51.2;
 
-const MapChart = ({ lon, lat, regions, onRegionClick }) => {
+const MapChart = ({ lon, lat, regions = [], onRegionClick, dots = [] }) => {
   const { theme } = useContext(ThemeContext);
   const { COLOR_TEXT_BRIGHT, NAVIGATION_COLOR } = theme.colors;
   const [hoveredRegion, setHoveredRegion] = useState(null);
+  const [hoveredDot, setHoveredDot] = useState(null);
   const allPostalcodes = regions
     .map((region) => region.postalcodes)
     .reduce((a, b) => [...a, ...b], []);
@@ -136,6 +136,35 @@ const MapChart = ({ lon, lat, regions, onRegionClick }) => {
               })
           }
         </Geographies>
+
+        {dots.map((dot) => {
+          const renderTooltip = (props) => (
+            <Tooltip id="tooltip" {...props}>
+              {`${dot.description}`}
+            </Tooltip>
+          );
+          return (
+            <OverlayTrigger
+              placement="right"
+              delay={{ show: 50, hide: 200 }}
+              overlay={renderTooltip}
+            >
+              <Marker
+                coordinates={[dot.lon, dot.lat]}
+                {...(dot.onClick && { onClick: dot.onClick })}
+                onMouseEnter={() => setHoveredDot(dot.id)}
+                onMouseLeave={() => setHoveredDot(null)}
+              >
+                <circle
+                  style={{ cursor: "pointer" }}
+                  r={dot.size}
+                  fill={dot.id === hoveredDot ? "#135" : "#ABC"}
+                  fillOpacity={1}
+                />
+              </Marker>
+            </OverlayTrigger>
+          );
+        })}
       </ZoomableGroup>
     </ComposableMap>
   );

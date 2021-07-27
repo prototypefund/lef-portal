@@ -41,11 +41,18 @@ const WARMING_COLORS = [
   "#67000d",
 ];
 
-// const YEAR_RANGE = [1881, 2018];
+const YEAR_RANGE = [1950, 2021];
 const REFERENCE_RANGE = [1961, 1990];
 
 export const WarmingStripe = ({ climateData = [] }) => {
-  const referenceData = climateData.filter(
+  let yearlyMeans = [];
+  climateData.forEach((climateDataEntry) => {
+    const { monthlyData = [], year } = climateDataEntry;
+    const monthlyMeans = monthlyData.map((m) => m.temperatureMean);
+    const yearMean = monthlyMeans.reduce((a, b) => a + b, 0) / 12;
+    yearlyMeans.push({ mean: yearMean, year });
+  });
+  const referenceData = yearlyMeans.filter(
     (entry) =>
       entry.year > REFERENCE_RANGE[0] && entry.year < REFERENCE_RANGE[1]
   );
@@ -53,22 +60,28 @@ export const WarmingStripe = ({ climateData = [] }) => {
     referenceData.map((d) => d.mean).reduce((a, b) => a + b, 0) /
     referenceData.length;
 
+  yearlyMeans = yearlyMeans.filter(
+    (entry) => entry.year >= YEAR_RANGE[0] && entry.year <= YEAR_RANGE[1]
+  );
+
   const data = {
-    labels: climateData.map((entry) => entry.year),
+    labels: yearlyMeans.map((entry) => entry.year),
     datasets: [
       {
         label: "Mean",
         data: [...Array(100).keys()].map(() => 100),
-        backgroundColor: climateData.map((entry) => {
+        backgroundColor: yearlyMeans.map((entry) => {
           const temperature = entry.mean;
           const difference = temperature - referenceMean;
-          const middleIndex = Math.round(WARMING_COLORS.length / 3);
-          let index = Math.round(middleIndex + difference * 5);
+          const middleIndex = Math.round(WARMING_COLORS.length / 2);
+          const index = Math.round(middleIndex + difference);
           return WARMING_COLORS[index];
         }),
       },
     ],
   };
+
+  console.debug(data);
 
   return (
     <>

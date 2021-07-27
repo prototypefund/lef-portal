@@ -1,6 +1,7 @@
 import { ObjectivesWidget } from "./ObjectivesWidget";
 import { ClimateWidget } from "./ClimateWidget";
 import { VotingWidget } from "./VotingWidget";
+import { WarmingStripeWidget } from "./WarmingStripeWidget";
 // import { CarsWidget } from "./CarsWidget";
 // import { WarmingStripeWidget } from "./WarmingStripeWidget";
 

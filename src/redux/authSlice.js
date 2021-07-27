@@ -37,7 +37,7 @@ export default authSlice.reducer;
 
 export const handleApiError = (error) => (dispatch) => {
   console.debug("ERROR", { error });
-  if (error.response.data === "Unauthorized")
+  if (["Unauthorized", "Forbidden"].includes(error.response.data))
     dispatch(updateAuthState({ authState: AUTH_STATES.logInRequest }));
 };
 

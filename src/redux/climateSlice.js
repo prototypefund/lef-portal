@@ -31,8 +31,13 @@ const climateSlice = createSlice({
       state.isFetching = true;
     },
     [fetchWeatherData.fulfilled]: (state, action) => {
+      let data = action.payload.data || {};
+      const { climateData = [] } = data;
+      let sortedClimateData = [...climateData];
+      sortedClimateData.sort((a, b) => (a.year < b.year ? -1 : 1));
+      data.climateData = sortedClimateData;
       state.isFetching = false;
-      state.singleWeatherStations[action.meta.arg] = action.payload.data;
+      state.singleWeatherStations[action.meta.arg] = data;
     },
   },
 });
