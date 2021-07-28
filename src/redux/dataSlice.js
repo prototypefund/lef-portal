@@ -17,6 +17,31 @@ export const fetchAllRegions = createAsyncThunk("regions/getAll", async () => {
   return response;
 });
 
+export const fetchAllObjectivesForRegion = createAsyncThunk(
+  "objective/get",
+  async (id, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const response = await dispatch(
+      callApi(() => lefApi.getAllObjectivesForRegion(id))
+    );
+    return response;
+  }
+);
+
+export const requestGetAllObjectivesForRegion = (regionId) => (dispatch) => {
+  lefApi.getAllObjectivesForRegion(regionId).then((response) => {
+    dispatch(setObjectivesForRegion({ regionId, objectives: response.data }));
+  });
+};
+
+export const requestGetAllActionsForRegion = (regionId) => (dispatch) => {
+  lefApi
+    .getAllActionsForRegion(regionId)
+    .then((response) =>
+      dispatch(setActionsForRegion({ regionId, actions: response.data }))
+    );
+};
+
 const dataSlice = createSlice({
   name: "data",
   initialState: {
@@ -24,6 +49,7 @@ const dataSlice = createSlice({
     objectivesForRegion: {},
     actionsForRegion: {},
     isFetchingAllRegions: false,
+    isFetchingObjectivesForRegion: false,
   },
   reducers: {
     setRegionData(state, action) {
@@ -106,12 +132,19 @@ const dataSlice = createSlice({
     },
   },
   extraReducers: {
-    [fetchAllRegions.pending]: (state, action) => {
+    [fetchAllRegions.pending]: (state) => {
       state.isFetchingAllRegions = true;
     },
     [fetchAllRegions.fulfilled]: (state, action) => {
       state.isFetchingAllRegions = false;
       state.regionData = action.payload.data;
+    },
+    [fetchAllObjectivesForRegion.pending]: (state) => {
+      state.isFetchingObjectivesForRegion = true;
+    },
+    [fetchAllObjectivesForRegion.fulfilled]: (state, action) => {
+      state.isFetchingObjectivesForRegion = false;
+      state.objectivesForRegion[action.meta.arg] = action.payload.data;
     },
   },
 });
@@ -145,20 +178,6 @@ export const requestGetRegion = (regionId) => (dispatch) => {
     .getRegionData(regionId)
     .then((response) =>
       dispatch(setRegionData({ regionId, data: response.data }))
-    );
-};
-
-export const requestGetAllObjectivesForRegion = (regionId) => (dispatch) => {
-  lefApi.getAllObjectivesForRegion(regionId).then((response) => {
-    dispatch(setObjectivesForRegion({ regionId, objectives: response.data }));
-  });
-};
-
-export const requestGetAllActionsForRegion = (regionId) => (dispatch) => {
-  lefApi
-    .getAllActionsForRegion(regionId)
-    .then((response) =>
-      dispatch(setActionsForRegion({ regionId, actions: response.data }))
     );
 };
 

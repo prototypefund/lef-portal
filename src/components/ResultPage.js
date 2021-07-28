@@ -140,7 +140,7 @@ const ResultPage = ({ history, location }) => {
       <Row>
         <Col>
           {!_id ? (
-            <LefSpinner />
+            <LefSpinner hideBackground />
           ) : widgets.length > 0 ? (
             widgets.map((entry, k) => (
               <ResultEntry

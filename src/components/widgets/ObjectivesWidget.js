@@ -15,14 +15,15 @@ import { EditButton } from "../shared/EditButton";
 import { ActionDisplay } from "./objectivesWidgetComponents/ActionDisplay";
 import { DeleteButton } from "../shared/DeleteButton";
 import {
+  fetchAllObjectivesForRegion,
   requestDeleteAction,
   requestDeleteObjective,
   requestGetAllActionsForRegion,
-  requestGetAllObjectivesForRegion,
 } from "../../redux/dataSlice";
 import { ConfirmDialog } from "../shared/ConfirmDialog";
 import { ThemeContext } from "../theme/ThemeContext";
 import { LefModal } from "../shared/LefModal";
+import { LefSpinner } from "../shared/LefSpinner";
 
 const OBJECTIVE_DELETE = "OBJECTIVE_DELETE";
 const ACTION_DELETE = "ACTION_DELETE";
@@ -43,6 +44,9 @@ export const ObjectivesWidget = (props) => {
   const regionsActions = useSelector(
     (state) => state.data.actionsForRegion[_id] || []
   );
+  const isFetchingObjectivesForRegion = useSelector(
+    (state) => state.data.isFetchingObjectivesForRegion
+  );
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [isActionMode, setIsActionMode] = useState(false);
@@ -58,7 +62,7 @@ export const ObjectivesWidget = (props) => {
 
   useEffect(() => {
     if (_id) {
-      dispatch(requestGetAllObjectivesForRegion(_id));
+      dispatch(fetchAllObjectivesForRegion(_id));
       dispatch(requestGetAllActionsForRegion(_id));
     }
   }, [_id, dispatch]);
@@ -241,7 +245,9 @@ export const ObjectivesWidget = (props) => {
         );
       });
 
-  return (
+  return isFetchingObjectivesForRegion ? (
+    <LefSpinner hideBackground />
+  ) : (
     <Row
       style={{ maxWidth: "100%", minHeight: 300 }}
       className={"p-sm-1 p-md-2"}

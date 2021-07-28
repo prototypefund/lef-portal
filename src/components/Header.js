@@ -1,6 +1,6 @@
 import { Nav, Navbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import LefLogo from "../assets/lef_logo.jpeg";
+import LefLogo from "../assets/lef_logo_white.png";
 
 export function Header({ pages, loggedIn }) {
   return (
@@ -10,7 +10,7 @@ export function Header({ pages, loggedIn }) {
           <img
             src={LefLogo}
             alt={"LEF Logo"}
-            style={{ height: 40, marginBottom: 7, marginRight: 15 }}
+            style={{ height: 40, marginBottom: 7, marginRight: 10 }}
           />{" "}
           <span className={"d-none d-sm-inline"}>
             {"Local Emission Framework"}

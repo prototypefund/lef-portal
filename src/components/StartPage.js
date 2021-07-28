@@ -131,47 +131,42 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
               <div className={"d-none d-md-block"}>
                 {isFetchingRegions && (
                   <Container
-                    style={{ top: "50%", fontSize: 12 }}
+                    style={{ height: "100%", fontSize: 12 }}
                     className={
                       "position-absolute w-100 d-flex align-items-center flex-wrap"
                     }
                   >
-                    <Row xs={12} className={"w-100"}>
-                      <LefSpinner />
-                    </Row>
-                    <Row className={"w-100 justify-content-center"}>
-                      Wird geladen..
+                    <Row xs={12} className={"w-100 h-100"}>
+                      <LefSpinner text={"Wird geladen.."} />
                     </Row>
                   </Container>
                 )}
-                <div
-                  style={{ bottom: 0, fontSize: 12 }}
-                  className={
-                    "position-absolute w-100 d-flex align-items-center"
-                  }
-                >
-                  <div className={"w-100 p-2"}>
-                    <span
-                      style={{
-                        backgroundColor: theme.colors.NAVIGATION_COLOR,
-                        color: "#FFF",
-                        marginRight: 7,
-                        padding: 5,
-                        borderRadius: 5,
-                      }}
-                    >
-                      {"Diese Regionen"}
-                    </span>
-                    <span>sind schon dabei</span>
-                  </div>
-                </div>
-                <MapChart
-                  lat={latitude}
-                  lon={longitude}
-                  regions={regions}
-                  onRegionClick={(regionId) => onCitySelect(regionId)}
-                />
               </div>
+              <div
+                style={{ bottom: 0, fontSize: 12 }}
+                className={"position-absolute w-100 d-flex align-items-center"}
+              >
+                <div className={"w-100 p-2"}>
+                  <span
+                    style={{
+                      backgroundColor: theme.colors.NAVIGATION_COLOR,
+                      color: "#FFF",
+                      marginRight: 7,
+                      padding: 5,
+                      borderRadius: 5,
+                    }}
+                  >
+                    {"Diese Regionen"}
+                  </span>
+                  <span>sind schon dabei</span>
+                </div>
+              </div>
+              <MapChart
+                lat={latitude}
+                lon={longitude}
+                regions={regions}
+                onRegionClick={(regionId) => onCitySelect(regionId)}
+              />
             </Col>
           </Row>
         </Col>

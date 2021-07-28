@@ -155,7 +155,7 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
         </Col>
       </Row>
     ) : isFetching ? (
-      <LefSpinner />
+      <LefSpinner hideBackground />
     ) : (
       <p className={"text-center mt-2 alert alert-secondary"}>
         Keine Daten vorhanden.
