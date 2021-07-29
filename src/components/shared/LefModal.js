@@ -1,4 +1,4 @@
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Spinner } from "react-bootstrap";
 
 export const LefModal = ({ show, title, buttons = [], content, ...rest }) => {
   return (
@@ -11,10 +11,23 @@ export const LefModal = ({ show, title, buttons = [], content, ...rest }) => {
       {content && <Modal.Body>{content}</Modal.Body>}
       <Modal.Footer>
         {buttons.map((button, i) => {
-          const { label, variant, ...rest } = button;
+          const { label, variant, loading, disabled, ...rest } = button;
           return (
-            <Button key={i} {...rest} variant={button.variant || "primary"}>
-              {button.label || ""}
+            <Button
+              disabled={loading || disabled}
+              key={i}
+              {...rest}
+              variant={variant || "primary"}
+            >
+              {loading && (
+                <Spinner
+                  className={"mr-2 "}
+                  animation="border"
+                  role="status"
+                  size={"sm"}
+                />
+              )}
+              {label || ""}
             </Button>
           );
         })}

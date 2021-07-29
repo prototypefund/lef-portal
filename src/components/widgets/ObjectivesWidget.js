@@ -15,10 +15,10 @@ import { EditButton } from "../shared/EditButton";
 import { ActionDisplay } from "./objectivesWidgetComponents/ActionDisplay";
 import { DeleteButton } from "../shared/DeleteButton";
 import {
+  fetchAllActionsForRegion,
   fetchAllObjectivesForRegion,
   requestDeleteAction,
   requestDeleteObjective,
-  requestGetAllActionsForRegion,
 } from "../../redux/dataSlice";
 import { ConfirmDialog } from "../shared/ConfirmDialog";
 import { ThemeContext } from "../theme/ThemeContext";
@@ -47,6 +47,9 @@ export const ObjectivesWidget = (props) => {
   const isFetchingObjectivesForRegion = useSelector(
     (state) => state.data.isFetchingObjectivesForRegion
   );
+  const isFetchingActionsForRegion = useSelector(
+    (state) => state.data.isFetchingActionsForRegion
+  );
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [isActionMode, setIsActionMode] = useState(false);
@@ -63,7 +66,7 @@ export const ObjectivesWidget = (props) => {
   useEffect(() => {
     if (_id) {
       dispatch(fetchAllObjectivesForRegion(_id));
-      dispatch(requestGetAllActionsForRegion(_id));
+      dispatch(fetchAllActionsForRegion(_id));
     }
   }, [_id, dispatch]);
 
@@ -245,7 +248,7 @@ export const ObjectivesWidget = (props) => {
         );
       });
 
-  return isFetchingObjectivesForRegion ? (
+  return isFetchingObjectivesForRegion || isFetchingActionsForRegion ? (
     <LefSpinner hideBackground />
   ) : (
     <Row

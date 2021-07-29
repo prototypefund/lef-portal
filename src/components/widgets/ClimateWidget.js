@@ -65,18 +65,21 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
     label: "Niederschlag",
     data: rainfalls,
     yAxisID: "y1",
+    color: "#1693ff",
+    type: "bar",
   };
   const temperatureSet = {
     label: "Durchschnittstemperatur",
     data: temperatureMeans,
     yAxisID: "y2",
+    color: "#f46247",
   };
   const data = {
     labels,
     datasets: [],
   };
-  if (showRainfall) data.datasets.push(rainFallSet);
   if (showTemperature) data.datasets.push(temperatureSet);
+  if (showRainfall) data.datasets.push(rainFallSet);
 
   const years = yearlyData.map((d) => d.year);
   const minYear = Math.min(...years);
@@ -85,13 +88,13 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
   useEffect(() => {
     setStartYearFilter(minYear);
     setEndYearFilter(maxYear);
-  }, [yearlyData.length]);
+  }, [yearlyData.length, maxYear, minYear]);
 
   useEffect(() => {
     if (editMode) {
       dispatch(requestGetAllClimateStations());
     }
-  }, [editMode]);
+  }, [editMode, dispatch]);
 
   useEffect(() => {
     if (weatherStationId) {
@@ -161,8 +164,6 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
         Keine Daten vorhanden.
       </p>
     );
-
-  const regions = useSelector((state) => state.data.regionData);
 
   const SelectWeatherStationMapModal = (
     <LefModal

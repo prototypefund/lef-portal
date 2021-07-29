@@ -7,9 +7,8 @@ import { useState } from "react";
 import { PasswordChangeDialog } from "./accountPageComponents/PasswordChangeDialog";
 import { AddRegionDialog } from "./accountPageComponents/AddRegionDialog";
 import { requestAddRegionToAccount } from "../redux/authSlice";
-import { lefApi } from "../api/lefApi";
 
-export const AccountPage = ({}) => {
+export const AccountPage = () => {
   const dispatch = useDispatch();
   const regions = useSelector((state) => state.data.regionData);
   const userData = useSelector((state) => state.auth.user) || {};
@@ -150,7 +149,7 @@ export const AccountPage = ({}) => {
 
       <PasswordChangeDialog
         show={showPasswordDialog}
-        onSubmit={(oldPassword, newPassword) => {
+        onSubmit={() => {
           setShowPasswordDialog(false);
           // TODO dispatch(requestReplacePassword(oldPassword, newPassword));
         }}

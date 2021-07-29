@@ -50,6 +50,7 @@ export function LefLineChart({ data = {} }) {
             label: entry.label,
             data: entry.data,
             yAxisID: entry.yAxisID,
+            type: entry.type || "line",
           };
         }),
       }}

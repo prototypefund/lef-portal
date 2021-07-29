@@ -10,10 +10,7 @@ export const LefSpinner = ({ text, hideBackground = false }) => (
       style: { backgroundColor: "rgba(200,200,200,0.5)" },
     })}
   >
-    <img src={lefLogoAnimation} style={{ width: 300 }} />
-    {/*<Spinner animation="border" role="status">
-      <span className="sr-only">Lade Daten...</span>
-    </Spinner>*/}
+    <img alt={"Ladebalken"} src={lefLogoAnimation} style={{ width: 300 }} />
     {text && <p>{text}</p>}
   </Container>
 );

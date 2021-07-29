@@ -45,15 +45,15 @@ const MainRouting = ({ location = {}, history = {} }) => {
     if (loggedIn) {
       dispatch(requestGetUser());
     }
-  }, [authStatus, dispatch]);
+  }, [authStatus, dispatch, loggedIn]);
 
   const pages = [
-    /*{
-          id: "1",
-          label: "Token löschen",
-          action: () => localStorage.removeItem("token"),
-          button: true,
-        },*/
+    {
+      id: "1",
+      label: "Token löschen",
+      action: () => localStorage.removeItem("token"),
+      button: true,
+    },
     {
       id: "3",
       label: "Anmelden",

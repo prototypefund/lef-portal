@@ -65,6 +65,12 @@ const App = () => {
           border: none;
         }
         
+         .btn-primary.disabled, .btn-primary:disabled {
+          background-color: ${PRIMARY_COLOR};
+          color: ${COLOR_TEXT_DARK};
+          border: none;
+        }
+        
         .btn-primary:hover {
           background-color: ${PRIMARY_COLOR_DARK};
           color: ${COLOR_TEXT_DARK};

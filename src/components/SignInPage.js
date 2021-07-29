@@ -23,7 +23,7 @@ const SignInPage = ({ history, disableRedirect = false }) => {
     if (loggedIn && !disableRedirect) {
       history.push(PATHS.ACCOUNT);
     }
-  }, [authState]);
+  }, [authState, history, disableRedirect, loggedIn]);
 
   return (
     <div>

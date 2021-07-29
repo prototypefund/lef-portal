@@ -4,8 +4,8 @@ import {
   addObjectiveForRegion,
   removeActionForRegion,
   removeObjectiveForRegion,
+  requestUpdateObjective,
   updateActionForRegion,
-  updateObjectiveForRegion,
   updateRegionData,
 } from "../dataSlice";
 
@@ -13,7 +13,7 @@ export const notifier = ({ dispatch }) => (next) => (action) => {
   // console.debug("TYPE: ", action.type);
   const message_changesSaved = "Änderungen gespeichert";
   switch (action.type) {
-    case updateObjectiveForRegion().type:
+    case requestUpdateObjective.fulfilled.type:
       dispatch(
         addNotificationMessage(
           message_changesSaved,

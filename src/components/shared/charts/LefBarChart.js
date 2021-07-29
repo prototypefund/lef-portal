@@ -1,4 +1,4 @@
-import { Bar, Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import React, { useContext } from "react";
 import { ThemeContext } from "../../theme/ThemeContext";
 
@@ -19,6 +19,7 @@ export function LefBarChart({ data }) {
   const { DIAGRAM_COLORS = [] } = theme.colors;
   return (
     <Bar
+      type={"bar"}
       data={{
         labels: data.labels,
         datasets: data.datasets.map((entry, i) => {

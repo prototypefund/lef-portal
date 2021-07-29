@@ -85,7 +85,7 @@ export const VotingWidget = ({ regionData = {} }) => {
   const {
     // region,
     votingData = [],
-    districtName: electionDistrictName,
+    // districtName: electionDistrictName,
   } = electionData;
   let partyData = {};
   let labels = [];

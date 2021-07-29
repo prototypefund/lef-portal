@@ -1,5 +1,5 @@
 import { Col, Form, Row } from "react-bootstrap";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { LefModal } from "../shared/LefModal";
 import MultiSelect from "react-multi-select-component";
@@ -9,6 +9,7 @@ import {
   requestUpdateAction,
   requestUpdateObjective,
 } from "../../redux/dataSlice";
+import { usePrevious } from "../../hooks/usePrevious";
 
 export const getYYYYMMDD = (date) => {
   const dateObj = new Date(date);
@@ -41,7 +42,14 @@ export const AddObjectivesAndActionsDialog = ({
     (state) => state.data.objectivesForRegion[regionData._id] || []
   );
 
+  const isUpdatingObjective = useSelector(
+    (state) => state.data.isUpdatingObjective
+  );
+
+  const previousIsUpdatingObjective = usePrevious(isUpdatingObjective);
+
   const sourceObject = isAction ? editedAction : editedObjective || {};
+  const [isSaving, setIsSaving] = useState(false);
   const [title, setTitle] = useState(sourceObject.title || "Test");
   const [budget, setBudget] = useState(sourceObject.budget || "0");
   const [startDate, setStartDate] = useState(
@@ -80,16 +88,12 @@ export const AddObjectivesAndActionsDialog = ({
     onClose();
   };
 
-  /*const filteredActions = regionsActions.filter(
-    (a) =>
-      Array.isArray(a.objectiveIds) &&
-      a.objectiveIds.includes(sourceObject._id)
-  );
-
   useEffect(() => {
-    setActionIds(filteredActions);
-  }, [sourceObject._id]);
-*/
+    if (previousIsUpdatingObjective && !isUpdatingObjective && isSaving) {
+      closeDialog();
+      setIsSaving(false);
+    }
+  }, [isSaving, isUpdatingObjective, previousIsUpdatingObjective]);
 
   const size = "md";
   let content = (
@@ -234,6 +238,7 @@ export const AddObjectivesAndActionsDialog = ({
           onClick: closeDialog,
         },
         {
+          loading: isSaving,
           label: editMode ? "Änderung speichern" : "Hinzufügen",
           onClick: () => {
             dispatch(
@@ -277,7 +282,7 @@ export const AddObjectivesAndActionsDialog = ({
                     regionData._id
                   )
             );
-            closeDialog();
+            setIsSaving(true);
           },
           disabled: tagsArray.length === 0,
         },

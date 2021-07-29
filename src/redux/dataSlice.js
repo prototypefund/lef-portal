@@ -12,10 +12,48 @@ const updateRegionInArray = (state, action) => {
   }
 };
 
-export const fetchAllRegions = createAsyncThunk("regions/getAll", async () => {
-  const response = await lefApi.getAllRegions();
-  return response;
-});
+/*export const requestUpdateObjective = (updatedObjective) => (dispatch) => {
+  dispatch(callApi(() => lefApi.updateObjective(updatedObjective))).then(
+    (response) => {
+      const { data = {} } = response;
+      const { regionId, _id } = data;
+      return dispatch(
+        updateObjectiveForRegion({
+          regionId: regionId,
+          objectiveId: _id,
+          objective: data,
+        })
+      );
+    }
+  );
+};*/
+
+export const requestUpdateObjective = createAsyncThunk(
+  "objective/update",
+  async (updatedObjective, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const response = await dispatch(
+      callApi(() => lefApi.updateObjective(updatedObjective))
+    );
+    const { data = {} } = response;
+    const { regionId, _id } = data;
+    const returnValue = {
+      regionId: regionId,
+      objectiveId: _id,
+      objective: data,
+    };
+    return returnValue;
+  }
+);
+
+export const fetchAllRegions = createAsyncThunk(
+  "regions/getAll",
+  async (_, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const response = await dispatch(callApi(() => lefApi.getAllRegions()));
+    return response;
+  }
+);
 
 export const fetchAllObjectivesForRegion = createAsyncThunk(
   "objective/get",
@@ -28,19 +66,16 @@ export const fetchAllObjectivesForRegion = createAsyncThunk(
   }
 );
 
-export const requestGetAllObjectivesForRegion = (regionId) => (dispatch) => {
-  lefApi.getAllObjectivesForRegion(regionId).then((response) => {
-    dispatch(setObjectivesForRegion({ regionId, objectives: response.data }));
-  });
-};
-
-export const requestGetAllActionsForRegion = (regionId) => (dispatch) => {
-  lefApi
-    .getAllActionsForRegion(regionId)
-    .then((response) =>
-      dispatch(setActionsForRegion({ regionId, actions: response.data }))
+export const fetchAllActionsForRegion = createAsyncThunk(
+  "actions/get",
+  async (id, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const response = await dispatch(
+      callApi(() => lefApi.getAllActionsForRegion(id))
     );
-};
+    return response;
+  }
+);
 
 const dataSlice = createSlice({
   name: "data",
@@ -50,6 +85,8 @@ const dataSlice = createSlice({
     actionsForRegion: {},
     isFetchingAllRegions: false,
     isFetchingObjectivesForRegion: false,
+    isFetchingActionsForRegion: false,
+    isUpdatingObjective: false,
   },
   reducers: {
     setRegionData(state, action) {
@@ -57,20 +94,6 @@ const dataSlice = createSlice({
     },
     updateRegionData(state, action) {
       updateRegionInArray(state, action);
-    },
-    updateObjectiveForRegion(state, action) {
-      const { payload } = action;
-      const { regionId, objectiveId, objective } = payload;
-      const { objectivesForRegion = {} } = state;
-      const currentObjectives = objectivesForRegion[regionId] || [];
-      const index = currentObjectives.findIndex(
-        (objective) => objective._id === objectiveId
-      );
-      if (index > -1) {
-        state.objectivesForRegion[regionId][index] = objective;
-      } else {
-        state.objectivesForRegion[regionId] = [objective];
-      }
     },
     addObjectiveForRegion(state, action) {
       state.objectivesForRegion[action.payload.regionId].push(
@@ -84,13 +107,6 @@ const dataSlice = createSlice({
     },
     replaceAllRegionData(state, action) {
       state.regionData = action.payload;
-    },
-    setObjectivesForRegion(state, action) {
-      state.objectivesForRegion[action.payload.regionId] =
-        action.payload.objectives;
-    },
-    setActionsForRegion(state, action) {
-      state.actionsForRegion[action.payload.regionId] = action.payload.actions;
     },
     updateActionForRegion(state, action) {
       const { payload } = action;
@@ -146,16 +162,38 @@ const dataSlice = createSlice({
       state.isFetchingObjectivesForRegion = false;
       state.objectivesForRegion[action.meta.arg] = action.payload.data;
     },
+    [fetchAllActionsForRegion.pending]: (state) => {
+      state.isFetchingActionsForRegion = true;
+    },
+    [fetchAllActionsForRegion.fulfilled]: (state, action) => {
+      state.isFetchingActionsForRegion = false;
+      state.actionsForRegion[action.meta.arg] = action.payload.data;
+    },
+    [requestUpdateObjective.pending]: (state) => {
+      state.isUpdatingObjective = true;
+    },
+    [requestUpdateObjective.fulfilled]: (state, action) => {
+      const { payload } = action;
+      const { regionId, objectiveId, objective } = payload;
+      const { objectivesForRegion = {} } = state;
+      const currentObjectives = objectivesForRegion[regionId] || [];
+      const index = currentObjectives.findIndex(
+        (objective) => objective._id === objectiveId
+      );
+      if (index > -1) {
+        state.objectivesForRegion[regionId][index] = objective;
+      } else {
+        state.objectivesForRegion[regionId] = [objective];
+      }
+      state.isUpdatingObjective = false;
+    },
   },
 });
 
 export const {
   setRegionData,
   replaceAllRegionData,
-  setObjectivesForRegion,
-  setActionsForRegion,
   updateActionForRegion,
-  updateObjectiveForRegion,
   updateRegionData,
   addObjectiveForRegion,
   addActionForRegion,
@@ -219,22 +257,6 @@ export const requestCreateObjectiveForRegion = (
         })
       );
     });
-};
-
-export const requestUpdateObjective = (updatedObjective) => (dispatch) => {
-  dispatch(callApi(() => lefApi.updateObjective(updatedObjective))).then(
-    (response) => {
-      const { data = {} } = response;
-      const { regionId, _id } = data;
-      return dispatch(
-        updateObjectiveForRegion({
-          regionId: regionId,
-          objectiveId: _id,
-          objective: data,
-        })
-      );
-    }
-  );
 };
 
 export const requestDeleteObjective = (objective) => (dispatch) => {
