@@ -2,7 +2,7 @@ import { withRouter } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { AUTH_STATES, requestSignIn } from "../redux/authSlice";
 import { useEffect, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Container, Form } from "react-bootstrap";
 import { Heading } from "./shared/Heading";
 import { PATHS } from "./MainRouting";
 
@@ -26,7 +26,7 @@ const SignInPage = ({ history, disableRedirect = false }) => {
   }, [authState, history, disableRedirect, loggedIn]);
 
   return (
-    <div>
+    <Container>
       {loggedIn ? (
         <p>Erfolgreich eingeloggt.</p>
       ) : (
@@ -37,7 +37,7 @@ const SignInPage = ({ history, disableRedirect = false }) => {
           </p>
           <Form>
             <Form.Group controlId={"signUpForm"}>
-              <Form.Label>Benutzername</Form.Label>
+              <Form.Label>E-Mail</Form.Label>
               <Form.Control
                 onChange={(e) => setEmail(e.target.value)}
                 type={"email"}
@@ -52,20 +52,29 @@ const SignInPage = ({ history, disableRedirect = false }) => {
                 placeholder={"Ihr Passwort"}
               />
 
-              <Button
-                variant="navigation"
-                onClick={onFinish}
-                className={"mt-3"}
-              >
-                Einloggen
-              </Button>
+              <div className={"d-flex justify-content-between"}>
+                <Button
+                  variant="link"
+                  onClick={() => history.push(PATHS.RESET_PASSWORD)}
+                  className={"mt-3"}
+                >
+                  Passwort vergessen?
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={onFinish}
+                  className={"mt-3 mr-2"}
+                >
+                  Einloggen
+                </Button>
+              </div>
             </Form.Group>
           </Form>
           <hr />
           <p>{authMessage}</p>
         </div>
       )}
-    </div>
+    </Container>
   );
 };
 

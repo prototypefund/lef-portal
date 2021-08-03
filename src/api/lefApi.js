@@ -17,6 +17,13 @@ export const lefApi = {
     });
   },
   getUser: () => apiRequest("/user/get", {}, true),
+  resetPassword(email) {
+    return Promise.resolve({ data: { message: "Test" } });
+    // TODO remove mockup
+    return apiRequest("/password/reset", { email });
+  },
+  setNewPassword: (email, key, newPassword) =>
+    apiRequest("/password/set", { email, key, password: newPassword }),
 
   // REGIONS
   getRegionData: (regionId) => apiRequest("/region/get", { _id: regionId }),

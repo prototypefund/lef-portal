@@ -86,7 +86,7 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
   const maxYear = Math.max(...years);
 
   useEffect(() => {
-    setStartYearFilter(minYear);
+    setStartYearFilter(Math.min(maxYear - 1, Math.max(1990, minYear)));
     setEndYearFilter(maxYear);
   }, [yearlyData.length, maxYear, minYear]);
 

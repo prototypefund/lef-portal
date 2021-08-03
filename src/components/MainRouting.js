@@ -19,6 +19,8 @@ import { Col, Row, Toast } from "react-bootstrap";
 import { WidgetEmbeddingPage } from "./WidgetEmbeddingPage";
 import { LefModal } from "./shared/LefModal";
 import { fetchAllRegions } from "../redux/dataSlice";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import { SetNewPassword } from "./pages/SetNewPassword";
 
 export const getCityPath = (city) => `/result/${city}`;
 export const PATHS = {
@@ -26,6 +28,10 @@ export const PATHS = {
   RESULT: "/result/:regionId",
   SIGN_IN: "/signIn",
   SIGN_UP: "/signUp",
+  RESET_PASSWORD: "/resetPassword",
+  SET_NEW_PASSWORD: (email, code) =>
+    `/setPassword/${email ? email : ":email"}/${code ? code : ":code"}`,
+  SET_NEW_PASSWORD_BLANK: "/setPassword",
   IMPRINT: "/imprint",
   EMBEDDING: "/embeddedWidget/:regionId/:widgetId/:colorPalette/:fontStyle",
 };
@@ -35,7 +41,9 @@ const MainRouting = ({ location = {}, history = {} }) => {
   const authStatus = useSelector((state) => state.auth.authState);
   const toasts = useSelector((state) => state.notifications);
   const loggedIn = authStatus === AUTH_STATES.loggedIn;
-  const requestLogIn = authStatus === AUTH_STATES.logInRequest;
+  const embeddingMode = location.pathname.startsWith("/embeddedWidget");
+  const showRequestLoginModal =
+    authStatus === AUTH_STATES.logInRequest && !embeddingMode;
 
   useEffect(() => {
     dispatch(fetchAllRegions());
@@ -48,12 +56,13 @@ const MainRouting = ({ location = {}, history = {} }) => {
   }, [authStatus, dispatch, loggedIn]);
 
   const pages = [
-    {
+    /*  {
       id: "1",
       label: "Token löschen",
       action: () => localStorage.removeItem("token"),
       button: true,
     },
+  */
     {
       id: "3",
       label: "Anmelden",
@@ -77,9 +86,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
   ];
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      {!location.pathname.startsWith("/embeddedWidget") && (
-        <Header pages={pages} loggedIn={loggedIn} />
-      )}
+      {!embeddingMode && <Header pages={pages} loggedIn={loggedIn} />}
       <div className={"d-flex flex-grow-1 pt-3 p-sm-1 p-md-3"}>
         <Switch>
           <Route path={PATHS.IMPRINT}>
@@ -107,6 +114,18 @@ const MainRouting = ({ location = {}, history = {} }) => {
             path={PATHS.ACCOUNT}
             component={AccountPage}
           />
+
+          <Route path={PATHS.RESET_PASSWORD}>
+            <ResetPasswordPage />
+          </Route>
+
+          <Route path={PATHS.SET_NEW_PASSWORD()}>
+            <SetNewPassword />
+          </Route>
+
+          <Route path={PATHS.SET_NEW_PASSWORD_BLANK}>
+            <SetNewPassword />
+          </Route>
 
           <Route path="/">
             <StartPage
@@ -140,7 +159,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
             onClick: () => dispatch(requestSignOut()),
           },
         ]}
-        show={requestLogIn}
+        show={showRequestLoginModal}
         title={"Erneut Einloggen"}
         content={
           <Col className={"m-2 pr-4"}>

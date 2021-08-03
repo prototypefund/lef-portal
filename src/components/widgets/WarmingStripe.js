@@ -46,7 +46,7 @@ const mapToScale = (value, oldMin, oldMax, newMin, newMax) => {
   return newMin + percent * (newMax - newMin);
 };
 
-const YEAR_RANGE = [1950, 2021];
+const YEAR_RANGE = [1990, 2021];
 const REFERENCE_RANGE = [1961, 1990];
 
 export const WarmingStripe = ({ climateData = [] }) => {
@@ -59,6 +59,17 @@ export const WarmingStripe = ({ climateData = [] }) => {
     yearlyMeans.push({ mean: yearMean, year });
   });
 
+  const startYear = Math.min(...yearlyMeans.map((y) => y.year));
+  const endYear = Math.max(...yearlyMeans.map((y) => y.year));
+
+  if (startYear > 1961 || endYear < 2015) {
+    return (
+      <p className={"alert alert-light"}>
+        Für die Darstellung von WarmingStripes stehen leider zu wenig Daten zur
+        Verfügung.{" "}
+      </p>
+    );
+  }
   yearlyMeans = yearlyMeans.filter(
     (y) => y.year >= YEAR_RANGE[0] && y.year <= YEAR_RANGE[1]
   );

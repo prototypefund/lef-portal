@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { callApi, lefApi } from "../api/lefApi";
 import { addNotificationMessage } from "./notificationSlice";
 
@@ -12,6 +12,7 @@ export const AUTH_STATES = {
   loggedOut: "loggedOut",
   logInRequest: "logInRequest",
 };
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -19,20 +20,29 @@ const authSlice = createSlice({
       ? AUTH_STATES.loggedIn
       : AUTH_STATES.loggedOut,
     message: "",
+    passwordResetMessage: "",
     user: {},
   },
   reducers: {
     updateAuthState: (state, action) => {
       const { authState, message } = action.payload;
-      return { authState, message };
+      if (authState) state.authState = authState;
+      if (message) state.message = message;
     },
     setUserData: (state, action) => {
       if (action.payload.user) state.user = action.payload.user;
     },
+    setPasswordResetMessage: (state, action) => {
+      state.passwordResetMessage = action.payload;
+    },
   },
 });
 
-export const { updateAuthState, setUserData } = authSlice.actions;
+export const {
+  updateAuthState,
+  setUserData,
+  setPasswordResetMessage,
+} = authSlice.actions;
 export default authSlice.reducer;
 
 export const handleApiError = (error) => (dispatch) => {
@@ -59,8 +69,8 @@ export const requestSignIn = (username, password) => (dispatch) => {
     .then((response) => {
       if (response.data) {
         localStorage.setItem("token", response.data);
+        dispatch(updateAuthState({ authState: AUTH_STATES.loggedIn }));
       }
-      dispatch(updateAuthState({ authState: AUTH_STATES.loggedIn }));
     })
     .catch(function (error) {
       const { response = {} } = error;
@@ -68,7 +78,7 @@ export const requestSignIn = (username, password) => (dispatch) => {
       const { error: errorText } = data;
       dispatch(
         updateAuthState({
-          authState: AUTH_STATES.loggedOut,
+          // authState: AUTH_STATES.loggedOut,
           message:
             errorText ||
             "Es konnte keine Verbindung hergestellt werden. Bitte prüfen Sie Ihre Internetverbindung.",
@@ -81,6 +91,19 @@ export const requestSignOut = () => (dispatch) => {
   localStorage.removeItem("token");
   localStorage.clear();
   dispatch(updateAuthState({ authState: AUTH_STATES.loggedOut }));
+};
+
+export const requestResetPassword = (email) => (dispatch) => {
+  dispatch(setPasswordResetMessage(""));
+  dispatch(callApi(() => lefApi.resetPassword(email))).then((response) => {
+    dispatch(setPasswordResetMessage(response.data.message));
+  });
+};
+
+export const setNewPassword = (email, code, newPassword) => (dispatch) => {
+  dispatch(
+    callApi(() => lefApi.setNewPassword(email, code, newPassword))
+  ).then((response) => {});
 };
 
 export const requestAddRegionToAccount = (regionId, message) => (dispatch) => {

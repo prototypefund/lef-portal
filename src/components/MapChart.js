@@ -18,7 +18,12 @@ const defaultLat = 51.2;
 
 const MapChart = ({ lon, lat, regions = [], onRegionClick, dots = [] }) => {
   const { theme } = useContext(ThemeContext);
-  const { COLOR_TEXT_BRIGHT, NAVIGATION_COLOR } = theme.colors;
+  const {
+    COLOR_TEXT_BRIGHT,
+    NAVIGATION_COLOR,
+    INTERACTIVE_ELEMENT_COLOR,
+    PRIMARY_COLOR_DARK,
+  } = theme.colors;
   const [hoveredRegion, setHoveredRegion] = useState(null);
   const [hoveredDot, setHoveredDot] = useState(null);
   const allPostalcodes = regions
@@ -40,7 +45,9 @@ const MapChart = ({ lon, lat, regions = [], onRegionClick, dots = [] }) => {
       fill: isHovered
         ? "#444"
         : allPostalcodes.includes(geo.properties.plz)
-        ? NAVIGATION_COLOR
+        ? geosRegion.objectiveWidget
+          ? PRIMARY_COLOR_DARK
+          : NAVIGATION_COLOR
         : COLOR_TEXT_BRIGHT,
       outline: "#FFF",
       stroke: isHovered ? "#444" : "#646464",
