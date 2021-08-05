@@ -1,11 +1,31 @@
 import { Bar } from "react-chartjs-2";
+import { aggregateByYear, mapToScale, mean, roundToN } from "../../utils/utils";
 
-const options = {
+const options = (weatherStationName, dataset = [], referenceMean) => ({
   responsive: true,
   plugins: {
     legend: {
       display: false,
     },
+    tooltip: {
+      callbacks: {
+        label: (context) => {
+          const { dataIndex } = context;
+          let value = dataset[dataIndex];
+          return value
+            ? `Durchschnittstemperatur: ${roundToN(value, 2)}° Celsius`
+            : "";
+        },
+      },
+    },
+    title: {
+      text: `WarmingStripes für ${weatherStationName}`,
+      display: true,
+      position: "bottom",
+    },
+  },
+  layout: {
+    padding: 0,
   },
   scales: {
     y: {
@@ -20,7 +40,7 @@ const options = {
       },
     },
   },
-};
+});
 
 const WARMING_COLORS = [
   "#08306b",
@@ -40,29 +60,19 @@ const WARMING_COLORS = [
   "#a50f15",
   "#67000d",
 ];
-
-const mapToScale = (value, oldMin, oldMax, newMin, newMax) => {
-  const percent = (value - oldMin) / (oldMax - oldMin);
-  return newMin + percent * (newMax - newMin);
-};
-
-const YEAR_RANGE = [1990, 2021];
 const REFERENCE_RANGE = [1961, 1990];
+const YEAR_RANGE = [REFERENCE_RANGE[0], new Date().getFullYear()];
+const DEVIATION = 2.5;
 
-export const WarmingStripe = ({ climateData = [] }) => {
-  let yearlyMeans = [];
-  climateData.forEach((climateDataEntry) => {
-    const { monthlyData = [], year } = climateDataEntry;
-    const monthlyMeans = monthlyData.map((m) => m.temperatureMean);
-    const yearMean =
-      monthlyMeans.reduce((a, b) => a + b, 0) / monthlyMeans.length;
-    yearlyMeans.push({ mean: yearMean, year });
-  });
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
-  const startYear = Math.min(...yearlyMeans.map((y) => y.year));
-  const endYear = Math.max(...yearlyMeans.map((y) => y.year));
+export const WarmingStripe = ({ climateData = [], weatherStationName }) => {
+  let yearlyData = aggregateByYear(climateData);
 
-  if (startYear > 1961 || endYear < 2015) {
+  const years = yearlyData.map((y) => y.year);
+  const startYear = Math.min(...years);
+  const endYear = Math.max(...years);
+  if (startYear > REFERENCE_RANGE[0] || endYear < REFERENCE_RANGE[1] + 10) {
     return (
       <p className={"alert alert-light"}>
         Für die Darstellung von WarmingStripes stehen leider zu wenig Daten zur
@@ -70,56 +80,36 @@ export const WarmingStripe = ({ climateData = [] }) => {
       </p>
     );
   }
-  yearlyMeans = yearlyMeans.filter(
+  let displayData = yearlyData.filter(
     (y) => y.year >= YEAR_RANGE[0] && y.year <= YEAR_RANGE[1]
   );
-
-  const min = Math.min(...yearlyMeans.map((y) => y.mean));
-  const max = Math.max(...yearlyMeans.map((y) => y.mean));
-
-  yearlyMeans = yearlyMeans.map((y) => ({
-    ...y,
-    mean: (y.mean - min) / (max - min),
-  }));
-
-  const referenceData = yearlyMeans.filter(
+  const referenceData = yearlyData.filter(
     (entry) =>
       entry.year > REFERENCE_RANGE[0] && entry.year < REFERENCE_RANGE[1]
   );
-  const referenceMean =
-    referenceData.map((d) => d.mean).reduce((a, b) => a + b, 0) /
-    referenceData.length;
-  const maxColorValue = referenceMean < 0.5 ? 1 : 2 * referenceMean;
-  const minColorValue = referenceMean > 0.5 ? 0 : 2 * referenceMean - 1;
-  // console.debug({ referenceMean, minColorValue, maxColorValue });
+  const referenceMean = mean(referenceData.map((d) => d.mean));
+  const maxColorValue = referenceMean + DEVIATION;
+  const minColorValue = referenceMean - DEVIATION;
+
+  const displayDataMeans = displayData.map((y) => y.mean);
 
   const data = {
-    labels: yearlyMeans.map((entry) => entry.year),
+    labels: displayData.map((y) => y.year),
     datasets: [
       {
         data: [...Array(100).keys()].map(() => 100),
-        // data: yearlyMeans.map((y) => y.mean),
-        backgroundColor: yearlyMeans.map((entry) => {
-          const temperature = entry.mean;
-
-          const difference = temperature - referenceMean;
-          const differenceConverted = mapToScale(
-            difference,
-            -1,
-            1,
-            minColorValue,
-            maxColorValue
-          );
+        barPercentage: 1,
+        categoryPercentage: 1,
+        backgroundColor: displayDataMeans.map((temperature) => {
           const index = Math.round(
             mapToScale(
-              differenceConverted,
+              clamp(temperature, minColorValue, maxColorValue),
               minColorValue,
               maxColorValue,
               0,
               WARMING_COLORS.length - 1
             )
           );
-          // console.debug({difference, differenceConverted, index});
           return WARMING_COLORS[index];
         }),
       },
@@ -128,7 +118,15 @@ export const WarmingStripe = ({ climateData = [] }) => {
 
   return (
     <>
-      <Bar data={data} options={options} />
+      <Bar
+        data={data}
+        options={options(weatherStationName, displayDataMeans, referenceMean)}
+        type={"bar"}
+      />
+      <p>{`In ${weatherStationName} betrug die Durchschnittstemperatur im Zeitraum zwischen 1961 und 1990 etwa ${roundToN(
+        referenceMean,
+        2
+      )}° Celsius.`}</p>
     </>
   );
 };

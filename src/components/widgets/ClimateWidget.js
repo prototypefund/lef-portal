@@ -21,6 +21,8 @@ import { requestUpdateRegion } from "../../redux/dataSlice";
 import { LefSpinner } from "../shared/LefSpinner";
 import { LefModal } from "../shared/LefModal";
 import MapChart from "../MapChart";
+import { aggregateByYear } from "../../utils/utils";
+import { Heading } from "../shared/Heading";
 
 export const ClimateWidget = ({ year, months, regionData, editMode }) => {
   const dispatch = useDispatch();
@@ -31,6 +33,7 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
   const [showTemperature, setShowTemperature] = useState(true);
   const [startYearFilter, setStartYearFilter] = useState();
   const [endYearFilter, setEndYearFilter] = useState();
+  const [aggregateByYearFlag, setAggregateByYear] = useState(true);
   const allWeatherStations = useSelector(
     (state) => state.climate.weatherStationList
   );
@@ -39,27 +42,41 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
     (state) => state.climate.singleWeatherStations[weatherStationId] || {}
   );
   const { weatherStation, climateData: yearlyData = [] } = climateChart;
+
+  let yearlyMeans = aggregateByYear(
+    yearlyData.filter(
+      (data) => data.year >= startYearFilter && data.year <= endYearFilter
+    )
+  );
+
   let temperatureMeans = [];
   let rainfalls = [];
   let labels = [];
-  yearlyData
-    .filter(
-      (data) => data.year >= startYearFilter && data.year <= endYearFilter
-    )
-    .forEach((yearData) => {
-      const { monthlyData = [], year } = yearData;
-      monthlyData.forEach((monthData) => {
-        const {
-          month: monthNumber,
-          rainfall,
-          temperatureMean,
-          // temperatureMaxMean,
-        } = monthData;
-        temperatureMeans.push(temperatureMean);
-        rainfalls.push(rainfall);
-        labels.push(`${year}|${monthNumber}`);
+
+  if (aggregateByYearFlag) {
+    labels = yearlyMeans.map((y) => y.year);
+    rainfalls = yearlyMeans.map((y) => y.rainfallMean);
+    temperatureMeans = yearlyMeans.map((y) => y.mean);
+  } else {
+    yearlyData
+      .filter(
+        (data) => data.year >= startYearFilter && data.year <= endYearFilter
+      )
+      .forEach((yearData) => {
+        const { monthlyData = [], year } = yearData;
+        monthlyData.forEach((monthData) => {
+          const {
+            month: monthNumber,
+            rainfall,
+            temperatureMean,
+            // temperatureMaxMean,
+          } = monthData;
+          temperatureMeans.push(temperatureMean);
+          rainfalls.push(rainfall);
+          labels.push(`${year}|${monthNumber}`);
+        });
       });
-    });
+  }
 
   const rainFallSet = {
     label: "Niederschlag",
@@ -206,10 +223,11 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
     <Container {...(editMode && { style: { minHeight: 400 } })}>
       {editMode && SelectWeatherStation}
       {weatherStation && (
-        <Row>
-          <Col>
-            <p>{`Wetterstation: ${weatherStation}`}</p>
-          </Col>
+        <Row className={"mb-3"}>
+          <Heading
+            size={"h5"}
+            text={`Klimadaten der Wetterstation ${weatherStation}`}
+          />
         </Row>
       )}
       {!isFetching && (
@@ -230,6 +248,15 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
               checked={showTemperature}
               label={"Durchschnittstemperatur anzeigen"}
               onChange={() => setShowTemperature(!showTemperature)}
+            />
+          </FormGroup>
+          <FormGroup controlId={"switchAggergateByYear"}>
+            <FormCheck
+              type={"switch"}
+              className={"mt-2 mb-3"}
+              checked={!aggregateByYearFlag}
+              label={"monatliche Werte anzeigen"}
+              onChange={() => setAggregateByYear(!aggregateByYearFlag)}
             />
           </FormGroup>
           <Row>

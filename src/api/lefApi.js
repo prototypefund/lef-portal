@@ -9,13 +9,11 @@ const axios = require("axios");
 export const lefApi = {
   // USER & AUTH
   signUp: (username, password) => {},
-  signIn: (username, password) => {
-    // return Promise.resolve({ data: { token: "myToken" } });
-    return apiRequest("/token/get", {
+  signIn: (username, password) =>
+    apiRequest("/token/get", {
       email: username,
       password: password,
-    });
-  },
+    }),
   getUser: () => apiRequest("/user/get", {}, true),
   resetPassword(email) {
     return Promise.resolve({ data: { message: "Test" } });
@@ -24,6 +22,8 @@ export const lefApi = {
   },
   setNewPassword: (email, key, newPassword) =>
     apiRequest("/password/set", { email, key, password: newPassword }),
+  changePassword: (email, oldPassword, newPassword) =>
+    apiRequest("/password/change", { email, oldPassword, newPassword }, true),
 
   // REGIONS
   getRegionData: (regionId) => apiRequest("/region/get", { _id: regionId }),
@@ -90,9 +90,9 @@ export const lefApi = {
   updateAction: (updatedAction) =>
     apiRequest("/action/update", { action: updatedAction }, true),
 
-  getClimateChart: (weatherStationId, year, months) =>
+  getClimateChart: (weatherStationDataId, year, months) =>
     apiRequest("/climatechart/get", {
-      weatherStationName: "Münster",
+      weatherStationDataId,
       year,
       months,
     }),

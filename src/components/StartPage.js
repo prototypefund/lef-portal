@@ -54,15 +54,9 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
   let mainTitle = "Wie läuft der Klimaschutz in..";
   return (
     <div className={"col"}>
-      {/*<Button
-          onClick={() =>
-            dispatch(
-              requestCreateRegion("Münster", [ 48167, ])
-            )
-          }
-        >
-          Neue Region
-        </Button>*/}
+      {/*/!* <Button onClick={() => dispatch(requestCreateRegion("Demo-Region", []))}>*/}
+      {/*   Neue Region*/}
+      {/* </Button>*!/*/}
 
       <Container
         // fluid={"sm"}

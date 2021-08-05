@@ -8,6 +8,7 @@ import {
   updateActionForRegion,
   updateRegionData,
 } from "../dataSlice";
+import { requestChangePassword } from "../authSlice";
 
 export const notifier = ({ dispatch }) => (next) => (action) => {
   // console.debug("TYPE: ", action.type);
@@ -63,6 +64,22 @@ export const notifier = ({ dispatch }) => (next) => (action) => {
         )
       );
       break;
+    case requestChangePassword.fulfilled.type:
+      dispatch(
+        addNotificationMessage(
+          message_changesSaved,
+          "Ihr Passwort wurde erfolgreich geändert."
+        )
+      );
+      break;
+    case requestChangePassword.rejected.type:
+      dispatch(
+        addNotificationMessage(
+          message_changesSaved,
+          "Beim Ändern des Passworts ist ein Fehler aufgetreten. Bitte prüfen Sie, ob das bisherige Passwort korrekt ist.",
+          "Warning"
+        )
+      );
     default:
       break;
   }

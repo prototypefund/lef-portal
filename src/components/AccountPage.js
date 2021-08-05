@@ -3,15 +3,22 @@ import { Button, Card, CardGroup, Col, Form, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import EmbeddingWizard from "./embedding/EmbeddingWizard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PasswordChangeDialog } from "./accountPageComponents/PasswordChangeDialog";
 import { AddRegionDialog } from "./accountPageComponents/AddRegionDialog";
-import { requestAddRegionToAccount } from "../redux/authSlice";
+import {
+  requestAddRegionToAccount,
+  requestChangePassword,
+  resetChangePasswordState,
+} from "../redux/authSlice";
+import { REQUEST_STATES } from "../redux/consts";
+import { usePrevious } from "../hooks/usePrevious";
 
 export const AccountPage = () => {
   const dispatch = useDispatch();
   const regions = useSelector((state) => state.data.regionData);
-  const userData = useSelector((state) => state.auth.user) || {};
+  const auth = useSelector((state) => state.auth) || {};
+  const { user: userData = {}, changePasswordState } = auth;
   const { username: userName, email, regionIds = [] } = userData;
   const [showEmbeddingDialog, setShowEmbeddingDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
@@ -19,6 +26,18 @@ export const AccountPage = () => {
   const myRegions = regionIds
     .map((id) => regions.find((r) => r._id === id))
     .filter((r) => r);
+  const previousPasswordState = usePrevious(changePasswordState);
+
+  useEffect(() => {
+    if (
+      changePasswordState === REQUEST_STATES.FULFILLED &&
+      previousPasswordState !== changePasswordState &&
+      showPasswordDialog
+    ) {
+      setShowPasswordDialog(false);
+      dispatch(resetChangePasswordState());
+    }
+  }, [changePasswordState]);
   return (
     <Col>
       <Heading size={"h1"} text={"Accountverwaltung"} />
@@ -149,9 +168,8 @@ export const AccountPage = () => {
 
       <PasswordChangeDialog
         show={showPasswordDialog}
-        onSubmit={() => {
-          setShowPasswordDialog(false);
-          // TODO dispatch(requestReplacePassword(oldPassword, newPassword));
+        onSubmit={(oldPassword, newPassword) => {
+          dispatch(requestChangePassword({ email, oldPassword, newPassword }));
         }}
         onCancel={() => setShowPasswordDialog(false)}
       />

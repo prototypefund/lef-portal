@@ -4,6 +4,7 @@ import { Col, Row } from "react-bootstrap";
 import { useEffect } from "react";
 import { fetchWeatherData } from "../../redux/climateSlice";
 import { LefSpinner } from "../shared/LefSpinner";
+import { Heading } from "../shared/Heading";
 
 export const WarmingStripeWidget = ({ regionData }) => {
   const dispatch = useDispatch();
@@ -25,11 +26,17 @@ export const WarmingStripeWidget = ({ regionData }) => {
     <LefSpinner hideBackground />
   ) : (
     <Col>
-      <Row>
-        <p>{`WarmingStripes für Wetterstation: ${weatherStation}`}</p>
+      <Row className={"mb-3"}>
+        <Heading
+          size={"h5"}
+          text={`WarmingStripes für die Wetterstation ${weatherStation}`}
+        />
       </Row>
       <Row>
-        <WarmingStripe climateData={yearlyData} />
+        <WarmingStripe
+          climateData={yearlyData}
+          weatherStationName={weatherStation}
+        />
       </Row>
     </Col>
   );
