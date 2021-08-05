@@ -15,7 +15,6 @@ import {
   requestGetAllClimateStations,
 } from "../../redux/climateSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { Typeahead } from "react-bootstrap-typeahead";
 import { isArray } from "chart.js/helpers";
 import { requestUpdateRegion } from "../../redux/dataSlice";
 import { LefSpinner } from "../shared/LefSpinner";
@@ -23,6 +22,7 @@ import { LefModal } from "../shared/LefModal";
 import MapChart from "../MapChart";
 import { aggregateByYear } from "../../utils/utils";
 import { Heading } from "../shared/Heading";
+import { LefSelect } from "../shared/LefSelect";
 
 export const ClimateWidget = ({ year, months, regionData, editMode }) => {
   const dispatch = useDispatch();
@@ -123,11 +123,9 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
     .map((key) => allWeatherStations[key])
     .sort((a, b) => (a.weatherStationName < b.weatherStationName ? -1 : 1));
   const selectWeatherStationTypeahead = (
-    <Typeahead
+    <LefSelect
       style={{ width: "100%" }}
       isLoading={allWeatherStations.length === 0}
-      autoFocus
-      highlightOnlyResult
       id={"weatherStationSelect"}
       onChange={(values) =>
         isArray(values) &&
@@ -144,7 +142,6 @@ export const ClimateWidget = ({ year, months, regionData, editMode }) => {
         label: weatherStation.weatherStationName,
         value: weatherStation._id,
       }))}
-      emptyLabel={"Keine Ergebnisse."}
     />
   );
   const SelectWeatherStation = (

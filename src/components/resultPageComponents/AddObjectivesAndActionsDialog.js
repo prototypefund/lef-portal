@@ -10,18 +10,7 @@ import {
   requestUpdateObjective,
 } from "../../redux/dataSlice";
 import { usePrevious } from "../../hooks/usePrevious";
-
-export const getYYYYMMDD = (date) => {
-  const dateObj = new Date(date);
-  const mm = dateObj.getMonth() + 1;
-  const dd = dateObj.getDate();
-
-  return [
-    dateObj.getFullYear(),
-    (mm > 9 ? "" : "0") + mm,
-    (dd > 9 ? "" : "0") + dd,
-  ].join("-");
-};
+import { getYYYYMMDD } from "../../utils/utils";
 
 const optionsMapping = (objective) => ({
   label: objective.title,
@@ -50,7 +39,7 @@ export const AddObjectivesAndActionsDialog = ({
 
   const sourceObject = isAction ? editedAction : editedObjective || {};
   const [isSaving, setIsSaving] = useState(false);
-  const [title, setTitle] = useState(sourceObject.title || "Test");
+  const [title, setTitle] = useState(sourceObject.title || "");
   const [budget, setBudget] = useState(sourceObject.budget || "0");
   const [startDate, setStartDate] = useState(
     sourceObject.startDate ? getYYYYMMDD(sourceObject.startDate) : "01.01.2020"
@@ -59,10 +48,10 @@ export const AddObjectivesAndActionsDialog = ({
     sourceObject.endDate ? getYYYYMMDD(sourceObject.endDate) : "01.01.2030"
   );
   const [description, setDescription] = useState(
-    sourceObject.description || "Test Beschreibung"
+    sourceObject.description || ""
   );
   const [tags, setTags] = useState(
-    sourceObject.tags ? sourceObject.tags.join(" ") : "Test"
+    sourceObject.tags ? sourceObject.tags.join(" ") : ""
   );
   const [selectedObjectives, setSelectedObjectives] = useState(
     sourceObject.objectiveIds

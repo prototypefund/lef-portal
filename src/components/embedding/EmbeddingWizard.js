@@ -1,21 +1,29 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Heading } from "../shared/Heading";
 import { WIDGETS } from "../widgets/getWidget";
 import { LefModal } from "../shared/LefModal";
 import { addNotificationMessage } from "../../redux/notificationSlice";
 import { useDispatch } from "react-redux";
+import { pleaseChoose } from "../../assets/consts";
+import { LefSelect } from "../shared/LefSelect";
+import { Menu, MenuItem } from "react-bootstrap-typeahead";
+import { MenuGroupLabel } from "../shared/MenuGroupLabel";
 
 const ROOT_URL = `https://portal.emission-framework.org`;
 // const ROOT_URL = `http://localhost:3000`;
 
-const EmbeddingWizard = ({ regions, open, onClose }) => {
+const EmbeddingWizard = ({ ownRegionIds, regions, open, onClose }) => {
   const dispatch = useDispatch();
   const [previewColorPalette, setPreviewColorPalette] = useState("default");
   const [previewFontStyle, setPreviewFontStyle] = useState("sansSerif");
   const [widgetId, setWidgetId] = useState(1);
   const [regionId, setRegionId] = useState(undefined);
-  const pleaseChoose = "Bitte auswählen..";
+
+  const convertedRegions = regions.map((r) => ({
+    ...r,
+    own: ownRegionIds.includes(r._id),
+  }));
 
   useEffect(() => {
     if (regions.length > 0) setRegionId(regions[0]._id);
@@ -56,15 +64,50 @@ const EmbeddingWizard = ({ regions, open, onClose }) => {
                 </Form.Group>
                 <Form.Group as={"div"} controlId="formRegionSelect">
                   <Form.Label>Darzustellende Region</Form.Label>
-                  <Form.Control
-                    as="select"
-                    defaultValue={pleaseChoose}
-                    onChange={(event) => setRegionId(event.target.value)}
-                  >
-                    {regions.map((region) => (
-                      <option value={region._id}>{region.name}</option>
-                    ))}
-                  </Form.Control>
+                  <LefSelect
+                    id={"formRegionSelect"}
+                    onChange={(values) => values && setRegionId(values[0])}
+                    placeholder={pleaseChoose}
+                    options={convertedRegions.map((region) => ({
+                      label: region.name,
+                      value: region._id,
+                      own: region.own,
+                    }))}
+                    renderMenu={(results, menuProps) => {
+                      const ownRegionsResults = results.filter((r) => r.own);
+                      const noResultsLine = (
+                        <>
+                          <p className={"font-italic ml-4"}>
+                            Keine Ergebnisse.
+                          </p>
+                        </>
+                      );
+                      return (
+                        <Menu {...menuProps}>
+                          <MenuGroupLabel label={"Meine Regionen"} />
+                          {ownRegionsResults.length === 0 && noResultsLine}
+                          {ownRegionsResults.map((result, index) => (
+                            <MenuItem option={result} position={index}>
+                              {result.label}
+                            </MenuItem>
+                          ))}
+
+                          <MenuGroupLabel label={"Alle Regionen"} />
+                          {results.length === 0 && noResultsLine}
+                          {results
+                            .sort((a, b) => (a.label < b.label ? -1 : 1))
+                            .map((result, index) => (
+                              <MenuItem
+                                option={result}
+                                position={index + ownRegionsResults.length}
+                              >
+                                {result.label}
+                              </MenuItem>
+                            ))}
+                        </Menu>
+                      );
+                    }}
+                  />
                 </Form.Group>
                 <Form.Group as={"div"} controlId="formColorThemeSelect">
                   <Form.Label>Farbpalette</Form.Label>

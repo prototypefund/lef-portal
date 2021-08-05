@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Accordion,
@@ -6,6 +6,7 @@ import {
   ButtonGroup,
   Col,
   Container,
+  Overlay,
   Row,
 } from "react-bootstrap";
 import * as PropTypes from "prop-types";
@@ -24,9 +25,42 @@ import { ConfirmDialog } from "../shared/ConfirmDialog";
 import { ThemeContext } from "../theme/ThemeContext";
 import { LefModal } from "../shared/LefModal";
 import { LefSpinner } from "../shared/LefSpinner";
+import { GermanDateString } from "../shared/GermanDateString";
+import { InfoCircle } from "react-bootstrap-icons";
 
 const OBJECTIVE_DELETE = "OBJECTIVE_DELETE";
 const ACTION_DELETE = "ACTION_DELETE";
+
+const InfoIconWithTooltip = ({ tooltipText }) => {
+  const [show, setShow] = useState(false);
+  const target = useRef(null);
+  return (
+    <>
+      <InfoCircle
+        ref={target}
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onClick={() => setShow(!show)}
+      />
+      <Overlay target={target.current} show={show} placement="right">
+        {({ placement, arrowProps, show: _show, popper, ...props }) => (
+          <div
+            {...props}
+            style={{
+              backgroundColor: "rgba(100, 100, 100, 0.85)",
+              padding: "2px 10px",
+              color: "white",
+              borderRadius: 3,
+              ...props.style,
+            }}
+          >
+            {tooltipText}
+          </div>
+        )}
+      </Overlay>
+    </>
+  );
+};
 
 ConfirmDialog.propTypes = {
   show: PropTypes.bool,
@@ -75,9 +109,13 @@ export const ObjectivesWidget = (props) => {
       .filter((o) => o)
       .sort((a, b) => new Date(a.endDate) - new Date(b.endDate))
       .map((objective, j) => {
-        const { description } = objective;
+        const {
+          description,
+          startDate: startDateString,
+          endDate: endDateString,
+        } = objective;
         const isLast = j === regionsObjectives.length - 1;
-        const endDate = new Date(objective.endDate);
+        const endDate = new Date(endDateString);
 
         const filteredActions = regionsActions.filter((action) =>
           action.objectiveIds.includes(objective._id)
@@ -178,9 +216,24 @@ export const ObjectivesWidget = (props) => {
               <Row>
                 <Col xs={12} className={"d-flex align-items-center mr-4 pl-0 "}>
                   <span
-                    className={"h4"}
+                    className={"h4 mr-2"}
                     style={{ width: "fit-content" }}
                   >{`${objective.title}`}</span>
+                  <InfoIconWithTooltip
+                    tooltipText={
+                      <Col>
+                        <span style={{ whiteSpace: "pre-wrap" }}>
+                          {`Ziel beschlossen am: `}
+                        </span>
+                        <GermanDateString date={startDateString} />
+                        <span
+                          style={{ whiteSpace: "pre-wrap" }}
+                        >{`\nGeplante Umsetzung des Ziels am: `}</span>
+                        <GermanDateString date={endDateString} />
+                      </Col>
+                    }
+                  />
+
                   {editMode && huge && (
                     <>
                       <EditButton

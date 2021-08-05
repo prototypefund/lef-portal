@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
 import MapChart from "./MapChart";
 import { Heading } from "./shared/Heading";
-import { Typeahead } from "react-bootstrap-typeahead";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { ThemeContext } from "./theme/ThemeContext";
 import { LefSpinner } from "./shared/LefSpinner";
+import { LefSelect } from "./shared/LefSelect";
 // import { requestCreateRegion } from "../redux/dataSlice";
 
 export const getTypeAheadOptions = (regions) => {
@@ -85,12 +85,11 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
               </Row>
               <Col>
                 <Row className={"w-100"}>
-                  <Typeahead
+                  <LefSelect
                     value={typeaheadText}
                     open={typeaheadText.length > 0}
                     onInputChange={(text) => setTypeaheadText(text)}
                     autoFocus
-                    highlightOnlyResult
                     style={{ width: "100%" }}
                     id={"citySelection"}
                     onChange={(values) => onCitySelect(values[0].value)}

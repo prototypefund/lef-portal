@@ -59,7 +59,7 @@ const authSlice = createSlice({
     [requestChangePassword.fulfilled]: (state) => {
       state.changePasswordState = REQUEST_STATES.FULFILLED;
     },
-    [requestChangePassword.rejected]: (state, action) => {
+    [requestChangePassword.rejected]: (state) => {
       state.changePasswordState = REQUEST_STATES.REJECTED;
     },
   },
@@ -74,9 +74,25 @@ export const {
 export default authSlice.reducer;
 
 export const handleApiError = (error) => (dispatch) => {
-  console.debug("ERROR", { error });
-  if (["Unauthorized", "Forbidden"].includes(error.response.data))
-    dispatch(updateAuthState({ authState: AUTH_STATES.logInRequest }));
+  console.debug("ERROR", error.response.data);
+  if (error.response.data && error.response.data.name) {
+    switch (error.response.data.name) {
+      case "JsonWebTokenError": // token is completely wrong
+      case "TokenExpiredError": // token expired, ask user to signIn again
+        dispatch(updateAuthState({ authState: AUTH_STATES.logInRequest }));
+        break;
+      default:
+        break;
+    }
+  } else if (["Unauthorized", "Forbidden"].includes(error.response.data)) {
+    // user tried to access a resource that she has no access to
+    dispatch(
+      addNotificationMessage(
+        "Zugriff nicht möglich",
+        "Sie verfügen für diese Aktion nicht über die notwendigen Rechte. Bitte loggen Sie sich ggf. mit einem anderen Account ein, um diese Aktion durchzuführen."
+      )
+    );
+  }
 };
 
 export const requestGetUser = () => (dispatch) => {
@@ -131,16 +147,18 @@ export const requestResetPassword = (email) => (dispatch) => {
 export const setNewPassword = (email, code, newPassword) => (dispatch) => {
   dispatch(
     callApi(() => lefApi.setNewPassword(email, code, newPassword))
-  ).then((response) => {});
+  ).then(() => {});
 };
 
-export const requestAddRegionToAccount = (regionId, message) => (dispatch) => {
-  // TODO send request to LEF team, then
-  dispatch(
-    addNotificationMessage(
-      "Antrag wurde weitergeleitet.",
-      "Ihr Antrag auf Hinzufügen einer Region wurde dem LEF-Team übermittelt. " +
-        "Nach Prüfung wird die Region Ihrem Account hinzugefügt. Dies kann einige Tage dauern."
-    )
-  );
-};
+export const requestAddRegionToAccount = () =>
+  // regionId, message
+  (dispatch) => {
+    // TODO send request to LEF team, then
+    dispatch(
+      addNotificationMessage(
+        "Antrag wurde weitergeleitet.",
+        "Ihr Antrag auf Hinzufügen einer Region wurde dem LEF-Team übermittelt. " +
+          "Nach Prüfung wird die Region Ihrem Account hinzugefügt. Dies kann einige Tage dauern."
+      )
+    );
+  };

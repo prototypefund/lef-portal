@@ -12,13 +12,13 @@ import {
 } from "../redux/dataSlice";
 import { WidgetContainer } from "./WidgetContainer";
 import { WIDGETS } from "./widgets/getWidget";
-import { Typeahead } from "react-bootstrap-typeahead";
 import { getTypeAheadOptions } from "./StartPage";
 import { getCityPath } from "./MainRouting";
 import { withRouter } from "react-router";
 import { LefSpinner } from "./shared/LefSpinner";
 import { AUTH_STATES } from "../redux/authSlice";
 import { isArray } from "chart.js/helpers";
+import { LefSelect } from "./shared/LefSelect";
 
 const ResultPage = ({ history, location }) => {
   const dispatch = useDispatch();
@@ -75,7 +75,7 @@ const ResultPage = ({ history, location }) => {
       </Row>
       <Row>
         <Col className={"mb-1"} xs={9}>
-          <Typeahead
+          <LefSelect
             /*renderInput={({ inputRef, ...inputProps }) => (
               <Hint
                 shouldSelect={(shouldSelect, e) =>
@@ -99,9 +99,7 @@ const ResultPage = ({ history, location }) => {
             defaultSelected={selectedRegion ? [selectedRegion] : []}
             id={"citySelection"}
             placeholder={"Stadt / Unternehmen"}
-            highlightOnlyResult
             options={typeAheadOptions}
-            emptyLabel={"Keine Ergebnisse."}
             inputProps={{
               style: {
                 paddingLeft: 0,

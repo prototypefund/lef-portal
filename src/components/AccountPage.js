@@ -37,7 +37,13 @@ export const AccountPage = () => {
       setShowPasswordDialog(false);
       dispatch(resetChangePasswordState());
     }
-  }, [changePasswordState]);
+  }, [
+    changePasswordState,
+    dispatch,
+    setShowPasswordDialog,
+    showPasswordDialog,
+    previousPasswordState,
+  ]);
   return (
     <Col>
       <Heading size={"h1"} text={"Accountverwaltung"} />
@@ -134,14 +140,15 @@ export const AccountPage = () => {
               </p>
             )}
           </CardGroup>
-          <div>
+
+          {/*<div>
             <Button
               className={"mt-2"}
               onClick={() => setShowAddRegionDialog(true)}
             >
               Region hinzufügen
             </Button>
-          </div>
+          </div>*/}
         </Col>
       </Row>
 
@@ -159,6 +166,7 @@ export const AccountPage = () => {
       </Row>
 
       <EmbeddingWizard
+        ownRegionIds={regionIds}
         regions={regions}
         open={showEmbeddingDialog}
         onClose={() => {

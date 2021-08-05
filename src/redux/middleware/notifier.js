@@ -80,6 +80,7 @@ export const notifier = ({ dispatch }) => (next) => (action) => {
           "Warning"
         )
       );
+      break;
     default:
       break;
   }

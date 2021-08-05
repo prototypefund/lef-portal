@@ -31,3 +31,20 @@ export const mean = (data) => data.reduce((a, b) => a + b, 0) / data.length;
 
 export const roundToN = (value, n) =>
   Math.round(value * Math.pow(10, n)) / Math.pow(10, n);
+
+export const isValidClimateValue = (value) => [-999, null].includes(value);
+
+export const toZeroIfInvalid = (value) =>
+  isValidClimateValue(value) ? value : 0;
+
+export const getYYYYMMDD = (date) => {
+  const dateObj = new Date(date);
+  const mm = dateObj.getMonth() + 1;
+  const dd = dateObj.getDate();
+
+  return [
+    dateObj.getFullYear(),
+    (mm > 9 ? "" : "0") + mm,
+    (dd > 9 ? "" : "0") + dd,
+  ].join("-");
+};
