@@ -137,21 +137,37 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
               </div>
               <div
                 style={{ bottom: 0, fontSize: 12 }}
-                className={"position-absolute w-100 d-flex align-items-center"}
+                className={
+                  "position-absolute w-100 d-flex align-items-center flex-column"
+                }
               >
-                <div className={"w-100 p-2"}>
-                  <span
+                <div className={"w-100 pl-2 p-1 d-flex align-items-center"}>
+                  <div
+                    style={{
+                      backgroundColor: theme.colors.PRIMARY_COLOR_DARK,
+                      color: "#FFF",
+                      marginRight: 7,
+                      borderRadius: 5,
+                      width: 20,
+                      height: 20,
+                    }}
+                  />
+                  <span>Diese Orte sind schon dabei</span>
+                </div>
+                <div
+                  className={"w-100 pl-2 pb-2 p-1 d-flex align-items-center"}
+                >
+                  <div
                     style={{
                       backgroundColor: theme.colors.NAVIGATION_COLOR,
                       color: "#FFF",
                       marginRight: 7,
-                      padding: 5,
                       borderRadius: 5,
+                      width: 20,
+                      height: 20,
                     }}
-                  >
-                    {"Diese Regionen"}
-                  </span>
-                  <span>sind schon dabei</span>
+                  />
+                  <span>nur Wetterdaten</span>
                 </div>
               </div>
               <MapChart
