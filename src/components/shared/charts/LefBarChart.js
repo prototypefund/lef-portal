@@ -2,21 +2,30 @@ import { Bar } from "react-chartjs-2";
 import React, { useContext } from "react";
 import { ThemeContext } from "../../theme/ThemeContext";
 
-const options = {
-  responsive: true,
-  scales: {
-    y: {
-      stacked: true,
-    },
-    x: {
-      stacked: true,
-    },
-  },
-};
-
-export function LefBarChart({ data }) {
+export function LefBarChart({ data, isPercent = false, xTitle = "" }) {
   const { theme } = useContext(ThemeContext);
   const { DIAGRAM_COLORS = [] } = theme.colors;
+
+  const options = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: Boolean(xTitle),
+        text: xTitle,
+        position: "bottom",
+      },
+    },
+    scales: {
+      y: {
+        stacked: true,
+        ...(isPercent && { min: 0, max: 100 }),
+      },
+      x: {
+        stacked: true,
+      },
+    },
+  };
+
   return (
     <Bar
       type={"bar"}

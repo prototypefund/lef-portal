@@ -77,6 +77,7 @@ export const AddObjectivesAndActionsDialog = ({
     onClose();
   };
 
+  // TODO react to other actions (createObjective, createAction, updateAction)
   useEffect(() => {
     if (previousIsUpdatingObjective && !isUpdatingObjective && isSaving) {
       closeDialog();

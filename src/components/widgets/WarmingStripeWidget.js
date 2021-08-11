@@ -1,26 +1,30 @@
-import { useDispatch, useSelector } from "react-redux";
 import { WarmingStripe } from "./WarmingStripe";
 import { Col, Row } from "react-bootstrap";
-import { useEffect } from "react";
-import { fetchWeatherData } from "../../redux/climateSlice";
+import { useMemo } from "react";
 import { LefSpinner } from "../shared/LefSpinner";
 import { Heading } from "../shared/Heading";
+import { useGetClimateChartQuery } from "../../redux/lefReduxApi";
 
 export const WarmingStripeWidget = ({ regionData }) => {
-  const dispatch = useDispatch();
   const { weatherStations = [] } = regionData;
   const [weatherStationId] = weatherStations;
-  const climateChart = useSelector(
-    (state) => state.climate.singleWeatherStations[weatherStationId] || {}
-  );
-  const isFetching = useSelector((state) => state.climate.isFetching);
+  const {
+    data: climateChart = {},
+    isFetching,
+    fulfilledTimeStamp,
+  } = useGetClimateChartQuery(weatherStationId);
+
   const { weatherStation, climateData: yearlyData = [] } = climateChart;
 
-  useEffect(() => {
-    if (weatherStationId) {
-      dispatch(fetchWeatherData(weatherStationId));
-    }
-  }, [dispatch, weatherStationId]);
+  const WarmingStripes = useMemo(
+    () => (
+      <WarmingStripe
+        climateData={yearlyData}
+        weatherStationName={weatherStation}
+      />
+    ),
+    [fulfilledTimeStamp]
+  );
 
   return isFetching ? (
     <LefSpinner hideBackground />
@@ -32,12 +36,7 @@ export const WarmingStripeWidget = ({ regionData }) => {
           text={`WarmingStripes für die Wetterstation ${weatherStation}`}
         />
       </Row>
-      <Row>
-        <WarmingStripe
-          climateData={yearlyData}
-          weatherStationName={weatherStation}
-        />
-      </Row>
+      <Row>{WarmingStripes}</Row>
     </Col>
   );
 };

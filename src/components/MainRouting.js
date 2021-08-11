@@ -8,19 +8,15 @@ import { SignUpPage } from "./SignUpPage";
 import { useDispatch, useSelector } from "react-redux";
 import { AccountPage } from "./AccountPage";
 import ProtectedRoute from "./ProtectedRoute";
-import {
-  AUTH_STATES,
-  requestGetUser,
-  requestSignOut,
-} from "../redux/authSlice";
+import { AUTH_STATES, requestSignOut } from "../redux/authSlice";
 import { useEffect } from "react";
 import { Header } from "./Header";
 import { Col, Row, Toast } from "react-bootstrap";
 import { WidgetEmbeddingPage } from "./WidgetEmbeddingPage";
 import { LefModal } from "./shared/LefModal";
-import { fetchAllRegions } from "../redux/dataSlice";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import { SetNewPassword } from "./pages/SetNewPassword";
+import { lefReduxApi, useGetUserQuery } from "../redux/lefReduxApi";
 
 export const getCityPath = (city) => `/result/${city}`;
 export const PATHS = {
@@ -38,22 +34,25 @@ export const PATHS = {
 
 const MainRouting = ({ location = {}, history = {} }) => {
   const dispatch = useDispatch();
-  const authStatus = useSelector((state) => state.auth.authState);
+  const auth = useSelector((state) => state.auth);
+  const { authState: authStatus, token } = auth;
   const toasts = useSelector((state) => state.notifications);
   const loggedIn = authStatus === AUTH_STATES.loggedIn;
   const embeddingMode = location.pathname.startsWith("/embeddedWidget");
   const showRequestLoginModal =
     authStatus === AUTH_STATES.logInRequest && !embeddingMode;
 
-  useEffect(() => {
-    dispatch(fetchAllRegions());
-  }, [dispatch]);
+  // const { data, isFetching } = useGetUserQuery();
+  // console.debug({ data, isFetching });
+
+  const [getUser] = lefReduxApi.endpoints.getUser.useLazyQuery();
 
   useEffect(() => {
-    if (loggedIn) {
-      dispatch(requestGetUser());
+    if (token && !loggedIn) {
+      // dispatch(requestGetUser());
+      getUser();
     }
-  }, [authStatus, dispatch, loggedIn]);
+  }, [token, loggedIn]);
 
   const pages = [
     /*  {

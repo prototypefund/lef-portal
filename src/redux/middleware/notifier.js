@@ -11,7 +11,7 @@ import {
 import { requestChangePassword } from "../authSlice";
 
 export const notifier = ({ dispatch }) => (next) => (action) => {
-  // console.debug("TYPE: ", action.type);
+  // console.debug("TYPE: ", action);
   const message_changesSaved = "Änderungen gespeichert";
   switch (action.type) {
     case requestUpdateObjective.fulfilled.type:

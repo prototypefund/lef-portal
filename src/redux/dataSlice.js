@@ -46,37 +46,6 @@ export const requestUpdateObjective = createAsyncThunk(
   }
 );
 
-export const fetchAllRegions = createAsyncThunk(
-  "regions/getAll",
-  async (_, thunkAPI) => {
-    const { dispatch } = thunkAPI;
-    const response = await dispatch(callApi(() => lefApi.getAllRegions()));
-    return response;
-  }
-);
-
-export const fetchAllObjectivesForRegion = createAsyncThunk(
-  "objective/get",
-  async (id, thunkAPI) => {
-    const { dispatch } = thunkAPI;
-    const response = await dispatch(
-      callApi(() => lefApi.getAllObjectivesForRegion(id))
-    );
-    return response;
-  }
-);
-
-export const fetchAllActionsForRegion = createAsyncThunk(
-  "actions/get",
-  async (id, thunkAPI) => {
-    const { dispatch } = thunkAPI;
-    const response = await dispatch(
-      callApi(() => lefApi.getAllActionsForRegion(id))
-    );
-    return response;
-  }
-);
-
 const dataSlice = createSlice({
   name: "data",
   initialState: {
@@ -148,27 +117,6 @@ const dataSlice = createSlice({
     },
   },
   extraReducers: {
-    [fetchAllRegions.pending]: (state) => {
-      state.isFetchingAllRegions = true;
-    },
-    [fetchAllRegions.fulfilled]: (state, action) => {
-      state.isFetchingAllRegions = false;
-      state.regionData = action.payload.data;
-    },
-    [fetchAllObjectivesForRegion.pending]: (state) => {
-      state.isFetchingObjectivesForRegion = true;
-    },
-    [fetchAllObjectivesForRegion.fulfilled]: (state, action) => {
-      state.isFetchingObjectivesForRegion = false;
-      state.objectivesForRegion[action.meta.arg] = action.payload.data;
-    },
-    [fetchAllActionsForRegion.pending]: (state) => {
-      state.isFetchingActionsForRegion = true;
-    },
-    [fetchAllActionsForRegion.fulfilled]: (state, action) => {
-      state.isFetchingActionsForRegion = false;
-      state.actionsForRegion[action.meta.arg] = action.payload.data;
-    },
     [requestUpdateObjective.pending]: (state) => {
       state.isUpdatingObjective = true;
     },
@@ -211,13 +159,6 @@ export const getRegionDataFromState = (state, regionId) => {
 };
 
 // REGIONS
-export const requestGetRegion = (regionId) => (dispatch) => {
-  lefApi
-    .getRegionData(regionId)
-    .then((response) =>
-      dispatch(setRegionData({ regionId, data: response.data }))
-    );
-};
 
 export const requestCreateRegion = (name, postalcodes) => (dispatch) => {
   lefApi

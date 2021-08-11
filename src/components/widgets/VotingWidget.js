@@ -1,108 +1,70 @@
 import { Col, Row } from "react-bootstrap";
 import React, { useEffect } from "react";
-import { requestGetVotingForDistrict } from "../../redux/votingSlice";
-import { useDispatch, useSelector } from "react-redux";
 import { LefBarChart } from "../shared/charts/LefBarChart";
+import { SelectVotingDistrictArea } from "./votingWidgetComponents/SelectVotingDistrictArea";
+import { lefReduxApi } from "../../redux/lefReduxApi";
+import { parties } from "../../assets/germanParties";
+import { isArrayWithOneElement, roundToN } from "../../utils/utils";
 
-const fakeElectionData = {
-  region: "Münster",
-  districtName: "Münster Innenstadt",
-  districtId: 123,
-  votingData: [
-    {
-      year: 2018,
-      eligibleVoters: 1900,
-      voters: 2000,
-      validVotes: 1650,
-      partyResults: [
-        {
-          party: "SPD",
-          result: 90,
-        },
-        {
-          party: "CDU",
-          result: 10,
-        },
-      ],
-    },
-    {
-      year: 2020,
-      eligibleVoters: 2900,
-      voters: 3000,
-      validVotes: 2650,
-      partyResults: [
-        {
-          party: "SPD",
-          result: 80,
-        },
-        {
-          party: "CDU",
-          result: 20,
-        },
-        {
-          party: "Grüne",
-          result: 50,
-        },
-      ],
-    },
-    {
-      year: 2022,
-      eligibleVoters: 2900,
-      voters: 3000,
-      validVotes: 2650,
-      partyResults: [
-        {
-          party: "SPD",
-          result: 70,
-        },
-        {
-          party: "Grüne",
-          result: 60,
-        },
-      ],
-    },
-  ],
-};
-
-const partyColors = {
-  SPD: `rgb(220,50,50)`,
-  Grüne: `rgb(50,160,50)`,
-  CDU: `rgb(50,50,50)`,
-};
-
-const getPartyColor = (party) => partyColors[party];
-
-export const VotingWidget = ({ regionData = {} }) => {
-  const dispatch = useDispatch();
-  const { votingId, districtId, districtName } = regionData;
-  useEffect(() => {
-    if (votingId || districtId || districtName)
-      dispatch(requestGetVotingForDistrict(votingId, districtId, districtName));
+let partyNameDictionary = {};
+Object.keys(parties).forEach((key) => {
+  const party = parties[key];
+  partyNameDictionary[party.short] = key;
+  party.names.forEach((name) => {
+    partyNameDictionary[name] = key;
   });
+});
 
-  const electionData =
-    useSelector((state) => state.voting[votingId]) || fakeElectionData;
+const getPartyColor = (party) => {
+  const partyObject = partyNameDictionary[party]
+    ? parties[partyNameDictionary[party]]
+    : {} || {};
+  return partyObject.primaryColor || "#DDD";
+};
+
+export const VotingWidget = ({ regionData = {}, editMode }) => {
+  const { votings = [] } = regionData;
+  // const { data: electionData = {} } = useGetVotingDataForDistrictQuery(isArrayWithOneElement(votings) ? votings[0] : null);
+  const [
+    getVotingDataForDistrict,
+    result = {},
+  ] = lefReduxApi.endpoints.getVotingDataForDistrict.useLazyQuery();
+  const { data: electionData = {} } = result;
+
+  useEffect(() => {
+    if (isArrayWithOneElement(votings)) {
+      getVotingDataForDistrict(votings[0]);
+    }
+  }, [votings]);
+
   const {
     // region,
     votingData = [],
-    // districtName: electionDistrictName,
+    districtName: electionDistrictName,
   } = electionData;
   let partyData = {};
   let labels = [];
+
   votingData.forEach((voting) => {
     const {
       // eligibleVoters,
       // voters,
-      // validVotes,
+      validVotes,
       year,
       partyResults = [],
     } = voting;
     labels.push(year);
     partyResults.forEach((partyResult) => {
       const { party, result } = partyResult;
-      partyData[party] = [...(partyData[party] || []), { year, result }];
+      partyData[party] = [
+        ...(partyData[party] || []),
+        { year, result: roundToN((result / validVotes) * 100, 1) },
+      ];
     });
   });
+
+  const startYear = Math.min(...votingData.map((d) => d.year));
+  const endYear = Math.max(...votingData.map((d) => d.year));
 
   const data = {
     labels: labels,
@@ -117,21 +79,29 @@ export const VotingWidget = ({ regionData = {} }) => {
     })),
   };
 
+  const title = `Wahlergebnisse der Region ${electionDistrictName}`;
+  const description = `Wahlergebnisse der Region ${electionDistrictName} im Zeitraum von ${startYear} bis ${endYear}:`;
   return (
     <Col>
+      {editMode && <SelectVotingDistrictArea regionData={regionData} />}
       {votingData.length > 0 ? (
-        <Row>
-          <Col sm={12} lg={12}>
-            <div style={{ width: "100%" }}>
-              <LefBarChart data={data} />
-            </div>
-          </Col>
-          {/*<Col sm={12} lg={4} className={"mt-sm-2"}>
+        <Col>
+          <Row>
+            <p>{description}</p>
+          </Row>{" "}
+          <Row>
+            <Col sm={12} lg={12}>
+              <div style={{ width: "100%" }}>
+                <LefBarChart data={data} isPercent xTitle={title} />
+              </div>
+            </Col>
+            {/*<Col sm={12} lg={4} className={"mt-sm-2"}>
           <p
             style={{ whiteSpace: "pre-wrap" }}
           >{`Die stärkste Partei bei der letzten Wahl in ${electionDistrictName} war die Partei "${mostRecentWinner}" mit ${mostRecentWinnerResult} Prozent.`}</p>
         </Col>*/}
-        </Row>
+          </Row>
+        </Col>
       ) : (
         <p className={"text-center mt-2 alert alert-secondary"}>
           Keine Daten vorhanden.

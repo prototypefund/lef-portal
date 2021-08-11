@@ -8,26 +8,15 @@ const axios = require("axios");
 
 export const lefApi = {
   // USER & AUTH
-  signUp: (username, password) => {},
-  signIn: (username, password) =>
-    apiRequest("/token/get", {
-      email: username,
-      password: password,
-    }),
-  getUser: () => apiRequest("/user/get", {}, true),
   resetPassword(email) {
-    return Promise.resolve({ data: { message: "Test" } });
-    // TODO remove mockup
-    return apiRequest("/password/reset", { email });
+    return apiRequest("/resetCode/create", { email });
   },
   setNewPassword: (email, key, newPassword) =>
-    apiRequest("/password/set", { email, key, password: newPassword }),
+    apiRequest("/password/reset", { email, key, password: newPassword }),
   changePassword: (email, oldPassword, newPassword) =>
     apiRequest("/password/change", { email, oldPassword, newPassword }, true),
 
   // REGIONS
-  getRegionData: (regionId) => apiRequest("/region/get", { _id: regionId }),
-  getAllRegions: () => apiRequest("/region/get", { allRegions: true }),
   createRegion: (name, postalcodes = []) =>
     apiRequest(
       "/region/create",
@@ -41,10 +30,6 @@ export const lefApi = {
     apiRequest("/region/update", { region: updatedRegion }, true),
 
   // OBJECTIVES
-  getObjectiveById: (objectiveId) =>
-    apiRequest("/objective/get", { _id: objectiveId }),
-  getAllObjectivesForRegion: (regionId) =>
-    apiRequest("/objective/get", { regionId }),
   createObjective: (startDate, endDate, title, description, tags, regionId) =>
     apiRequest(
       "/objective/create",
@@ -64,7 +49,6 @@ export const lefApi = {
     apiRequest("/objective/delete", { _id: objectiveId }, true),
 
   // ACTIONS
-  getAllActionsForRegion: (regionId) => apiRequest("/action/get", { regionId }),
   createAction: (
     startDate,
     endDate,
@@ -89,24 +73,11 @@ export const lefApi = {
     ),
   updateAction: (updatedAction) =>
     apiRequest("/action/update", { action: updatedAction }, true),
-
-  getClimateChart: (weatherStationDataId, year, months) =>
-    apiRequest("/climatechart/get", {
-      weatherStationDataId,
-      year,
-      months,
-    }),
-  createClimateChart: () =>
-    apiRequest("/weatherstationdata/create", { fromFile: true }, true),
-  getAllClimateStations: () =>
-    apiRequest("/weatherstationdata/get", { allData: true }, true),
-  getWeatherStationDataById: (id) =>
-    apiRequest("/weatherstationdata/get", { _id: id }, true),
-
-  getVotingData: (votingId, districtId, districtName) =>
-    apiRequest("/voting/get", { _id: votingId, districtId, districtName }),
   deleteAction: (actionId) =>
     apiRequest("/action/delete", { _id: actionId }, true),
+
+  createClimateChart: () =>
+    apiRequest("/weatherstationdata/create", { fromFile: true }, true),
 };
 
 export const callApi = (func) => (dispatch) => {
@@ -123,16 +94,12 @@ const apiRequest = (path, body, secure = false, method = "post") => {
   let token = null;
   if (secure) {
     token = getCurrentUserToken();
-    //if (!token) {
-    //  return Promise.reject({ error: "tokenMissing" });
-    //}
   }
   console.debug("ApiRequest:", path, body, token);
   const config = {
     method,
     url: `https://us-central1-lef-backend.cloudfunctions.net/app${path}`,
     headers: {
-      // "Content-Type": "application/x-www-form-urlencoded",
       "Access-Control-Allow-Origin": "*",
       ...(secure &&
         token && {

@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import reducers from "./../src/redux/rootReducers";
+import { setupListeners } from "@reduxjs/toolkit/query";
 import { createLogger } from "redux-logger";
 import MainContent from "./components/MainRouting";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -12,15 +13,23 @@ import { createTheme } from "./components/theme/themes"; // requires a loader
 import { ThemeContext } from "./components/theme/ThemeContext";
 import { notifier } from "./redux/middleware/notifier";
 import { apiMiddleware } from "./redux/middleware/apiMiddleware";
+import { lefReduxApi } from "./redux/lefReduxApi";
 
 const logger = createLogger({
   timestamp: true,
 });
-const middleware = [...getDefaultMiddleware(), logger, notifier, apiMiddleware];
+const middleware = [
+  ...getDefaultMiddleware(),
+  logger,
+  notifier,
+  apiMiddleware,
+  lefReduxApi.middleware,
+];
 const store = configureStore({
   reducer: reducers,
   middleware,
 });
+setupListeners(store.dispatch);
 
 const App = () => {
   const [currentTheme, setCurrentTheme] = useState(createTheme());

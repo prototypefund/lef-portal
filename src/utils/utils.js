@@ -48,3 +48,12 @@ export const getYYYYMMDD = (date) => {
     (dd > 9 ? "" : "0") + dd,
   ].join("-");
 };
+
+export const getSortedArray = (arr, key) => {
+  let sortedArray = [...arr];
+  sortedArray.sort((a, b) => (a[key] < b[key] ? -1 : 1));
+  return sortedArray;
+};
+
+export const isArrayWithOneElement = (arr) =>
+  Array.isArray(arr) && arr.length > 0;

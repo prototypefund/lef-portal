@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useContext, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   Accordion,
   Button,
@@ -16,8 +16,6 @@ import { EditButton } from "../shared/EditButton";
 import { ActionDisplay } from "./objectivesWidgetComponents/ActionDisplay";
 import { DeleteButton } from "../shared/DeleteButton";
 import {
-  fetchAllActionsForRegion,
-  fetchAllObjectivesForRegion,
   requestDeleteAction,
   requestDeleteObjective,
 } from "../../redux/dataSlice";
@@ -27,6 +25,10 @@ import { LefModal } from "../shared/LefModal";
 import { LefSpinner } from "../shared/LefSpinner";
 import { GermanDateString } from "../shared/GermanDateString";
 import { InfoCircle } from "react-bootstrap-icons";
+import {
+  useGetActionsForRegionQuery,
+  useGetObjectivesForRegionQuery,
+} from "../../redux/lefReduxApi";
 
 const OBJECTIVE_DELETE = "OBJECTIVE_DELETE";
 const ACTION_DELETE = "ACTION_DELETE";
@@ -72,18 +74,14 @@ export const ObjectivesWidget = (props) => {
   const dispatch = useDispatch();
   const { regionData, editMode } = props;
   const { _id } = regionData;
-  const regionsObjectives = useSelector(
-    (state) => state.data.objectivesForRegion[_id] || []
-  );
-  const regionsActions = useSelector(
-    (state) => state.data.actionsForRegion[_id] || []
-  );
-  const isFetchingObjectivesForRegion = useSelector(
-    (state) => state.data.isFetchingObjectivesForRegion
-  );
-  const isFetchingActionsForRegion = useSelector(
-    (state) => state.data.isFetchingActionsForRegion
-  );
+  const {
+    data: regionsActions = [],
+    isFetching: isFetchingActionsForRegion,
+  } = useGetActionsForRegionQuery(_id);
+  const {
+    data: regionsObjectives = [],
+    isFetching: isFetchingObjectivesForRegion,
+  } = useGetObjectivesForRegionQuery(_id);
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [isActionMode, setIsActionMode] = useState(false);
@@ -96,13 +94,6 @@ export const ObjectivesWidget = (props) => {
 
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [confirmParameter, setConfirmParameter] = useState({});
-
-  useEffect(() => {
-    if (_id) {
-      dispatch(fetchAllObjectivesForRegion(_id));
-      dispatch(fetchAllActionsForRegion(_id));
-    }
-  }, [_id, dispatch]);
 
   let mappedObjectives = (huge) =>
     regionsObjectives

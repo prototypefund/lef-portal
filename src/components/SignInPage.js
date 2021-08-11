@@ -1,10 +1,11 @@
 import { withRouter } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { AUTH_STATES, requestSignIn } from "../redux/authSlice";
+import { AUTH_STATES } from "../redux/authSlice";
 import { useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { Heading } from "./shared/Heading";
 import { PATHS } from "./MainRouting";
+import { lefReduxApi } from "../redux/lefReduxApi";
 
 const SignInPage = ({ history, disableRedirect = false }) => {
   const dispatch = useDispatch();
@@ -15,8 +16,11 @@ const SignInPage = ({ history, disableRedirect = false }) => {
   const [password, setPassword] = useState("");
   const loggedIn = authState === AUTH_STATES.loggedIn;
 
+  const [getToken] = lefReduxApi.endpoints.getToken.useLazyQuery();
+
   const onFinish = () => {
-    dispatch(requestSignIn(email, password));
+    getToken({ email, password });
+    // dispatch(requestSignIn(email, password));
   };
 
   useEffect(() => {

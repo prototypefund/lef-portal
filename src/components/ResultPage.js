@@ -5,11 +5,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { EditButton } from "./shared/EditButton";
 import { useParams } from "react-router-dom";
-import {
-  getRegionDataFromState,
-  requestGetRegion,
-  requestUpdateRegion,
-} from "../redux/dataSlice";
 import { WidgetContainer } from "./WidgetContainer";
 import { WIDGETS } from "./widgets/getWidget";
 import { getTypeAheadOptions } from "./StartPage";
@@ -19,12 +14,20 @@ import { LefSpinner } from "./shared/LefSpinner";
 import { AUTH_STATES } from "../redux/authSlice";
 import { isArray } from "chart.js/helpers";
 import { LefSelect } from "./shared/LefSelect";
+import {
+  lefReduxApi,
+  useGetAllRegionsQuery,
+  useGetRegionQuery,
+  useUpdateRegionMutation,
+} from "../redux/lefReduxApi";
 
 const ResultPage = ({ history, location }) => {
   const dispatch = useDispatch();
+  const [updateRegion] = useUpdateRegionMutation();
   const loggedIn =
     useSelector((state) => state.auth.authState) === AUTH_STATES.loggedIn;
-  const userData = useSelector((state) => state.auth.user) || {};
+  const [getUser, result = {}] = lefReduxApi.endpoints.getUser.useLazyQuery();
+  const { data: userData = {} } = result;
   const { regionId } = useParams();
   const userIsAdmin =
     loggedIn &&
@@ -32,18 +35,21 @@ const ResultPage = ({ history, location }) => {
     userData.regionIds.includes(regionId);
   const { state = {} } = location;
   const [editMode, setEditMode] = useState(state.startInEditMode);
+  const {
+    data: regionData = {},
+    isFetching: isFetchingRegion,
+  } = useGetRegionQuery(regionId);
+  const {
+    data: regions = [],
+    isFetching: isFetchingRegions,
+  } = useGetAllRegionsQuery();
+  const { name = "Musterstadt", _id } = regionData;
 
   useEffect(() => {
-    if (regionId) {
-      dispatch(requestGetRegion(regionId));
+    if (loggedIn) {
+      getUser();
     }
-  }, [dispatch, regionId]);
-
-  const regionData = useSelector((state) =>
-    getRegionDataFromState(state, regionId)
-  );
-  const regions = useSelector((state) => state.data.regionData);
-  const { name = "Musterstadt", _id } = regionData;
+  }, [loggedIn]);
 
   const widgets = Object.keys(WIDGETS)
     .map((key) => WIDGETS[key])
@@ -62,7 +68,7 @@ const ResultPage = ({ history, location }) => {
 
   let typeAheadOptions = getTypeAheadOptions(regions);
   let selectedRegion = typeAheadOptions.find((option) => option.value === _id);
-  let header = _id && (
+  let header = !isFetchingRegion && (
     <>
       <Row>
         <Col>
@@ -75,42 +81,46 @@ const ResultPage = ({ history, location }) => {
       </Row>
       <Row>
         <Col className={"mb-1"} xs={9}>
-          <LefSelect
-            /*renderInput={({ inputRef, ...inputProps }) => (
-              <Hint
-                shouldSelect={(shouldSelect, e) =>
-                  e.keyCode === 13 || shouldSelect
-                }
-              >
-                <Input {...inputProps} ref={inputRef} />
-              </Hint>
-            )}*/
-            onFocus={(event) => event.target.select()}
-            onChange={(selectedValues) =>
-              selectedValues.length > 0 &&
-              history.push(getCityPath(selectedValues[0].value))
-            }
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.target.blur();
+          {selectedRegion ? (
+            <LefSelect
+              /*renderInput={({ inputRef, ...inputProps }) => (
+                <Hint
+                  shouldSelect={(shouldSelect, e) =>
+                    e.keyCode === 13 || shouldSelect
+                  }
+                >
+                  <Input {...inputProps} ref={inputRef} />
+                </Hint>
+              )}*/
+              onFocus={(event) => event.target.select()}
+              onChange={(selectedValues) =>
+                selectedValues.length > 0 &&
+                history.push(getCityPath(selectedValues[0].value))
               }
-            }}
-            // selectHintOnEnter
-            defaultSelected={selectedRegion ? [selectedRegion] : []}
-            id={"citySelection"}
-            placeholder={"Stadt / Unternehmen"}
-            options={typeAheadOptions}
-            inputProps={{
-              style: {
-                paddingLeft: 0,
-                textAlign: "left",
-                backgroundColor: "transparent",
-                border: "none",
-                fontSize: "3.4rem",
-                textDecoration: "underline",
-              },
-            }}
-          />
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.target.blur();
+                }
+              }}
+              // selectHintOnEnter
+              defaultSelected={[selectedRegion]}
+              id={"citySelection"}
+              placeholder={"Stadt / Unternehmen"}
+              options={typeAheadOptions}
+              inputProps={{
+                style: {
+                  paddingLeft: 0,
+                  textAlign: "left",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  fontSize: "3.4rem",
+                  textDecoration: "underline",
+                },
+              }}
+            />
+          ) : (
+            <LefSpinner hideBackground height={100} horizontal />
+          )}
         </Col>
         {userIsAdmin && (
           <Col className={"align-items-center d-none d-sm-block"} xs={3}>
@@ -137,9 +147,7 @@ const ResultPage = ({ history, location }) => {
       {header}
       <Row>
         <Col>
-          {!_id ? (
-            <LefSpinner hideBackground />
-          ) : widgets.length > 0 ? (
+          {widgets.length > 0 ? (
             widgets.map((entry, k) => (
               <ResultEntry
                 key={k}
@@ -148,9 +156,7 @@ const ResultPage = ({ history, location }) => {
                 editMode={editMode}
                 active={regionData[entry.flag]}
                 onToggleActive={(result) =>
-                  dispatch(
-                    requestUpdateRegion({ ...regionData, [entry.flag]: result })
-                  )
+                  updateRegion({ ...regionData, [entry.flag]: result })
                 }
               />
             ))

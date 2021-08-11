@@ -8,7 +8,7 @@ export function SignUpPage() {
   const [password, setPassword] = useState("");
 
   const onFinish = (values) => {
-    lefApi.signUp(email, password);
+    // lefApi.signUp(email, password);
   };
 
   return (

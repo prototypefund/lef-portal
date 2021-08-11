@@ -6,6 +6,8 @@ import { useSelector } from "react-redux";
 import { ThemeContext } from "./theme/ThemeContext";
 import { LefSpinner } from "./shared/LefSpinner";
 import { LefSelect } from "./shared/LefSelect";
+import { useGetAllRegionsQuery } from "../redux/lefReduxApi";
+import { getString } from "../assets/dictionary_de";
 // import { requestCreateRegion } from "../redux/dataSlice";
 
 export const getTypeAheadOptions = (regions) => {
@@ -20,22 +22,22 @@ export const getTypeAheadOptions = (regions) => {
 
 export const StartPage = ({ onCitySelect = () => {} }) => {
   const { theme } = useContext(ThemeContext);
-  const regions = useSelector((state) => state.data.regionData);
+  // const regions = useSelector((state) => state.data.regionData);
   const [coords, setCoords] = useState({});
   const [typeaheadText, setTypeaheadText] = useState("");
   const { longitude, latitude } = coords;
-  const isFetchingRegions = useSelector(
-    (state) => state.data.isFetchingAllRegions
-  );
+  // const isFetchingRegions = useSelector((state) => state.data.isFetchingAllRegions);
   // const dispatch = useDispatch();
+
+  const {
+    data: regions = [],
+    isFetching: isFetchingRegions,
+  } = useGetAllRegionsQuery();
 
   const getLocation = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        // const latitude = position.coords.latitude;
-        // const longitude = position.coords.longitude;
         setCoords(position.coords);
-        // TODO find region closest to user location
       },
       () => alert("Dein Standort konnte leider nicht ermittelt werden!")
     );
@@ -45,13 +47,11 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
     <div className={"alert alert-secondary"}>
       <Heading size={"h4"} text={"Was ist das Local Emission Framework?"} />
       <p style={{ whiteSpace: "pre-wrap" }} className={"mt-2"}>
-        {
-          "Über den Klimaschutz wird viel geredet - aber du fragst dich, was sich ganz konkret vor deiner Haustür tut? Was unternehmen deine Kommune, dein Kreis und die Unternehmen in deiner Region in Sachen Klima? Sind die Folgen des Klimawandels bereits bei dir zu spüren?\n\nWir erklären dir kurz und bündig, was bisher schon an Klimaschutzmaßnahmen passiert ist, wo wir gerade stehen und was in Zukunft noch geplant ist."
-        }
+        {getString("aboutLef_text")}
       </p>
     </div>
   );
-  let mainTitle = "Wie läuft der Klimaschutz in..";
+  const mainTitle = "Wie läuft der Klimaschutz in..";
   return (
     <div className={"col"}>
       {/*/!* <Button onClick={() => dispatch(requestCreateRegion("Demo-Region", []))}>*/}

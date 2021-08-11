@@ -35,12 +35,20 @@ const authSlice = createSlice({
     passwordResetMessage: "",
     changePasswordState: REQUEST_STATES.IDLE,
     user: {},
+    token: getCurrentUserToken(),
   },
   reducers: {
     updateAuthState: (state, action) => {
-      const { authState, message } = action.payload;
+      const { authState, message, token, userId } = action.payload;
       if (authState) state.authState = authState;
       if (message) state.message = message;
+      if (token) {
+        state.token = token;
+        localStorage.setItem("token", token);
+      }
+      if (userId) {
+        localUserId = userId;
+      }
     },
     setUserData: (state, action) => {
       if (action.payload.user) state.user = action.payload.user;
@@ -85,7 +93,7 @@ export const handleApiError = (error) => (dispatch) => {
         break;
     }
   } else if (["Unauthorized", "Forbidden"].includes(error.response.data)) {
-    // user tried to access a resource that she has no access to
+    // user tried to access a resource that they have no access to
     dispatch(
       addNotificationMessage(
         "Zugriff nicht möglich",
@@ -95,21 +103,10 @@ export const handleApiError = (error) => (dispatch) => {
   }
 };
 
-export const requestGetUser = () => (dispatch) => {
-  dispatch(callApi(() => lefApi.getUser())).then(
-    (response) => {
-      localUserId = response.data._id;
-      return dispatch(setUserData({ user: response.data }));
-    },
-    (error) => {
-      console.debug(error);
-    }
-  );
-};
-
+/*
 export const requestSignIn = (username, password) => (dispatch) => {
   lefApi
-    .signIn(username, password)
+    .getToken(username, password)
     .then((response) => {
       if (response.data) {
         localStorage.setItem("token", response.data);
@@ -130,6 +127,7 @@ export const requestSignIn = (username, password) => (dispatch) => {
       );
     });
 };
+*/
 
 export const requestSignOut = () => (dispatch) => {
   localStorage.removeItem("token");

@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getRegionDataFromState, requestGetRegion } from "../redux/dataSlice";
+import { useSelector } from "react-redux";
+import { getRegionDataFromState } from "../redux/dataSlice";
 import { WidgetContainer } from "./WidgetContainer";
 import { ThemeContext } from "./theme/ThemeContext";
 import { WIDGETS } from "./widgets/getWidget";
@@ -11,7 +11,7 @@ export function WidgetEmbedding({
   regionId,
   widgetId,
 }) {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { updateTheme } = useContext(ThemeContext);
 
   const regionData = useSelector((state) =>
@@ -22,11 +22,11 @@ export function WidgetEmbedding({
     updateTheme(colorPalette, fontStyle);
   }, [updateTheme, colorPalette, fontStyle]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (regionId) {
       dispatch(requestGetRegion(regionId));
     }
-  }, [dispatch, regionId]);
+  }, [dispatch, regionId]);*/
 
   let widget = WIDGETS[widgetId] ? WIDGETS[widgetId].component : undefined;
 

@@ -29,7 +29,7 @@ export const WIDGETS = {
   4: {
     name: "Wahlverhalten",
     question:
-      "Hat sich das Verhalten der Bürger:innen in %s mit Hinblick auf das Thema Klimaschutz in den letzten Jahren verändert?",
+      "Hat sich das Wahlverhalten der Bürger:innen in %s, ggf. mit Hinblick auf das Thema Klimaschutz, in den letzten Jahren verändert?",
     component: VotingWidget,
     flag: "votingWidget",
   },
@@ -38,10 +38,5 @@ export const WIDGETS = {
     question:
       "Hat sich die Anzahl neu zugelassener PKW in %s in den letzten Jahren verändert?",
     component: CarsWidget,
-  },
-  5: {
-    name: "Warming Stripes",
-    question: "Wie haben sich die Durchschnittstemperaturen in %s verändert?",
-    component: WarmingStripeWidget,
   },*/
 };
