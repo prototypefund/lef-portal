@@ -37,7 +37,6 @@ const ResultPage = ({ history, location }) => {
     userData.regionIds.includes(regionId);
   const { state = {} } = location;
   const [editMode, setEditMode] = useState(state.startInEditMode);
-  console.debug({ editMode });
   const {
     data: regionData = {},
     isFetching: isFetchingRegion,

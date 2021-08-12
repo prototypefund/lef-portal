@@ -1,16 +1,16 @@
 import { Col, Form, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { LefModal } from "../shared/LefModal";
 import MultiSelect from "react-multi-select-component";
-import {
-  requestCreateActionForRegion,
-  requestCreateObjectiveForRegion,
-  requestUpdateAction,
-  requestUpdateObjective,
-} from "../../redux/dataSlice";
 import { usePrevious } from "../../hooks/usePrevious";
 import { getYYYYMMDD } from "../../utils/utils";
+import {
+  useCreateActionMutation,
+  useCreateObjectiveMutation,
+  useGetObjectivesForRegionQuery,
+  useUpdateActionMutation,
+  useUpdateObjectiveMutation,
+} from "../../redux/lefReduxApi";
 
 const optionsMapping = (objective) => ({
   label: objective.title,
@@ -25,19 +25,38 @@ export const AddObjectivesAndActionsDialog = ({
   isAction,
   editedAction = {},
 }) => {
-  const dispatch = useDispatch();
+  const sourceObject = isAction ? editedAction : editedObjective || {};
 
-  const regionsObjectives = useSelector(
-    (state) => state.data.objectivesForRegion[regionData._id] || []
-  );
+  const [
+    updateObjective,
+    { isLoading: isUpdatingObjective, isSuccess: isSuccessObjective },
+  ] = useUpdateObjectiveMutation();
+  const [
+    createObjective,
+    { isLoading: isCreatingObjective, isSuccess: isSuccessCreatingObjective },
+  ] = useCreateObjectiveMutation();
+  const [
+    updateAction,
+    { isLoading: isUpdatingAction, isSuccess: isSuccessAction },
+  ] = useUpdateActionMutation();
+  const [
+    createAction,
+    { isLoading: isCreatingAction, isSuccess: isSuccessCreatingAction },
+  ] = useCreateActionMutation();
 
-  const isUpdatingObjective = useSelector(
-    (state) => state.data.isUpdatingObjective
-  );
+  /* const {
+      data: regionsActions = [],
+      isFetching: isFetchingActionsForRegion,
+    } = useGetActionsForRegionQuery(regionData._id);*/
+  const {
+    data: regionsObjectives = [],
+    //isFetching: isFetchingObjectivesForRegion,
+  } = useGetObjectivesForRegionQuery(regionData._id);
 
+  //const regionsObjectives = useSelector((state) => state.data.objectivesForRegion[regionData._id] || []);
+  //const isUpdatingObjective = useSelector((state) => state.data.isUpdatingObjective);
   const previousIsUpdatingObjective = usePrevious(isUpdatingObjective);
 
-  const sourceObject = isAction ? editedAction : editedObjective || {};
   const [isSaving, setIsSaving] = useState(false);
   const [title, setTitle] = useState(sourceObject.title || "");
   const [budget, setBudget] = useState(sourceObject.budget || "0");
@@ -77,13 +96,27 @@ export const AddObjectivesAndActionsDialog = ({
     onClose();
   };
 
-  // TODO react to other actions (createObjective, createAction, updateAction)
   useEffect(() => {
-    if (previousIsUpdatingObjective && !isUpdatingObjective && isSaving) {
+    //if (previousIsUpdatingObjective && !isUpdatingObjective && isSaving) {
+    if (
+      isSuccessObjective ||
+      isSuccessAction ||
+      isSuccessCreatingObjective ||
+      isSuccessCreatingAction
+    ) {
       closeDialog();
       setIsSaving(false);
     }
-  }, [isSaving, isUpdatingObjective, previousIsUpdatingObjective]);
+  }, [
+    closeDialog,
+    isSaving,
+    isSuccessAction,
+    isSuccessCreatingAction,
+    isSuccessCreatingObjective,
+    isSuccessObjective,
+    isUpdatingObjective,
+    previousIsUpdatingObjective,
+  ]);
 
   const size = "md";
   let content = (
@@ -231,47 +264,45 @@ export const AddObjectivesAndActionsDialog = ({
           loading: isSaving,
           label: editMode ? "Änderung speichern" : "Hinzufügen",
           onClick: () => {
-            dispatch(
-              isAction
-                ? editMode
-                  ? requestUpdateAction({
-                      ...editedAction,
-                      startDate,
-                      endDate,
-                      title,
-                      description,
-                      tags: tagsArray,
-                      budget,
-                      objectiveIds: selectedObjectives.map((o) => o.value),
-                    })
-                  : requestCreateActionForRegion(
-                      startDate,
-                      endDate,
-                      title,
-                      description,
-                      budget,
-                      tags,
-                      regionData._id,
-                      selectedObjectives.map((o) => o.value)
-                    )
-                : editMode
-                ? requestUpdateObjective({
-                    ...editedObjective,
+            isAction
+              ? editMode
+                ? updateAction({
+                    ...editedAction,
                     startDate,
                     endDate,
                     title,
                     description,
                     tags: tagsArray,
+                    budget,
+                    objectiveIds: selectedObjectives.map((o) => o.value),
                   })
-                : requestCreateObjectiveForRegion(
+                : createAction({
                     startDate,
                     endDate,
                     title,
                     description,
-                    tagsArray,
-                    regionData._id
-                  )
-            );
+                    budget,
+                    tags,
+                    regionId: regionData._id,
+                    objectiveIds: selectedObjectives.map((o) => o.value),
+                  })
+              : editMode
+              ? updateObjective({
+                  ...editedObjective,
+                  startDate,
+                  endDate,
+                  title,
+                  description,
+                  tags: tagsArray,
+                })
+              : createObjective({
+                  startDate,
+                  endDate,
+                  title,
+                  description,
+                  tags: tagsArray,
+                  regionId: regionData._id,
+                });
             setIsSaving(true);
           },
           disabled: tagsArray.length === 0,

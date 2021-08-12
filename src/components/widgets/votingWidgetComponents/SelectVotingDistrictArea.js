@@ -4,15 +4,12 @@ import {
   useUpdateRegionMutation,
 } from "../../../redux/lefReduxApi";
 import { isArrayWithOneElement } from "../../../utils/utils";
-import { Badge, FormGroup, FormLabel } from "react-bootstrap";
+import { FormGroup, FormLabel } from "react-bootstrap";
 import React from "react";
 
 export const SelectVotingDistrictArea = ({ regionData = {} }) => {
   const { data: allVotingAreas = [] } = useGetAllVotingAreasQuery();
-  const [
-    updateRegion,
-    { isLoading: isLoadingRegion, isSuccess },
-  ] = useUpdateRegionMutation();
+  const [updateRegion] = useUpdateRegionMutation();
   const handleSelectVotingArea = (areaId) => {
     updateRegion({ ...regionData, votings: [areaId] });
   };
@@ -21,6 +18,7 @@ export const SelectVotingDistrictArea = ({ regionData = {} }) => {
       <FormGroup>
         <FormLabel>{`Wahlbezirk`}</FormLabel>
         <LefSelect
+          id={"votingAreaSelect"}
           options={allVotingAreas.map((area) => ({
             label: area.districtName,
             value: area._id,
@@ -30,12 +28,12 @@ export const SelectVotingDistrictArea = ({ regionData = {} }) => {
             handleSelectVotingArea(values[0].value)
           }
         />
-        {isLoadingRegion && (
+        {/*{isLoadingRegion && (
           <Badge variant={"info"}>Änderungen werden gespeichert..</Badge>
         )}
         {isSuccess && (
           <Badge variant={"success"}>Änderungen gespeichert!</Badge>
-        )}
+        )}*/}
       </FormGroup>
     </>
   );

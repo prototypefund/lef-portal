@@ -6,32 +6,33 @@ import EmbeddingWizard from "./embedding/EmbeddingWizard";
 import { useEffect, useState } from "react";
 import { PasswordChangeDialog } from "./accountPageComponents/PasswordChangeDialog";
 import { AddRegionDialog } from "./accountPageComponents/AddRegionDialog";
-import {
-  requestAddRegionToAccount,
-  requestChangePassword,
-  resetChangePasswordState,
-} from "../redux/authSlice";
-import { REQUEST_STATES } from "../redux/consts";
+import { requestAddRegionToAccount } from "../redux/authSlice";
 import { usePrevious } from "../hooks/usePrevious";
-import { useGetAllRegionsQuery, useGetUserQuery } from "../redux/lefReduxApi";
+import {
+  useChangePasswordMutation,
+  useGetAllRegionsQuery,
+  useGetUserQuery,
+} from "../redux/lefReduxApi";
 import { SpinnerWrapper } from "./shared/SpinnerWrapper";
 
 export const AccountPage = () => {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth) || {};
+  const { changePasswordState } = auth;
+
   const {
     data: regions = [],
     isFetching: isFetchingRegions,
   } = useGetAllRegionsQuery();
-  // const regions = useSelector((state) => state.data.regionData);
-  const {
-    // user: userData = {},
-    changePasswordState,
-  } = auth;
   const {
     data: userData = {},
     isFetching: isFetchingUserData,
   } = useGetUserQuery();
+  const [
+    changePassword,
+    { isLoading: isUpdatingPassword, isSuccess: isSuccessPasswordChanged },
+  ] = useChangePasswordMutation();
+
   const { username: userName, email, regionIds = [] } = userData;
   const [showEmbeddingDialog, setShowEmbeddingDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
@@ -42,13 +43,8 @@ export const AccountPage = () => {
   const previousPasswordState = usePrevious(changePasswordState);
 
   useEffect(() => {
-    if (
-      changePasswordState === REQUEST_STATES.FULFILLED &&
-      previousPasswordState !== changePasswordState &&
-      showPasswordDialog
-    ) {
+    if (showPasswordDialog && isSuccessPasswordChanged) {
       setShowPasswordDialog(false);
-      dispatch(resetChangePasswordState());
     }
   }, [
     changePasswordState,
@@ -211,7 +207,7 @@ export const AccountPage = () => {
       <PasswordChangeDialog
         show={showPasswordDialog}
         onSubmit={(oldPassword, newPassword) => {
-          dispatch(requestChangePassword({ email, oldPassword, newPassword }));
+          changePassword({ email, oldPassword, newPassword });
         }}
         onCancel={() => setShowPasswordDialog(false)}
       />

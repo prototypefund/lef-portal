@@ -23,7 +23,9 @@ export const {
 } = notificationSlice.actions;
 export default notificationSlice.reducer;
 
-export const addNotificationMessage = (title, message, type) => (dispatch) => {
+export const addNotificationMessage = (title, message, type = "info") => (
+  dispatch
+) => {
   const id = getRandomId();
   dispatch(addNotification({ title, message, type, id }));
   setTimeout(() => {

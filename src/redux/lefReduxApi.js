@@ -2,12 +2,12 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   AUTH_STATES,
   getCurrentUserId,
-  handleApiError,
   setUserData,
   updateAuthState,
 } from "./authSlice";
-import { addNotificationMessage } from "./notificationSlice";
 import { getSortedArray } from "../utils/utils";
+
+const URL = "https://us-central1-lef-backend.cloudfunctions.net/app/";
 
 const getQueryParameters = (body, secure = false) => ({
   body: {
@@ -18,7 +18,7 @@ const getQueryParameters = (body, secure = false) => ({
 });
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://us-central1-lef-backend.cloudfunctions.net/app/",
+  baseUrl: URL,
   prepareHeaders: (headers, { getState }) => {
     const state = getState();
     const { auth = {} } = state;
@@ -34,21 +34,21 @@ const baseQuery = fetchBaseQuery({
 const customBaseQuery = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
   /*
-        console.debug({ args });
-        api.dispatch(
-          addNotificationMessage(
-            `BaseQuery: ${result.meta.response.status}`,
-            result.meta.request.url
-          )
-        );
-      */
+            console.debug({ args });
+            api.dispatch(
+              addNotificationMessage(
+                `BaseQuery: ${result.meta.response.status}`,
+                result.meta.request.url
+              )
+            );
+          */
   return result;
 };
 
 export const lefReduxApi = createApi({
   reducerPath: "reduxApi",
   baseQuery: customBaseQuery,
-  tagTypes: ["Regions"],
+  tagTypes: ["Regions", "Objectives", "Actions"],
   endpoints: (builder) => ({
     // QUERIES
     getToken: builder.query({
@@ -107,12 +107,30 @@ export const lefReduxApi = createApi({
         url: "action/get",
         ...getQueryParameters({ regionId }),
       }),
+      providesTags: (result, error, regionId) => {
+        return [
+          { type: "Actions", id: "LIST" },
+          ...result.map((action) => ({
+            type: "Actions",
+            id: action._id,
+          })),
+        ];
+      },
     }),
     getObjectivesForRegion: builder.query({
       query: (regionId) => ({
         url: "objective/get",
         ...getQueryParameters({ regionId }),
       }),
+      providesTags: (result, error, regionId) => {
+        return [
+          { type: "Objectives", id: "LIST" },
+          ...result.map((objective) => ({
+            type: "Objectives",
+            id: objective._id,
+          })),
+        ];
+      },
     }),
     getAllClimateStations: builder.query({
       query: () => ({
@@ -165,6 +183,72 @@ export const lefReduxApi = createApi({
         { type: "Regions", id: region._id },
       ],
     }),
+    updateAction: builder.mutation({
+      query: (action) => ({
+        url: "action/update",
+        ...getQueryParameters({ action }, true),
+      }),
+      invalidatesTags: (result, error, action) => [
+        { type: "Actions", id: action._id },
+      ],
+    }),
+    updateObjective: builder.mutation({
+      query: (objective) => ({
+        url: "objective/update",
+        ...getQueryParameters({ objective }, true),
+      }),
+      invalidatesTags: (result, error, objective) => [
+        { type: "Objectives", id: objective._id },
+      ],
+    }),
+    createRegion: builder.mutation({
+      query: ({ name, postalcodes }) => ({
+        url: "region/create",
+        ...getQueryParameters({ name, postalcodes }, true),
+      }),
+    }),
+    createObjective: builder.mutation({
+      query: (objective) => ({
+        url: "objective/create",
+        ...getQueryParameters({ ...objective }, true),
+      }),
+      invalidatesTags: () => [{ type: "Objectives", id: "LIST" }],
+    }),
+    createAction: builder.mutation({
+      query: (action) => ({
+        url: "action/create",
+        ...getQueryParameters({ ...action }, true),
+      }),
+      invalidatesTags: () => [{ type: "Actions", id: "LIST" }],
+    }),
+    deleteAction: builder.mutation({
+      query: (_id) => ({
+        url: "action/delete",
+        ...getQueryParameters({ _id }, true),
+      }),
+      invalidatesTags: (result, error, _id) => [{ type: "Actions", id: _id }],
+    }),
+    deleteObjective: builder.mutation({
+      query: (_id) => ({
+        url: "objective/delete",
+        ...getQueryParameters({ _id }, true),
+      }),
+      invalidatesTags: (result, error, _id) => [
+        { type: "Objectives", id: _id },
+      ],
+    }),
+    changePassword: builder.mutation({
+      query: ({ email, oldPassword, newPassword }) => ({
+        url: "password/change",
+        ...getQueryParameters({ email, oldPassword, newPassword }, true),
+      }),
+    }),
+    requestPasswordReset: builder.mutation({
+      query: ({ email }) => ({
+        url: "resetCode/create",
+        ...getQueryParameters({ email }),
+      }),
+    }),
   }),
 });
 
@@ -177,7 +261,15 @@ export const {
   useGetClimateChartQuery,
   useGetAllClimateStationsQuery,
   useGetAllVotingAreasQuery,
-  useGetVotingDataForDistrictQuery,
+  // useGetVotingDataForDistrictQuery,
   useGetTokenLazyQuery,
   useUpdateRegionMutation,
+  useUpdateObjectiveMutation,
+  useUpdateActionMutation,
+  useCreateObjectiveMutation,
+  useCreateActionMutation,
+  useDeleteActionMutation,
+  useDeleteObjectiveMutation,
+  useChangePasswordMutation,
+  useRequestPasswordResetMutation,
 } = lefReduxApi;

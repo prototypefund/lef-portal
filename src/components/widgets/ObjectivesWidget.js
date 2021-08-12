@@ -15,10 +15,6 @@ import { Carousel } from "react-responsive-carousel";
 import { EditButton } from "../shared/EditButton";
 import { ActionDisplay } from "./objectivesWidgetComponents/ActionDisplay";
 import { DeleteButton } from "../shared/DeleteButton";
-import {
-  requestDeleteAction,
-  requestDeleteObjective,
-} from "../../redux/dataSlice";
 import { ConfirmDialog } from "../shared/ConfirmDialog";
 import { ThemeContext } from "../theme/ThemeContext";
 import { LefModal } from "../shared/LefModal";
@@ -26,6 +22,8 @@ import { LefSpinner } from "../shared/LefSpinner";
 import { GermanDateString } from "../shared/GermanDateString";
 import { InfoCircle } from "react-bootstrap-icons";
 import {
+  useDeleteActionMutation,
+  useDeleteObjectiveMutation,
   useGetActionsForRegionQuery,
   useGetObjectivesForRegionQuery,
 } from "../../redux/lefReduxApi";
@@ -82,6 +80,8 @@ export const ObjectivesWidget = (props) => {
     data: regionsObjectives = [],
     isFetching: isFetchingObjectivesForRegion,
   } = useGetObjectivesForRegionQuery(_id);
+  const [deleteAction] = useDeleteActionMutation();
+  const [deleteObjective] = useDeleteObjectiveMutation();
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [isActionMode, setIsActionMode] = useState(false);
@@ -375,10 +375,10 @@ export const ObjectivesWidget = (props) => {
           if (result) {
             switch (confirmParameter.type) {
               case OBJECTIVE_DELETE:
-                dispatch(requestDeleteObjective(confirmParameter.objective));
+                deleteObjective(confirmParameter.objective._id);
                 break;
               case ACTION_DELETE:
-                dispatch(requestDeleteAction(confirmParameter.action));
+                deleteAction(confirmParameter.action._id);
                 break;
               default:
                 break;

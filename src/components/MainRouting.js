@@ -11,7 +11,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import { AUTH_STATES, requestSignOut } from "../redux/authSlice";
 import { useEffect } from "react";
 import { Header } from "./Header";
-import { Col, Row, Toast } from "react-bootstrap";
+import { Alert, Col, Row, Toast } from "react-bootstrap";
 import { WidgetEmbeddingPage } from "./WidgetEmbeddingPage";
 import { LefModal } from "./shared/LefModal";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
@@ -42,14 +42,10 @@ const MainRouting = ({ location = {}, history = {} }) => {
   const showRequestLoginModal =
     authStatus === AUTH_STATES.logInRequest && !embeddingMode;
 
-  // const { data, isFetching } = useGetUserQuery();
-  // console.debug({ data, isFetching });
-
   const [getUser] = lefReduxApi.endpoints.getUser.useLazyQuery();
 
   useEffect(() => {
     if (token && !loggedIn) {
-      // dispatch(requestGetUser());
       getUser();
     }
   }, [token, loggedIn]);
@@ -141,12 +137,21 @@ const MainRouting = ({ location = {}, history = {} }) => {
         style={{ position: "fixed", bottom: 10, right: 10, zIndex: 2000 }}
       >
         {toasts.map((toast) => (
-          <Toast key={toast.id}>
+          <Toast key={toast.id} show={true}>
             <Toast.Header closeButton={false}>
-              <strong className="mr-2">{toast.title}</strong>
+              <strong className="mr-2 ">{toast.title}</strong>
               <small>{new Date(toast.timestamp).toLocaleTimeString()}</small>
             </Toast.Header>
-            <Toast.Body>{toast.message}</Toast.Body>
+            <Toast.Body
+              {...(toast.type === "warning" && {
+                className: "alert alert-danger",
+              })}
+              {...(toast.type === "success" && {
+                className: "alert alert-success",
+              })}
+            >
+              {toast.message}
+            </Toast.Body>
           </Toast>
         ))}
       </div>

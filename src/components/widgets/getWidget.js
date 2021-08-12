@@ -24,7 +24,7 @@ export const WIDGETS = {
     question:
       "Wie hat sich die Temperatur in %s seit 1990 im Vergleich zur Durchschnittstemperatur der Jahre 1961 bis 1990 verändert?",
     component: WarmingStripeWidget,
-    flag: "climateWidget",
+    flag: "warmingstripeWidget",
   },
   4: {
     name: "Wahlverhalten",

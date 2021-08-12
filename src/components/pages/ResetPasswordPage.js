@@ -2,32 +2,29 @@ import { withRouter } from "react-router";
 import { Heading } from "../shared/Heading";
 import { Button, Container, Form } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  requestResetPassword,
-  setPasswordResetMessage,
-} from "../../redux/authSlice";
 import { PATHS } from "../MainRouting";
+import { useRequestPasswordResetMutation } from "../../redux/lefReduxApi";
+import { LefSpinner } from "../shared/LefSpinner";
 
 const ResetPasswordPage = ({ history }) => {
   const [email, setEmail] = useState("");
-  const dispatch = useDispatch();
+  const [
+    requestPasswordReset,
+    {
+      isLoading: isRequestingPasswordReset,
+      isSuccess: isSuccessPasswordResetRequest,
+    },
+  ] = useRequestPasswordResetMutation();
+
   const onFinish = () => {
-    dispatch(requestResetPassword(email));
+    requestPasswordReset(email);
   };
-  const passwordResetMessage = useSelector(
-    (state) => state.auth.passwordResetMessage
-  );
 
   useEffect(() => {
-    dispatch(setPasswordResetMessage(""));
-  }, []);
-
-  useEffect(() => {
-    if (passwordResetMessage) {
+    if (isSuccessPasswordResetRequest) {
       history.push(PATHS.SET_NEW_PASSWORD(email));
     }
-  }, [passwordResetMessage]);
+  }, [isSuccessPasswordResetRequest]);
 
   return (
     <>
@@ -58,7 +55,7 @@ const ResetPasswordPage = ({ history }) => {
           </Form.Group>
         </Form>
         <hr />
-        <p>{passwordResetMessage}</p>
+        {isRequestingPasswordReset && <LefSpinner />}
       </Container>
     </>
   );

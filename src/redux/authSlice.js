@@ -14,17 +14,6 @@ export const AUTH_STATES = {
   logInRequest: "logInRequest",
 };
 
-export const requestChangePassword = createAsyncThunk(
-  "password/change",
-  async ({ email, oldPassword, newPassword }, thunkAPI) => {
-    const { dispatch } = thunkAPI;
-    const response = await dispatch(
-      callApi(() => lefApi.changePassword(email, oldPassword, newPassword))
-    );
-    return response;
-  }
-);
-
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -56,61 +45,16 @@ const authSlice = createSlice({
     setPasswordResetMessage: (state, action) => {
       state.passwordResetMessage = action.payload;
     },
-    resetChangePasswordState: (state) => {
-      state.passwordResetMessage = REQUEST_STATES.IDLE;
-    },
   },
-  extraReducers: {
-    [requestChangePassword.pending]: (state) => {
-      state.changePasswordState = REQUEST_STATES.PENDING;
-    },
-    [requestChangePassword.fulfilled]: (state) => {
-      state.changePasswordState = REQUEST_STATES.FULFILLED;
-    },
-    [requestChangePassword.rejected]: (state) => {
-      state.changePasswordState = REQUEST_STATES.REJECTED;
-    },
-  },
+  extraReducers: {},
 });
 
 export const {
   updateAuthState,
   setUserData,
   setPasswordResetMessage,
-  resetChangePasswordState,
 } = authSlice.actions;
 export default authSlice.reducer;
-
-export const handleApiError = (error = {}) => (dispatch) => {
-  const { data = {} } = error;
-  const { code, message } = data;
-  console.debug("ERROR", code, message);
-  if (code) {
-    switch (code) {
-      case "JsonWebTokenError": // deprecated
-      case "TokenExpiredError": // deprecated
-      case "TOKEN_INVALID_ERROR": // invalid token, ask user to signIn again
-        dispatch(updateAuthState({ authState: AUTH_STATES.logInRequest }));
-        break;
-      default:
-        dispatch(
-          addNotificationMessage(
-            "Unbekannter Fehler",
-            "Ein unbekannter Fehler ist aufgetreten."
-          )
-        );
-        break;
-    }
-  } else if (["Unauthorized", "Forbidden"].includes(error)) {
-    // user tried to access a resource that they have no access to
-    dispatch(
-      addNotificationMessage(
-        "Zugriff nicht möglich",
-        "Sie verfügen für diese Aktion nicht über die notwendigen Rechte. Bitte loggen Sie sich ggf. mit einem anderen Account ein, um diese Aktion durchzuführen."
-      )
-    );
-  }
-};
 
 /*
 export const requestSignIn = (username, password) => (dispatch) => {
@@ -142,13 +86,6 @@ export const requestSignOut = () => (dispatch) => {
   localStorage.removeItem("token");
   localStorage.clear();
   dispatch(updateAuthState({ authState: AUTH_STATES.loggedOut }));
-};
-
-export const requestResetPassword = (email) => (dispatch) => {
-  dispatch(setPasswordResetMessage(""));
-  dispatch(callApi(() => lefApi.resetPassword(email))).then((response) => {
-    dispatch(setPasswordResetMessage(response.data.message));
-  });
 };
 
 export const setNewPassword = (email, code, newPassword) => (dispatch) => {

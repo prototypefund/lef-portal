@@ -1,9 +1,9 @@
 import { useContext, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { getRegionDataFromState } from "../redux/dataSlice";
 import { WidgetContainer } from "./WidgetContainer";
 import { ThemeContext } from "./theme/ThemeContext";
 import { WIDGETS } from "./widgets/getWidget";
+import { useGetRegionQuery } from "../redux/lefReduxApi";
+import { SpinnerWrapper } from "./shared/SpinnerWrapper";
 
 export function WidgetEmbedding({
   colorPalette,
@@ -11,33 +11,30 @@ export function WidgetEmbedding({
   regionId,
   widgetId,
 }) {
-  // const dispatch = useDispatch();
   const { updateTheme } = useContext(ThemeContext);
 
-  const regionData = useSelector((state) =>
-    getRegionDataFromState(state, regionId)
-  );
+  // const regionData = useSelector((state) => getRegionDataFromState(state, regionId));
+  const {
+    data: regionData = {},
+    isFetching: isFetchingRegion,
+  } = useGetRegionQuery(regionId);
 
   useEffect(() => {
     updateTheme(colorPalette, fontStyle);
   }, [updateTheme, colorPalette, fontStyle]);
 
-  /*useEffect(() => {
-    if (regionId) {
-      dispatch(requestGetRegion(regionId));
-    }
-  }, [dispatch, regionId]);*/
-
   let widget = WIDGETS[widgetId] ? WIDGETS[widgetId].component : undefined;
 
   return widget ? (
-    <div className={"d-flex flex-grow-1 m-2"}>
-      <WidgetContainer
-        regionData={regionData}
-        editMode={false}
-        component={widget}
-      />{" "}
-    </div>
+    <SpinnerWrapper loading={isFetchingRegion}>
+      <div className={"d-flex flex-grow-1 m-2"}>
+        <WidgetContainer
+          regionData={regionData}
+          editMode={false}
+          component={widget}
+        />{" "}
+      </div>
+    </SpinnerWrapper>
   ) : (
     <p>Das angeforderte Widget ist nicht vorhanden.</p>
   );

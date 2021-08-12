@@ -35,8 +35,8 @@ const options = (weatherStationName, dataset = [], referenceMean) => ({
       title: "Jahr",
       ticks: {
         /*        callback: (value, index, values) => {
-          return index % 5 === 0 ? value : "";
-        },*/
+                  return index % 5 === 0 ? value : "";
+                },*/
       },
     },
   },
@@ -123,7 +123,9 @@ export const WarmingStripe = ({ climateData = [], weatherStationName }) => {
         options={options(weatherStationName, displayDataMeans, referenceMean)}
         type={"bar"}
       />
-      <p>{`In ${weatherStationName} betrug die Durchschnittstemperatur im Zeitraum zwischen 1961 und 1990 etwa ${roundToN(
+      <p
+        style={{ whiteSpace: "pre-wrap" }}
+      >{`Die WarmingStripes zeigen die Temperatur der Jahre 1990 bis heute im Vergleich zur durchschnittlichen Temperatur zwischen den Jahren 1961 und 1990 an. In Jahren mit blau gefärbten Streifen war die Temperatur niedriger, in Jahren mit rötlich gefärbten Streifen war sie höher als im Vergleichszeitraum.\n\nIn ${weatherStationName} betrug die Durchschnittstemperatur im Zeitraum zwischen 1961 und 1990 etwa ${roundToN(
         referenceMean,
         2
       )}° Celsius.`}</p>
