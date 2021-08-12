@@ -26,8 +26,6 @@ export const lefApi = {
       },
       true
     ),
-  updateRegion: (updatedRegion) =>
-    apiRequest("/region/update", { region: updatedRegion }, true),
 
   // OBJECTIVES
   createObjective: (startDate, endDate, title, description, tags, regionId) =>
@@ -76,8 +74,7 @@ export const lefApi = {
   deleteAction: (actionId) =>
     apiRequest("/action/delete", { _id: actionId }, true),
 
-  createClimateChart: () =>
-    apiRequest("/weatherstationdata/create", { fromFile: true }, true),
+  // createClimateChart: () => apiRequest("/weatherstationdata/create", { fromFile: true }, true),
 };
 
 export const callApi = (func) => (dispatch) => {

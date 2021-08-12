@@ -6,13 +6,27 @@ import {
   removeObjectiveForRegion,
   requestUpdateObjective,
   updateActionForRegion,
-  updateRegionData,
 } from "../dataSlice";
 import { requestChangePassword } from "../authSlice";
+import { lefReduxApi } from "../lefReduxApi";
 
 export const notifier = ({ dispatch }) => (next) => (action) => {
   // console.debug("TYPE: ", action);
   const message_changesSaved = "Änderungen gespeichert";
+  const { meta = {} } = action;
+  const { arg = {} } = meta || {};
+  const { endpointName } = arg;
+  if (endpointName) console.debug(endpointName);
+
+  if (lefReduxApi.endpoints.updateRegion.matchFulfilled(action)) {
+    dispatch(
+      addNotificationMessage(
+        message_changesSaved,
+        "Ihre Änderungen an dieser Region wurden übernommen."
+      )
+    );
+  }
+
   switch (action.type) {
     case requestUpdateObjective.fulfilled.type:
       dispatch(
@@ -53,14 +67,6 @@ export const notifier = ({ dispatch }) => (next) => (action) => {
         addNotificationMessage(
           message_changesSaved,
           "Die Maßnahme wurde gelöscht."
-        )
-      );
-      break;
-    case updateRegionData().type:
-      dispatch(
-        addNotificationMessage(
-          message_changesSaved,
-          "Ihre Änderungen an dieser Region wurden übernommen."
         )
       );
       break;

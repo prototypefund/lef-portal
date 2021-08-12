@@ -66,36 +66,43 @@ export const AccountPage = () => {
       </div>
 
       <SpinnerWrapper loading={isFetchingUserData} spinnerProps={spinnerProps}>
-        <Form.Group controlId={"userEmail"}>
-          <Form.Label>Name</Form.Label>
-          <Form.Control
-            type={"name"}
-            placeholder={"(kein Name vergeben)"}
-            value={userName}
-            disabled
-          />
-        </Form.Group>
-        <Row>
-          <Form.Group controlId={"userEmail"} as={Col}>
-            <Form.Label>E-Mail</Form.Label>
+        <Form>
+          <Form.Group controlId={"userEmail"}>
+            <Form.Label>Name</Form.Label>
             <Form.Control
-              type={"email"}
-              placeholder={"Ihre E-Mail"}
-              value={email}
+              type={"name"}
+              placeholder={"(kein Name vergeben)"}
+              value={userName}
               disabled
             />
           </Form.Group>
+          <Row>
+            <Form.Group controlId={"userEmail"} as={Col}>
+              <Form.Label>E-Mail</Form.Label>
+              <Form.Control
+                type={"email"}
+                placeholder={"Ihre E-Mail"}
+                value={email}
+                disabled
+              />
+            </Form.Group>
 
-          <Form.Group controlId={"userPassword"} as={Col}>
-            <Form.Label>Passwort</Form.Label>
-            <Form.Control disabled type={"password"} value={"PASSWORD"} />
+            <Form.Group controlId={"userPassword"} as={Col}>
+              <Form.Label>Passwort</Form.Label>
+              <Form.Control
+                disabled
+                type={"password"}
+                autoComplete={"current-password"}
+                value={"PASSWORD"}
+              />
+            </Form.Group>
+          </Row>
+          <Form.Group>
+            <Button onClick={() => setShowPasswordDialog(true)}>
+              Passwort ändern
+            </Button>
           </Form.Group>
-        </Row>
-        <Form.Group>
-          <Button onClick={() => setShowPasswordDialog(true)}>
-            Passwort ändern
-          </Button>
-        </Form.Group>
+        </Form>
       </SpinnerWrapper>
 
       <Row className={"mt-5"}>

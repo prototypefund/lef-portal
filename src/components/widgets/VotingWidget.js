@@ -1,5 +1,5 @@
 import { Col, Row } from "react-bootstrap";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { LefBarChart } from "../shared/charts/LefBarChart";
 import { SelectVotingDistrictArea } from "./votingWidgetComponents/SelectVotingDistrictArea";
 import { lefReduxApi } from "../../redux/lefReduxApi";
@@ -31,11 +31,13 @@ export const VotingWidget = ({ regionData = {}, editMode }) => {
   ] = lefReduxApi.endpoints.getVotingDataForDistrict.useLazyQuery();
   const { data: electionData = {} } = result;
 
+  const votingDataId = isArrayWithOneElement(votings) ? votings[0] : null;
+
   useEffect(() => {
-    if (isArrayWithOneElement(votings)) {
-      getVotingDataForDistrict(votings[0]);
+    if (votingDataId) {
+      getVotingDataForDistrict(votingDataId);
     }
-  }, [votings]);
+  }, [votingDataId]);
 
   const {
     // region,
@@ -81,6 +83,10 @@ export const VotingWidget = ({ regionData = {}, editMode }) => {
 
   const title = `Wahlergebnisse der Region ${electionDistrictName}`;
   const description = `Wahlergebnisse der Region ${electionDistrictName} im Zeitraum von ${startYear} bis ${endYear}:`;
+  const lefBarChart = useMemo(
+    () => <LefBarChart data={data} isPercent xTitle={title} />,
+    [electionDistrictName]
+  );
   return (
     <Col>
       {editMode && <SelectVotingDistrictArea regionData={regionData} />}
@@ -91,9 +97,7 @@ export const VotingWidget = ({ regionData = {}, editMode }) => {
           </Row>{" "}
           <Row>
             <Col sm={12} lg={12}>
-              <div style={{ width: "100%" }}>
-                <LefBarChart data={data} isPercent xTitle={title} />
-              </div>
+              <div style={{ width: "100%" }}>{lefBarChart}</div>
             </Col>
             {/*<Col sm={12} lg={4} className={"mt-sm-2"}>
           <p

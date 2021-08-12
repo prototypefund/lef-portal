@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   AUTH_STATES,
   getCurrentUserId,
+  handleApiError,
   setUserData,
   updateAuthState,
 } from "./authSlice";
@@ -33,14 +34,14 @@ const baseQuery = fetchBaseQuery({
 const customBaseQuery = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
   /*
-  console.debug({ args });
-  api.dispatch(
-    addNotificationMessage(
-      `BaseQuery: ${result.meta.response.status}`,
-      result.meta.request.url
-    )
-  );
-*/
+        console.debug({ args });
+        api.dispatch(
+          addNotificationMessage(
+            `BaseQuery: ${result.meta.response.status}`,
+            result.meta.request.url
+          )
+        );
+      */
   return result;
 };
 
@@ -53,28 +54,18 @@ export const lefReduxApi = createApi({
     getToken: builder.query({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
         const { dispatch } = _queryApi;
-        dispatch(addNotificationMessage("Token bestellt"));
-        let tempToken =
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3QxQHRlc3QuZGUiLCJpYXQiOjE2Mjg2ODk4MzEsImV4cCI6MTYyODczMzAzMX0.jZ0FWADKhQnezl18nrNg6dlxPqrZoMuu3dZShJWniTs";
-        dispatch(
-          updateAuthState({ token: tempToken, authState: AUTH_STATES.loggedIn })
-        );
         const result = await fetchWithBQ({
           url: "token/get",
           ...getQueryParameters({ ..._arg }),
-          responseHandler: (response) => {
-            return {
-              data: response,
-            };
-          },
         });
-        if (result.error) throw result.error;
+        dispatch(
+          updateAuthState({
+            token: result.data.token,
+            authState: AUTH_STATES.loggedIn,
+          })
+        );
         return result.data ? { data: result.data } : { error: result.error };
       },
-      /* query: ({ email, password }) => ({
-        url: "token/get",
-        ...getQueryParameters({ email, password }),
-      }),*/
     }),
     getAllRegions: builder.query({
       query: () => ({
@@ -89,14 +80,16 @@ export const lefReduxApi = createApi({
           url: "user/get",
           ...getQueryParameters({}),
         });
-        dispatch(setUserData({ user: result.data }));
-        dispatch(
-          updateAuthState({
-            authState: AUTH_STATES.loggedIn,
-            userId: result.data._id,
-          })
-        );
-        if (result.error) throw result.error;
+        if (result.error) {
+        } else {
+          dispatch(setUserData({ user: result.data }));
+          dispatch(
+            updateAuthState({
+              authState: AUTH_STATES.loggedIn,
+              userId: result.data._id,
+            })
+          );
+        }
         return result.data ? { data: result.data } : { error: result.error };
       },
     }),
@@ -106,7 +99,6 @@ export const lefReduxApi = createApi({
         ...getQueryParameters({ _id: regionId }),
       }),
       providesTags: (result, error, regionId) => {
-        console.debug({ result, error, regionId });
         return [{ type: "Regions", id: regionId }];
       },
     }),
@@ -169,10 +161,9 @@ export const lefReduxApi = createApi({
         url: "region/update",
         ...getQueryParameters({ region }, true),
       }),
-      invalidatesTags: (result, error, region) => {
-        console.debug({ result, error, id: region._id });
-        return [{ type: "Regions", id: region._id }];
-      },
+      invalidatesTags: (result, error, region) => [
+        { type: "Regions", id: region._id },
+      ],
     }),
   }),
 });

@@ -61,9 +61,6 @@ const dataSlice = createSlice({
     setRegionData(state, action) {
       updateRegionInArray(state, action);
     },
-    updateRegionData(state, action) {
-      updateRegionInArray(state, action);
-    },
     addObjectiveForRegion(state, action) {
       state.objectivesForRegion[action.payload.regionId].push(
         action.payload.objective
@@ -142,7 +139,6 @@ export const {
   setRegionData,
   replaceAllRegionData,
   updateActionForRegion,
-  updateRegionData,
   addObjectiveForRegion,
   addActionForRegion,
   removeObjectiveForRegion,
@@ -164,19 +160,6 @@ export const requestCreateRegion = (name, postalcodes) => (dispatch) => {
   lefApi
     .createRegion(name, postalcodes)
     .then((response) => console.debug(response));
-};
-
-export const requestUpdateRegion = (updatedRegion) => (dispatch) => {
-  dispatch(callApi(() => lefApi.updateRegion(updatedRegion))).then(
-    (response) => {
-      dispatch(
-        updateRegionData({ regionId: updatedRegion._id, data: response.data })
-      );
-    },
-    (error) => {
-      console.debug(error);
-    }
-  );
 };
 
 // OBJECTIVES

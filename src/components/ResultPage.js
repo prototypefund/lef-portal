@@ -22,11 +22,13 @@ import {
 } from "../redux/lefReduxApi";
 
 const ResultPage = ({ history, location }) => {
-  const dispatch = useDispatch();
   const [updateRegion] = useUpdateRegionMutation();
   const loggedIn =
     useSelector((state) => state.auth.authState) === AUTH_STATES.loggedIn;
   const [getUser, result = {}] = lefReduxApi.endpoints.getUser.useLazyQuery();
+  const {
+    isSuccess: isLoadingUserSuccess,
+  } = lefReduxApi.endpoints.getUser.useQueryState();
   const { data: userData = {} } = result;
   const { regionId } = useParams();
   const userIsAdmin =
@@ -35,21 +37,25 @@ const ResultPage = ({ history, location }) => {
     userData.regionIds.includes(regionId);
   const { state = {} } = location;
   const [editMode, setEditMode] = useState(state.startInEditMode);
+  console.debug({ editMode });
   const {
     data: regionData = {},
     isFetching: isFetchingRegion,
   } = useGetRegionQuery(regionId);
-  const {
-    data: regions = [],
-    isFetching: isFetchingRegions,
-  } = useGetAllRegionsQuery();
-  const { name = "Musterstadt", _id } = regionData;
+  const { data: regions = [] } = useGetAllRegionsQuery();
+  const { name, _id } = regionData;
 
   useEffect(() => {
     if (loggedIn) {
       getUser();
     }
   }, [loggedIn]);
+
+  useEffect(() => {
+    if (isLoadingUserSuccess && editMode && !userIsAdmin) {
+      setEditMode(false);
+    }
+  }, [_id, isLoadingUserSuccess]);
 
   const widgets = Object.keys(WIDGETS)
     .map((key) => WIDGETS[key])
@@ -162,7 +168,8 @@ const ResultPage = ({ history, location }) => {
             ))
           ) : (
             <p>
-              {`Es sind bislang keine Daten für ${name} vorhanden. Probier es zu einem späteren Zeitpunkt noch einmal.`}
+              {name &&
+                `Es sind bislang keine Daten für ${name} vorhanden. Probier es zu einem späteren Zeitpunkt noch einmal.`}
             </p>
           )}
         </Col>

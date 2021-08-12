@@ -81,18 +81,27 @@ export const {
 } = authSlice.actions;
 export default authSlice.reducer;
 
-export const handleApiError = (error) => (dispatch) => {
-  console.debug("ERROR", error.response.data);
-  if (error.response.data && error.response.data.name) {
-    switch (error.response.data.name) {
-      case "JsonWebTokenError": // token is completely wrong
-      case "TokenExpiredError": // token expired, ask user to signIn again
+export const handleApiError = (error = {}) => (dispatch) => {
+  const { data = {} } = error;
+  const { code, message } = data;
+  console.debug("ERROR", code, message);
+  if (code) {
+    switch (code) {
+      case "JsonWebTokenError": // deprecated
+      case "TokenExpiredError": // deprecated
+      case "TOKEN_INVALID_ERROR": // invalid token, ask user to signIn again
         dispatch(updateAuthState({ authState: AUTH_STATES.logInRequest }));
         break;
       default:
+        dispatch(
+          addNotificationMessage(
+            "Unbekannter Fehler",
+            "Ein unbekannter Fehler ist aufgetreten."
+          )
+        );
         break;
     }
-  } else if (["Unauthorized", "Forbidden"].includes(error.response.data)) {
+  } else if (["Unauthorized", "Forbidden"].includes(error)) {
     // user tried to access a resource that they have no access to
     dispatch(
       addNotificationMessage(
