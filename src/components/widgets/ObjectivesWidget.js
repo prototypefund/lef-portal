@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { ArrowRightCircle, ArrowLeftCircle } from "react-bootstrap-icons";
 import {
   Accordion,
   Button,
@@ -66,10 +66,32 @@ ConfirmDialog.propTypes = {
   show: PropTypes.bool,
   onClick: PropTypes.func,
 };
+
+const Arrow = ({ left = false, onClick = () => alert("What"), show }) =>
+  show ? (
+    <div
+      onClick={onClick}
+      className={
+        "h-100 position-absolute align-items-center justify-content-center d-flex"
+      }
+      style={{
+        cursor: "pointer",
+        width: 20,
+        backgroundColor: "rgba(100,100,100,0.0)",
+        zIndex: 10000,
+        top: 0,
+        ...(left ? { left: 0 } : { right: 0 }),
+      }}
+    >
+      {left ? <ArrowLeftCircle /> : <ArrowRightCircle />}
+    </div>
+  ) : (
+    <></>
+  );
+
 export const ObjectivesWidget = (props) => {
   const { theme } = useContext(ThemeContext);
   const { COLOR_TEXT_BRIGHT, PRIMARY_COLOR_DARK } = theme.colors;
-  const dispatch = useDispatch();
   const { regionData, editMode } = props;
   const { _id } = regionData;
   const {
@@ -308,6 +330,13 @@ export const ObjectivesWidget = (props) => {
       >
         <div className={"w-100 d-sm-block d-md-none m-0 p-0"}>
           <Carousel
+            renderArrowNext={(onClickHandler, hasNext) => (
+              <Arrow onClick={onClickHandler} show={hasNext} />
+            )}
+            renderArrowPrev={(onClickHandler, hasPrevious) => (
+              <Arrow onClick={onClickHandler} show={hasPrevious} left />
+            )}
+            showArrows={true}
             showThumbs={false}
             autoPlay={false}
             showStatus={false}

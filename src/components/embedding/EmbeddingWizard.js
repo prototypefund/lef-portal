@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Heading } from "../shared/Heading";
 import { WIDGETS } from "../widgets/getWidget";
@@ -9,6 +9,7 @@ import { pleaseChoose } from "../../assets/consts";
 import { LefSelect } from "../shared/LefSelect";
 import { Menu, MenuItem } from "react-bootstrap-typeahead";
 import { MenuGroupLabel } from "../shared/MenuGroupLabel";
+import { isArrayWithOneElement } from "../../utils/utils";
 
 const ROOT_URL = `https://portal.emission-framework.org`;
 // const ROOT_URL = `http://localhost:3000`;
@@ -25,9 +26,6 @@ const EmbeddingWizard = ({ ownRegionIds, regions, open, onClose }) => {
     own: ownRegionIds.includes(r._id),
   }));
 
-  useEffect(() => {
-    if (regions.length > 0) setRegionId(regions[0]._id);
-  }, [regions]);
   let embeddingUrl = `${ROOT_URL}/embeddedWidget/${regionId}/${widgetId}/${previewColorPalette}/${previewFontStyle}`;
   let iFrameCode = `<iframe src="${embeddingUrl}" style="width: 100%; min-height: 500px; border: 1px solid grey">`;
   let copyEmbeddingCodeToClipboard = () => {
@@ -50,23 +48,14 @@ const EmbeddingWizard = ({ ownRegionIds, regions, open, onClose }) => {
             <Col xs={12} md={6} className={""}>
               <Heading size={"h5"} text={"Einstellungen"} />
               <Form className={"pr-3"}>
-                <Form.Group as={"div"} controlId="formWidgetSelect">
-                  <Form.Label>Widget</Form.Label>
-                  <Form.Control
-                    as="select"
-                    defaultValue={pleaseChoose}
-                    onChange={(event) => setWidgetId(event.target.value)}
-                  >
-                    {Object.keys(WIDGETS).map((widget) => (
-                      <option value={widget}>{WIDGETS[widget].name}</option>
-                    ))}
-                  </Form.Control>
-                </Form.Group>
                 <Form.Group as={"div"} controlId="formRegionSelect">
                   <Form.Label>Darzustellende Region</Form.Label>
                   <LefSelect
                     id={"formRegionSelect"}
-                    onChange={(values) => values && setRegionId(values[0])}
+                    onChange={(values) =>
+                      isArrayWithOneElement(values) &&
+                      setRegionId(values[0].value)
+                    }
                     placeholder={pleaseChoose}
                     options={convertedRegions.map((region) => ({
                       label: region.name,
@@ -109,6 +98,19 @@ const EmbeddingWizard = ({ ownRegionIds, regions, open, onClose }) => {
                     }}
                   />
                 </Form.Group>
+                <Form.Group as={"div"} controlId="formWidgetSelect">
+                  <Form.Label>Widget</Form.Label>
+                  <Form.Control
+                    as="select"
+                    defaultValue={pleaseChoose}
+                    onChange={(event) => setWidgetId(event.target.value)}
+                  >
+                    {Object.keys(WIDGETS).map((widget) => (
+                      <option value={widget}>{WIDGETS[widget].name}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+
                 <Form.Group as={"div"} controlId="formColorThemeSelect">
                   <Form.Label>Farbpalette</Form.Label>
                   <Form.Control

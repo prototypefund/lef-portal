@@ -13,7 +13,6 @@ export function WidgetEmbedding({
 }) {
   const { updateTheme } = useContext(ThemeContext);
 
-  // const regionData = useSelector((state) => getRegionDataFromState(state, regionId));
   const {
     data: regionData = {},
     isFetching: isFetchingRegion,
@@ -21,7 +20,7 @@ export function WidgetEmbedding({
 
   useEffect(() => {
     updateTheme(colorPalette, fontStyle);
-  }, [updateTheme, colorPalette, fontStyle]);
+  }, [colorPalette, fontStyle]);
 
   let widget = WIDGETS[widgetId] ? WIDGETS[widgetId].component : undefined;
 
@@ -29,6 +28,7 @@ export function WidgetEmbedding({
     <SpinnerWrapper loading={isFetchingRegion}>
       <div className={"d-flex flex-grow-1 m-2"}>
         <WidgetContainer
+          embeddingMode
           regionData={regionData}
           editMode={false}
           component={widget}

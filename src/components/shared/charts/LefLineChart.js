@@ -2,8 +2,10 @@ import { Line } from "react-chartjs-2";
 import React, { useContext } from "react";
 import { ThemeContext } from "../../theme/ThemeContext";
 import { isArray } from "chart.js/helpers";
+// import { defaults } from "react-chartjs-2";
 
 export function LefLineChart({ data = {} }) {
+  // defaults.animation = !disableAnimations;
   const { theme } = useContext(ThemeContext);
   const { DIAGRAM_COLORS = [] } = theme.colors;
   const usedScales = isArray(data.datasets)

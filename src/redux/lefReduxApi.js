@@ -79,7 +79,6 @@ export const lefReduxApi = createApi({
         } else {
           dispatch(
             updateAuthState({
-              authState: AUTH_STATES.loggedIn,
               userId: result.data._id,
             })
           );
