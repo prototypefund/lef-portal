@@ -3,16 +3,17 @@ import MapChart from "../../MapChart";
 import React, { useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { LefSelect } from "../../shared/LefSelect";
-import { isArray } from "chart.js/helpers";
 import {
   useGetAllClimateStationsQuery,
   useUpdateRegionMutation,
 } from "../../../redux/lefReduxApi";
 import { SpinnerWrapper } from "../../shared/SpinnerWrapper";
+import { isArrayWithOneElement } from "../../../utils/utils";
 
 export const SelectClimateStationArea = ({ regionData = {} }) => {
   const [showMapModal, setShowMapModal] = useState(false);
   const [updateRegion] = useUpdateRegionMutation();
+  const [selected, setSelected] = useState([]);
 
   const {
     data: allWeatherStations = {},
@@ -25,17 +26,19 @@ export const SelectClimateStationArea = ({ regionData = {} }) => {
 
   const selectWeatherStationTypeahead = (
     <LefSelect
+      selected={selected}
+      // multiple
       style={{ width: "100%" }}
       isLoading={allWeatherStations.length === 0}
       id={"weatherStationSelect"}
-      onChange={(values) =>
-        isArray(values) &&
-        values.length > 0 &&
-        updateRegion({
-          ...regionData,
-          weatherStations: [values[0].value],
-        })
-      }
+      onChange={(values) => {
+        if (isArrayWithOneElement(values))
+          updateRegion({
+            ...regionData,
+            weatherStations: values.map((v) => v.value),
+          });
+        setSelected(values);
+      }}
       placeholder={"Name der Wetterstation"}
       options={sortedWeatherStationsArray.map((weatherStation) => ({
         label: weatherStation.weatherStationName,

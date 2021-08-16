@@ -10,14 +10,14 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import { LefLineChart } from "../shared/charts/LefLineChart";
 import { LefSpinner } from "../shared/LefSpinner";
-import { aggregateByYear } from "../../utils/utils";
+import { aggregateByYear, isValidClimateValue } from "../../utils/utils";
 import { Heading } from "../shared/Heading";
 import { useGetClimateChartQuery } from "../../redux/lefReduxApi";
 import { SelectClimateStationArea } from "./climateWidgetComponents/SelectClimateStationArea";
 
 export const ClimateWidget = ({ regionData, editMode }) => {
   const { weatherStations = [] } = regionData;
-  const [weatherStationId] = weatherStations;
+  const [weatherStationId, weatherStationId2] = weatherStations;
   const [showRainfall, setShowRainfall] = useState(true);
   const [showTemperature, setShowTemperature] = useState(true);
   const [startYearFilter, setStartYearFilter] = useState();
@@ -28,8 +28,16 @@ export const ClimateWidget = ({ regionData, editMode }) => {
     data: climateChart = {},
     isFetching: isFetchingClimateChart,
   } = useGetClimateChartQuery(weatherStationId);
+  /* const {
+    data: climateChart2 = {},
+    isFetching: isFetchingClimateChart2,
+  } = useGetClimateChartQuery(weatherStationId2);*/
 
   const { weatherStation, climateData: yearlyData = [] } = climateChart;
+  /* const {
+    weatherStation: weatherStation2,
+    climateData: yearlyData2 = [],
+  } = climateChart2;*/
 
   let yearlyMeans = aggregateByYear(
     yearlyData.filter(
@@ -43,8 +51,18 @@ export const ClimateWidget = ({ regionData, editMode }) => {
 
   if (aggregateByYearFlag) {
     labels = yearlyMeans.map((y) => y.year);
-    rainfalls = yearlyMeans.map((y) => y.rainfallMean);
-    temperatureMeans = yearlyMeans.map((y) => y.mean);
+    rainfalls = yearlyMeans
+      .map((y, i) => ({
+        x: labels[i],
+        y: y.rainfallMean,
+      }))
+      .filter((e, i) => !yearlyMeans[i].invalidRainfalls);
+    temperatureMeans = yearlyMeans
+      .map((y, i) => ({
+        y: y.mean,
+        x: labels[i],
+      }))
+      .filter((e, i) => !yearlyMeans[i].invalidMeans);
   } else {
     yearlyData
       .filter(
@@ -59,9 +77,12 @@ export const ClimateWidget = ({ regionData, editMode }) => {
             temperatureMean,
             // temperatureMaxMean,
           } = monthData;
-          temperatureMeans.push(temperatureMean);
-          rainfalls.push(rainfall);
-          labels.push(`${year}|${monthNumber}`);
+          const label = `${year}|${monthNumber}`;
+          if (isValidClimateValue(temperatureMean))
+            temperatureMeans.push({ x: label, y: temperatureMean });
+          if (isValidClimateValue(rainfall))
+            rainfalls.push({ x: label, y: rainfall });
+          labels.push(label);
         });
       });
   }
@@ -101,11 +122,40 @@ export const ClimateWidget = ({ regionData, editMode }) => {
   }, [yearlyData.length, maxYear, minYear]);
 
   const ClimateChart = useMemo(() => {
+    let y2Max = Math.ceil(
+      Math.max(
+        ...(aggregateByYearFlag
+          ? temperatureMeans.map((r) => r.y)
+          : temperatureMeans)
+      )
+    );
+    let y2Min = Math.floor(
+      Math.min(
+        ...(aggregateByYearFlag
+          ? temperatureMeans.map((r) => r.y)
+          : temperatureMeans)
+      )
+    );
+    console.debug({ y2Max, y2Min });
     return labels.length > 0 && temperatureMeans.length > 0 ? (
       <Row>
         <Col sm={12} lg={12}>
           <div style={{ width: "100%" }}>
-            <LefLineChart data={data} />
+            <LefLineChart
+              data={data}
+              y2Min={y2Min}
+              y2Max={y2Max}
+              y1Min={0}
+              y1Max={
+                Math.ceil(
+                  Math.max(
+                    ...(aggregateByYearFlag
+                      ? rainfalls.map((r) => r.y)
+                      : rainfalls)
+                  ) / 10
+                ) * 10
+              }
+            />
           </div>
         </Col>
       </Row>
@@ -188,6 +238,7 @@ export const ClimateWidget = ({ regionData, editMode }) => {
     </>
   );
 
+  let weatherStation2 = false;
   return (
     <Container {...(editMode && { style: { minHeight: 400 } })}>
       {editMode && <SelectClimateStationArea regionData={regionData} />}
@@ -195,7 +246,11 @@ export const ClimateWidget = ({ regionData, editMode }) => {
         <Row className={"mb-3"}>
           <Heading
             size={"h5"}
-            text={`Klimadaten der Wetterstation ${weatherStation}`}
+            text={`Klimadaten der ${
+              weatherStation2 ? "Wetterstationen" : "Wetterstation"
+            }: ${[weatherStation, weatherStation2]
+              .filter((v) => Boolean(v))
+              .join(", ")}`}
           />
         </Row>
       )}

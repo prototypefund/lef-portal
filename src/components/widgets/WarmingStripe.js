@@ -1,5 +1,11 @@
 import { Bar } from "react-chartjs-2";
-import { aggregateByYear, mapToScale, mean, roundToN } from "../../utils/utils";
+import {
+  aggregateByYear,
+  isArrayWithOneElement,
+  mapToScale,
+  mean,
+  roundToN,
+} from "../../utils/utils";
 
 const options = (weatherStationName, dataset = [], referenceMean) => ({
   responsive: true,
@@ -67,7 +73,11 @@ const DEVIATION = 2.5;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 export const WarmingStripe = ({ climateData = [], weatherStationName }) => {
-  let yearlyData = aggregateByYear(climateData);
+  let yearlyData = aggregateByYear(
+    climateData.filter(
+      (e) => isArrayWithOneElement(e.monthlyData) && e.monthlyData.length === 12
+    )
+  );
 
   const years = yearlyData.map((y) => y.year);
   const startYear = Math.min(...years);

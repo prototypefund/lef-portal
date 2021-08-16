@@ -4,7 +4,7 @@ import { ThemeContext } from "../../theme/ThemeContext";
 import { isArray } from "chart.js/helpers";
 // import { defaults } from "react-chartjs-2";
 
-export function LefLineChart({ data = {} }) {
+export function LefLineChart({ data = {}, y1Min, y1Max, y2Min, y2Max }) {
   // defaults.animation = !disableAnimations;
   const { theme } = useContext(ThemeContext);
   const { DIAGRAM_COLORS = [] } = theme.colors;
@@ -22,6 +22,8 @@ export function LefLineChart({ data = {} }) {
         ticks: {
           beginAtZero: true,
         },
+        ...(y1Min && { min: y1Min }),
+        ...(y1Max && { max: y1Max }),
       },
       y2: {
         type: "linear",
@@ -30,6 +32,8 @@ export function LefLineChart({ data = {} }) {
         grid: {
           drawOnChartArea: false,
         },
+        ...(y2Min && { min: y2Min }),
+        ...(y2Max && { max: y2Max }),
       },
     },
   };
@@ -39,6 +43,8 @@ export function LefLineChart({ data = {} }) {
       delete options.scales[key];
     }
   });
+
+  console.debug(data);
   return (
     <Line
       data={{

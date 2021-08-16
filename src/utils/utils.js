@@ -1,3 +1,5 @@
+import { isNumber } from "chart.js/helpers";
+
 export const getRandomId = () => "_" + Math.random().toString(36).substr(2, 9);
 
 export const aggregateByYear = (climateData = []) => {
@@ -11,7 +13,17 @@ export const aggregateByYear = (climateData = []) => {
     const yearRainfallMean =
       monthlyRainfallMeans.reduce((a, b) => a + b, 0) /
       monthlyRainfallMeans.length;
-    yearlyMeans.push({ mean: yearMean, year, rainfallMean: yearRainfallMean });
+    yearlyMeans.push({
+      mean: yearMean,
+      year,
+      rainfallMean: yearRainfallMean,
+      invalidRainfalls:
+        monthlyRainfallMeans.length !== 12 ||
+        !monthlyRainfallMeans.every((e) => isValidClimateValue(e)),
+      invalidMeans:
+        monthlyMeans.length !== 12 ||
+        !monthlyMeans.every((e) => isValidClimateValue(e)),
+    });
   });
   return yearlyMeans;
 };
@@ -32,7 +44,8 @@ export const mean = (data) => data.reduce((a, b) => a + b, 0) / data.length;
 export const roundToN = (value, n) =>
   Math.round(value * Math.pow(10, n)) / Math.pow(10, n);
 
-export const isValidClimateValue = (value) => [-999, null].includes(value);
+export const isValidClimateValue = (value) =>
+  isNumber(value) && ![-999, null].includes(value);
 
 export const toZeroIfInvalid = (value) =>
   isValidClimateValue(value) ? value : 0;

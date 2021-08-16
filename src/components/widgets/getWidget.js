@@ -2,8 +2,6 @@ import { ObjectivesWidget } from "./ObjectivesWidget";
 import { ClimateWidget } from "./ClimateWidget";
 import { VotingWidget } from "./VotingWidget";
 import { WarmingStripeWidget } from "./WarmingStripeWidget";
-// import { CarsWidget } from "./CarsWidget";
-// import { WarmingStripeWidget } from "./WarmingStripeWidget";
 
 export const WIDGETS = {
   1: {
@@ -39,10 +37,4 @@ export const WIDGETS = {
       "http://www.landesdatenbank.nrw.de/",
     ],
   },
-  /*4: {
-    name: "PKW-Zulassungen",
-    question:
-      "Hat sich die Anzahl neu zugelassener PKW in %s in den letzten Jahren verändert?",
-    component: CarsWidget,
-  },*/
 };
