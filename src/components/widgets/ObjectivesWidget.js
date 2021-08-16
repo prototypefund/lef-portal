@@ -27,6 +27,7 @@ import {
   useGetActionsForRegionQuery,
   useGetObjectivesForRegionQuery,
 } from "../../redux/lefReduxApi";
+import { isFirefox } from "react-device-detect";
 
 const OBJECTIVE_DELETE = "OBJECTIVE_DELETE";
 const ACTION_DELETE = "ACTION_DELETE";
@@ -214,7 +215,7 @@ export const ObjectivesWidget = (props) => {
                 <h6
                   style={{
                     backgroundColor: PRIMARY_COLOR_DARK,
-                    width: "fit-content",
+                    width: isFirefox ? "-moz-fit-content" : "fit-content",
                     padding: "5px 12px",
                     borderRadius: 5,
                     color: "white",
