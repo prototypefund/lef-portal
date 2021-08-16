@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { PATHS } from "../MainRouting";
 import { useRequestPasswordResetMutation } from "../../redux/lefReduxApi";
 import { LefSpinner } from "../shared/LefSpinner";
+import { SpinnerWrapper } from "../shared/SpinnerWrapper";
 
 const ResetPasswordPage = ({ history }) => {
   const [email, setEmail] = useState("");
@@ -44,18 +45,22 @@ const ResetPasswordPage = ({ history }) => {
               placeholder={"Ihre E-Mail"}
             />
             <div className={"d-flex justify-content-end"}>
-              <Button
-                variant="primary"
-                onClick={onFinish}
-                className={"mt-3 mr-2"}
+              <SpinnerWrapper
+                loading={isRequestingPasswordReset}
+                spinnerProps={{ hideBackground: true, horizontal: true }}
               >
-                Passwort zurücksetzen
-              </Button>
+                <Button
+                  variant="primary"
+                  onClick={onFinish}
+                  className={"mt-3 mr-2"}
+                >
+                  Passwort zurücksetzen
+                </Button>
+              </SpinnerWrapper>
             </div>{" "}
           </Form.Group>
         </Form>
         <hr />
-        {isRequestingPasswordReset && <LefSpinner />}
       </Container>
     </>
   );

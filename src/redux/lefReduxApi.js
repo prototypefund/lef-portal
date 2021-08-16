@@ -53,12 +53,13 @@ export const lefReduxApi = createApi({
           url: "token/get",
           ...getQueryParameters({ ..._arg }),
         });
-        dispatch(
-          updateAuthState({
-            token: result.data.token,
-            authState: AUTH_STATES.loggedIn,
-          })
-        );
+        if (result && result.data)
+          dispatch(
+            updateAuthState({
+              token: result.data.token,
+              authState: AUTH_STATES.loggedIn,
+            })
+          );
         return result.data ? { data: result.data } : { error: result.error };
       },
     }),
@@ -251,8 +252,14 @@ export const lefReduxApi = createApi({
         ...getQueryParameters({ email, oldPassword, newPassword }, true),
       }),
     }),
+    resetPassword: builder.mutation({
+      query: ({ email, code, password }) => ({
+        url: "password/reset",
+        ...getQueryParameters({ email, code, password }, true),
+      }),
+    }),
     requestPasswordReset: builder.mutation({
-      query: ({ email }) => ({
+      query: (email) => ({
         url: "resetCode/create",
         ...getQueryParameters({ email }),
       }),
@@ -281,4 +288,5 @@ export const {
   useDeleteObjectiveMutation,
   useChangePasswordMutation,
   useRequestPasswordResetMutation,
+  useResetPasswordMutation,
 } = lefReduxApi;

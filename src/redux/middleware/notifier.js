@@ -9,16 +9,19 @@ const message_thatDidntWentWell = "Das hat leider nicht geklappt..";
 const message_technicalError = "Technischer Fehler";
 
 export const notifier = ({ dispatch }) => (next) => (action) => {
-  // console.debug("TYPE: ", action);
+  console.debug("TYPE: ", action);
   const notify = (title, message, type = "success") => {
     dispatch(addNotificationMessage(title, message, type));
   };
 
-  if (isRejectedWithValue(action) || isRejected(action)) {
-    const { payload = {} } = action;
+  let isRejectedAction = isRejectedWithValue(action) || isRejected(action);
+  console.debug({ isRejectedAction });
+  if (isRejectedAction) {
+    const { payload = {}, error = {} } = action;
     const { data = {} } = payload;
     const { code, message } = data;
-    console.error("API ERROR", action, code, message);
+    const { message: errorMessage } = error;
+    console.debug("API ERROR", action, code, message, errorMessage);
     if (code) {
       switch (code) {
         case "JsonWebTokenError": // deprecated
@@ -66,9 +69,13 @@ export const notifier = ({ dispatch }) => (next) => (action) => {
           );
           break;
       }
+    } else if (errorMessage) {
+      // notify(message_thatDidntWentWell, "Die Aktion war nicht erfolgreich.");
     }
   } else {
-    const { code, message } = action;
+    const { payload = {} } = action;
+    const { code, message } = payload;
+    console.debug("SUCCESS", code, message);
     if (code) {
       switch (code) {
         // SUCCESS MESSAGES TO DISPLAY

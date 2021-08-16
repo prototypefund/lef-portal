@@ -1,12 +1,21 @@
+# Local Emission Framework (Frontend)
+
+## Voraussetzungen
+- Node.js
+
 ## Setup
-Es ist so einfach, meine Oma könnte dieses Repo aufsetzen:
-1. ```npm install```
-2. ```npm start```
+Notwendige Dependencies können installiert werden mittels:
+```npm install```
+
+Ein lokaler Server kann anschließend gestartet werden mittels:
+ ```npm start```
+
 
 ## Verwendete Packages
 - React Router: Verwaltung von Subseiten, URL, Routing
 - Prettier/Eslint/Husky: Automatisches Prettifien beim Commiten
-- Faker: Erstellung von Fakedaten
-- Axios: Kommunikation mit Server
 - Redux-Toolkit: lokaler Zwischenspeicher
+- Redux-Toolkit Query: API-Schnittstelle zum Backend
 - Bootstrap: Design Framework
+
+
