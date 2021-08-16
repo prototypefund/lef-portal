@@ -68,8 +68,7 @@ export const notifier = ({ dispatch }) => (next) => (action) => {
       }
     }
   } else {
-    const { data = {} } = action;
-    const { code, message } = data;
+    const { code, message } = action;
     if (code) {
       switch (code) {
         // SUCCESS MESSAGES TO DISPLAY

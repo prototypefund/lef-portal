@@ -69,6 +69,7 @@ const ResultPage = ({ history, location }) => {
       ),
       question: widget.question,
       flag: widget.flag,
+      sources: widget.sources,
     }));
 
   let typeAheadOptions = getTypeAheadOptions(regions);
@@ -163,6 +164,7 @@ const ResultPage = ({ history, location }) => {
                 onToggleActive={(result) =>
                   updateRegion({ ...regionData, [entry.flag]: result })
                 }
+                sources={entry.sources}
               />
             ))
           ) : (

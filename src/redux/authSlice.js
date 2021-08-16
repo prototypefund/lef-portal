@@ -39,48 +39,12 @@ const authSlice = createSlice({
         localUserId = userId;
       }
     },
-    setUserData: (state, action) => {
-      if (action.payload.user) state.user = action.payload.user;
-    },
-    setPasswordResetMessage: (state, action) => {
-      state.passwordResetMessage = action.payload;
-    },
   },
   extraReducers: {},
 });
 
-export const {
-  updateAuthState,
-  setUserData,
-  setPasswordResetMessage,
-} = authSlice.actions;
+export const { updateAuthState } = authSlice.actions;
 export default authSlice.reducer;
-
-/*
-export const requestSignIn = (username, password) => (dispatch) => {
-  lefApi
-    .getToken(username, password)
-    .then((response) => {
-      if (response.data) {
-        localStorage.setItem("token", response.data);
-        dispatch(updateAuthState({ authState: AUTH_STATES.loggedIn }));
-      }
-    })
-    .catch(function (error) {
-      const { response = {} } = error;
-      const { data = {} } = response;
-      const { error: errorText } = data;
-      dispatch(
-        updateAuthState({
-          // authState: AUTH_STATES.loggedOut,
-          message:
-            errorText ||
-            "Es konnte keine Verbindung hergestellt werden. Bitte prüfen Sie Ihre Internetverbindung.",
-        })
-      );
-    });
-};
-*/
 
 export const requestSignOut = () => (dispatch) => {
   localStorage.removeItem("token");

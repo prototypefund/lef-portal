@@ -9,7 +9,6 @@ import {
 } from "react-bootstrap";
 import React, { useEffect, useMemo, useState } from "react";
 import { LefLineChart } from "../shared/charts/LefLineChart";
-import { useDispatch } from "react-redux";
 import { LefSpinner } from "../shared/LefSpinner";
 import { aggregateByYear } from "../../utils/utils";
 import { Heading } from "../shared/Heading";
@@ -202,7 +201,6 @@ export const ClimateWidget = ({ regionData, editMode }) => {
       )}
       {!isFetchingClimateChart && ClimateChartControls}
       {ClimateChart}
-      {/*{SelectWeatherStationMapModal}*/}
     </Container>
   );
 };

@@ -19,25 +19,28 @@ export const SetNewPassword = () => {
     <>
       <Container>
         <Heading text={"Passwort ändern"} />
-        {!emailParam && (
-          <p style={{ marginBottom: 15 }}>
-            {`Geben Sie den Sicherheitscode an, der Ihnen per
-              E-Mail zugeschickt wurde.`}
-          </p>
-        )}
         <Form>
           <Form.Group controlId={"emailForm"}>
             <Form.Label>E-Mail</Form.Label>
             <Form.Control
+              autoFocus={!Boolean(email)}
               onChange={(e) => setEmail(e.target.value)}
               type={"email"}
               placeholder={"Ihre E-Mail"}
               value={email}
+              autoComplete={"email"}
             />
           </Form.Group>
           <Form.Group controlId={"codeForm"}>
             <Form.Label>Sicherheitscode</Form.Label>
+            {codeParam === ":code" && (
+              <p className={"small"} style={{ marginBottom: 15 }}>
+                {`Geben Sie hier den Sicherheitscode ein, der Ihnen per
+              E-Mail zugeschickt wurde.`}
+              </p>
+            )}
             <Form.Control
+              autoFocus={Boolean(emailParam)}
               onChange={(e) => setCode(e.target.value)}
               type={"code"}
               placeholder={"Sicherheitscode"}
@@ -51,6 +54,7 @@ export const SetNewPassword = () => {
               type={"password"}
               placeholder={"Neues Passwort"}
               value={newPassword}
+              autoComplete={"new-password"}
             />
           </Form.Group>
         </Form>

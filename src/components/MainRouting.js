@@ -11,12 +11,12 @@ import ProtectedRoute from "./ProtectedRoute";
 import { AUTH_STATES, requestSignOut } from "../redux/authSlice";
 import { useEffect } from "react";
 import { Header } from "./Header";
-import { Alert, Col, Row, Toast } from "react-bootstrap";
+import { Col, Row, Toast } from "react-bootstrap";
 import { WidgetEmbeddingPage } from "./WidgetEmbeddingPage";
 import { LefModal } from "./shared/LefModal";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import { SetNewPassword } from "./pages/SetNewPassword";
-import { lefReduxApi, useGetUserQuery } from "../redux/lefReduxApi";
+import { lefReduxApi, useCreateUserMutation } from "../redux/lefReduxApi";
 
 export const getCityPath = (city) => `/result/${city}`;
 export const PATHS = {
@@ -43,6 +43,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
     authStatus === AUTH_STATES.logInRequest && !embeddingMode;
 
   const [getUser] = lefReduxApi.endpoints.getUser.useLazyQuery();
+  const [createUser] = useCreateUserMutation();
 
   useEffect(() => {
     if (token && !loggedIn) {
@@ -58,6 +59,19 @@ const MainRouting = ({ location = {}, history = {} }) => {
       button: true,
     },
   */
+    {
+      id: "0",
+      label: "User erstellen",
+      action: () =>
+        createUser({
+          username: "Local Emission Framework",
+          email: "info@emission-framework.org",
+          password: "LEF2021",
+          regionIds: ["610bc2cbc72d6f2984f80712", "610bc2d0c72d6f2984f80b22"],
+        }),
+      button: true,
+      hidden: true,
+    },
     {
       id: "3",
       label: "Anmelden",
@@ -81,7 +95,9 @@ const MainRouting = ({ location = {}, history = {} }) => {
   ];
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      {!embeddingMode && <Header pages={pages} loggedIn={loggedIn} />}
+      {!embeddingMode && (
+        <Header pages={pages.filter((p) => !p.hidden)} loggedIn={loggedIn} />
+      )}
       <div className={"d-flex flex-grow-1 pt-3 p-sm-1 p-md-3"}>
         <Switch>
           <Route path={PATHS.IMPRINT}>

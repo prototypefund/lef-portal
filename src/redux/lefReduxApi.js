@@ -1,10 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import {
-  AUTH_STATES,
-  getCurrentUserId,
-  setUserData,
-  updateAuthState,
-} from "./authSlice";
+import { AUTH_STATES, getCurrentUserId, updateAuthState } from "./authSlice";
 import { getSortedArray } from "../utils/utils";
 
 const URL = "https://us-central1-lef-backend.cloudfunctions.net/app/";
@@ -82,7 +77,6 @@ export const lefReduxApi = createApi({
         });
         if (result.error) {
         } else {
-          dispatch(setUserData({ user: result.data }));
           dispatch(
             updateAuthState({
               authState: AUTH_STATES.loggedIn,
@@ -221,6 +215,21 @@ export const lefReduxApi = createApi({
       }),
       invalidatesTags: () => [{ type: "Actions", id: "LIST" }],
     }),
+    createUser: builder.mutation({
+      query: ({ username, email, password, regionIds }) => ({
+        url: "user/create",
+        ...getQueryParameters(
+          {
+            username,
+            email,
+            password,
+            regionIds,
+          },
+          true
+        ),
+      }),
+      invalidatesTags: () => [{ type: "Actions", id: "LIST" }],
+    }),
     deleteAction: builder.mutation({
       query: (_id) => ({
         url: "action/delete",
@@ -268,6 +277,7 @@ export const {
   useUpdateActionMutation,
   useCreateObjectiveMutation,
   useCreateActionMutation,
+  useCreateUserMutation,
   useDeleteActionMutation,
   useDeleteObjectiveMutation,
   useChangePasswordMutation,

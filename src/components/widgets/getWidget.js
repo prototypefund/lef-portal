@@ -18,6 +18,7 @@ export const WIDGETS = {
     question: "Hat sich das Wetter in %s in den letzten Jahrzehnten verändert?",
     component: ClimateWidget,
     flag: "climateWidget",
+    sources: ["Deutscher Wetterdienst"],
   },
   3: {
     name: "Warming Stripes",
@@ -25,6 +26,7 @@ export const WIDGETS = {
       "Wie hat sich die Temperatur in %s seit 1990 im Vergleich zur Durchschnittstemperatur der Jahre 1961 bis 1990 verändert?",
     component: WarmingStripeWidget,
     flag: "warmingstripeWidget",
+    sources: ["Deutscher Wetterdienst"],
   },
   4: {
     name: "Wahlverhalten",
@@ -32,6 +34,10 @@ export const WIDGETS = {
       "Hat sich das Wahlverhalten der Bürger:innen in %s, ggf. mit Hinblick auf das Thema Klimaschutz, in den letzten Jahren verändert?",
     component: VotingWidget,
     flag: "votingWidget",
+    sources: [
+      "https://www.wahlergebnisse.nrw/kommunalwahlen/",
+      "http://www.landesdatenbank.nrw.de/",
+    ],
   },
   /*4: {
     name: "PKW-Zulassungen",

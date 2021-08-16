@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { FormCheck, Row } from "react-bootstrap";
 import { ThemeContext } from "../theme/ThemeContext";
 import { Question } from "./Question";
+import { SourceDisplay } from "../shared/SourceDisplay";
 
 const textColor = "#222";
 
@@ -11,6 +12,7 @@ export const ResultEntry = ({
   editMode,
   active,
   onToggleActive,
+  sources,
 }) => {
   const { theme } = useContext(ThemeContext);
   const { COLOR_TEXT_BRIGHT, LIGHT_BACKGROUND_COLOR } = theme.colors;
@@ -32,7 +34,9 @@ export const ResultEntry = ({
       )}
       {active && (
         <div
-          className={"d-flex align-items-center mt-2 alert p-sm-1 p-md-4"}
+          className={
+            "d-flex align-items-center mt-2 alert p-sm-1 p-md-4 flex-column"
+          }
           style={{
             paddingRight: 0,
             border: `2px solid ${COLOR_TEXT_BRIGHT}`,
@@ -42,6 +46,7 @@ export const ResultEntry = ({
           }}
         >
           {component}
+          <SourceDisplay sources={sources} />
         </div>
       )}
       <hr style={{ margin: 50 }} />
