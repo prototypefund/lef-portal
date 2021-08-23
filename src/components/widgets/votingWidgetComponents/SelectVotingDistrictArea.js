@@ -15,7 +15,7 @@ export const SelectVotingDistrictArea = ({ regionData = {} }) => {
   };
   return (
     <>
-      <FormGroup>
+      <FormGroup className={"w-100"}>
         <FormLabel>{`Wahlbezirk`}</FormLabel>
         <LefSelect
           id={"votingAreaSelect"}

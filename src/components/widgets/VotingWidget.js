@@ -5,6 +5,7 @@ import { SelectVotingDistrictArea } from "./votingWidgetComponents/SelectVotingD
 import { lefReduxApi } from "../../redux/lefReduxApi";
 import { parties } from "../../assets/germanParties";
 import { isArrayWithOneElement, roundToN } from "../../utils/utils";
+let randomColor = require("randomcolor");
 
 let partyNameDictionary = {};
 Object.keys(parties).forEach((key) => {
@@ -19,7 +20,7 @@ const getPartyColor = (party) => {
   const partyObject = partyNameDictionary[party]
     ? parties[partyNameDictionary[party]]
     : {} || {};
-  return partyObject.primaryColor || "#DDD";
+  return partyObject.primaryColor || randomColor({ seed: party });
 };
 
 export const VotingWidget = ({ regionData = {}, editMode, isMobile }) => {

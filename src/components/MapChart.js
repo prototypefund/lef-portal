@@ -21,7 +21,6 @@ const MapChart = ({ lon, lat, regions = [], onRegionClick, dots = [] }) => {
   const {
     COLOR_TEXT_BRIGHT,
     NAVIGATION_COLOR,
-    INTERACTIVE_ELEMENT_COLOR,
     PRIMARY_COLOR_DARK,
   } = theme.colors;
   const [hoveredRegion, setHoveredRegion] = useState(null);

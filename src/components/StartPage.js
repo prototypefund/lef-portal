@@ -1,8 +1,7 @@
 import { useContext, useState } from "react";
 import MapChart from "./MapChart";
 import { Heading } from "./shared/Heading";
-import { Button, Col, Container, Row } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { Col, Container, Row } from "react-bootstrap";
 import { ThemeContext } from "./theme/ThemeContext";
 import { LefSpinner } from "./shared/LefSpinner";
 import { LefSelect } from "./shared/LefSelect";
@@ -20,14 +19,28 @@ export const getTypeAheadOptions = (regions) => {
     }));
 };
 
+const StartPageCitySearch = ({ onCitySelect, regions, isFetchingRegions }) => {
+  const [typeaheadText, setTypeaheadText] = useState("");
+  return (
+    <LefSelect
+      value={typeaheadText}
+      open={typeaheadText.length > 0}
+      onInputChange={(text) => setTypeaheadText(text)}
+      autoFocus
+      style={{ width: "100%" }}
+      id={"citySelection"}
+      onChange={(values) => onCitySelect(values[0].value)}
+      placeholder={"Stadt / Unternehmen"}
+      options={getTypeAheadOptions(regions)}
+      emptyLabel={isFetchingRegions ? "Lade Daten.." : "Keine Ergebnisse."}
+    />
+  );
+};
+
 export const StartPage = ({ onCitySelect = () => {} }) => {
   const { theme } = useContext(ThemeContext);
-  // const regions = useSelector((state) => state.data.regionData);
   const [coords, setCoords] = useState({});
-  const [typeaheadText, setTypeaheadText] = useState("");
   const { longitude, latitude } = coords;
-  // const isFetchingRegions = useSelector((state) => state.data.isFetchingAllRegions);
-  // const dispatch = useDispatch();
 
   const {
     data: regions = [],
@@ -85,22 +98,13 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
               </Row>
               <Col>
                 <Row className={"w-100"}>
-                  <LefSelect
-                    value={typeaheadText}
-                    open={typeaheadText.length > 0}
-                    onInputChange={(text) => setTypeaheadText(text)}
-                    autoFocus
-                    style={{ width: "100%" }}
-                    id={"citySelection"}
-                    onChange={(values) => onCitySelect(values[0].value)}
-                    placeholder={"Stadt / Unternehmen"}
-                    options={getTypeAheadOptions(regions)}
-                    emptyLabel={
-                      isFetchingRegions ? "Lade Daten.." : "Keine Ergebnisse."
-                    }
+                  <StartPageCitySearch
+                    regions={regions}
+                    onCitySelect={onCitySelect}
+                    isFetchingRegions={isFetchingRegions}
                   />
                 </Row>
-                <Row>
+                {/*<Row>
                   <Button
                     className={"mt-3"}
                     size={"sm"}
@@ -109,7 +113,7 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
                   >
                     Meinen Standort verwenden
                   </Button>
-                </Row>
+                </Row>*/}
               </Col>
 
               <Row className={"mt-5 mr-3"}>{infoBox}</Row>
