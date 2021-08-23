@@ -28,6 +28,97 @@ export const aggregateByYear = (climateData = []) => {
   return yearlyMeans;
 };
 
+export const calculateYearMeans = (monthlyDataConverted = {}) => {
+  const dataArray = Object.keys(monthlyDataConverted).map(
+    (key) => monthlyDataConverted[key]
+  );
+  const monthlyMeans = dataArray.map((m) => m.temperatureMean);
+  const monthlyRainfallMeans = dataArray.map((m) => m.rainfall);
+  const yearMean =
+    monthlyMeans.reduce((a, b) => a + b, 0) / monthlyMeans.length;
+  const yearRainfallMean =
+    monthlyRainfallMeans.reduce((a, b) => a + b, 0) /
+    monthlyRainfallMeans.length;
+  return {
+    mean: yearMean,
+    rainfallMean: yearRainfallMean,
+    invalidRainfalls:
+      monthlyRainfallMeans.length !== 12 ||
+      !monthlyRainfallMeans.every((e) => isValidClimateValue(e)),
+    invalidMeans:
+      monthlyMeans.length !== 12 ||
+      !monthlyMeans.every((e) => isValidClimateValue(e)),
+  };
+};
+
+export const mergeWeatherStationData = (dataArray = []) => {
+  let allClimateDataFlattened = (dataArray.every((e) =>
+    Array.isArray(e.climateData)
+  )
+    ? dataArray.reduce(
+        (a, b) => [
+          ...a,
+          ...b.climateData.map((e) => ({ ...e, source: b.weatherStation })),
+        ],
+        []
+      )
+    : []
+  ).sort((a, b) => a.year - b.year);
+  let climateDataDictionary = {};
+  allClimateDataFlattened.forEach((entry) => {
+    const { year, source, monthlyData = [] } = entry;
+    const oldEntry = climateDataDictionary[year] || {};
+    let { sources = [], monthlyDataConverted = {} } = oldEntry;
+    const updatedSources = !sources.includes(source)
+      ? [...sources, source]
+      : [...sources];
+    monthlyData.forEach((monthData) => {
+      const { month, rainfall, temperatureMean } = monthData;
+      const oldMonthData = monthlyDataConverted[month] || {};
+      const {
+        rainfall: rainfallOld,
+        temperatureMean: temperatureMeanOld,
+        invalidRainfall: oldInvalidRainfall,
+        invalidMean: oldInvalidMean,
+      } = oldMonthData;
+      const count = updatedSources.length;
+      monthlyDataConverted[month] = {
+        ...oldMonthData,
+        month,
+        rainfall: movingAverage(rainfallOld, rainfall, count),
+        temperatureMean: movingAverage(
+          temperatureMeanOld,
+          temperatureMean,
+          count
+        ),
+        invalidRainfall: oldInvalidRainfall || !isValidClimateValue(rainfall),
+        invalidMean: oldInvalidMean || !isValidClimateValue(temperatureMean),
+        sourceCount: count,
+      };
+    });
+
+    climateDataDictionary[year] = {
+      ...oldEntry,
+      sources: updatedSources,
+      year,
+      monthlyDataConverted: {
+        ...monthlyDataConverted,
+      },
+      ...calculateYearMeans(monthlyDataConverted),
+    };
+  });
+  return climateDataDictionary;
+};
+
+const movingAverage = (oldSum, newValue, count) => {
+  let newVar = newValue
+    ? count > 1
+      ? ((count - 1) * oldSum + newValue) / count
+      : newValue
+    : oldSum;
+  return newVar;
+};
+
 export const mapToScale = (value, oldMin, oldMax, newMin, newMax) => {
   const percent = (value - oldMin) / (oldMax - oldMin);
   return newMin + percent * (newMax - newMin);
@@ -70,3 +161,5 @@ export const getSortedArray = (arr, key) => {
 
 export const isArrayWithOneElement = (arr) =>
   Array.isArray(arr) && arr.length > 0;
+
+export const removeSpaces = (str = "") => str.replace(/\s/g, "");

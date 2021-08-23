@@ -2,8 +2,6 @@ import { Heading } from "../shared/Heading";
 import { Button, Container, Form } from "react-bootstrap";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setNewPassword } from "../../redux/authSlice";
 import { useResetPasswordMutation } from "../../redux/lefReduxApi";
 import { SpinnerWrapper } from "../shared/SpinnerWrapper";
 

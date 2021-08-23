@@ -1,4 +1,7 @@
-// source: https://gist.githubusercontent.com/Pepo/1bf1b2d47a728e6c69d8b611a4063075/raw/ca0bdeb058c54871b492e901aea2782584db08fa/german-party-color-codes.md
+// sources:
+// https://gist.githubusercontent.com/Pepo/1bf1b2d47a728e6c69d8b611a4063075/raw/ca0bdeb058c54871b492e901aea2782584db08fa/german-party-color-codes.md
+// https://colorganize.com/palette/179
+
 export const parties = {
   1: {
     names: ["Sozialdemokratische Partei Deutschlands"],
@@ -21,7 +24,7 @@ export const parties = {
   4: {
     names: ["Die Linke"],
     short: "DIE LINKE",
-    primaryColor: "#E3000F",
+    primaryColor: "#b61c3e",
   },
   5: {
     names: ["Freie Demokratische Partei"],

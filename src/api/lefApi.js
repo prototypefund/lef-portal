@@ -9,15 +9,6 @@ export const lefApi = {
   // createClimateChart: () => apiRequest("/weatherstationdata/create", { fromFile: true }, true),
 };
 
-export const callApi = (func) => (dispatch) => {
-  return func().then(
-    (response) => response,
-    (error) => {
-      return Promise.reject({ error });
-    }
-  );
-};
-
 const apiRequest = (path, body, secure = false, method = "post") => {
   let token = null;
   if (secure) {

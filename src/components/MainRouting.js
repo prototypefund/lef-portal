@@ -73,6 +73,12 @@ const MainRouting = ({ location = {}, history = {} }) => {
       hidden: true,
     },
     {
+      id: "2",
+      label: "Impressum",
+      to: PATHS.IMPRINT,
+      unsecure: true,
+    },
+    {
       id: "3",
       label: "Anmelden",
       to: PATHS.SIGN_IN,
@@ -80,13 +86,13 @@ const MainRouting = ({ location = {}, history = {} }) => {
       button: true,
     },
     {
-      id: "5",
+      id: "4",
       label: "Mein Konto",
       to: PATHS.ACCOUNT,
       secure: true,
     },
     {
-      id: "4",
+      id: "5",
       label: "Abmelden",
       action: () => dispatch(requestSignOut()),
       secure: true,

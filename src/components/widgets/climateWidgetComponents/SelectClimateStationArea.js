@@ -1,6 +1,6 @@
 import { LefModal } from "../../shared/LefModal";
 import MapChart from "../../MapChart";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { LefSelect } from "../../shared/LefSelect";
 import {
@@ -11,15 +11,29 @@ import { SpinnerWrapper } from "../../shared/SpinnerWrapper";
 import { isArrayWithOneElement } from "../../../utils/utils";
 
 export const SelectClimateStationArea = ({ regionData = {} }) => {
+  const { weatherStations = [] } = regionData;
   const [showMapModal, setShowMapModal] = useState(false);
   const [updateRegion] = useUpdateRegionMutation();
-  const [selected, setSelected] = useState([]);
-
   const {
     data: allWeatherStations = {},
     isFetching: isFetchingClimateStations,
   } = useGetAllClimateStationsQuery();
 
+  const weatherStationsToOptions = (weatherStation) => ({
+    label: weatherStation.weatherStationName,
+    value: weatherStation._id,
+  });
+  const [selected, setSelected] = useState([]);
+
+  useEffect(() => {
+    if (!isFetchingClimateStations && isArrayWithOneElement(weatherStations)) {
+      setSelected(
+        sortedWeatherStationsArray
+          .filter((s) => weatherStations.includes(s._id))
+          .map(weatherStationsToOptions)
+      );
+    }
+  }, [isFetchingClimateStations, weatherStations]);
   let sortedWeatherStationsArray = Object.keys(allWeatherStations)
     .map((key) => allWeatherStations[key])
     .sort((a, b) => (a.weatherStationName < b.weatherStationName ? -1 : 1));
@@ -27,7 +41,7 @@ export const SelectClimateStationArea = ({ regionData = {} }) => {
   const selectWeatherStationTypeahead = (
     <LefSelect
       selected={selected}
-      // multiple
+      multiple
       style={{ width: "100%" }}
       isLoading={allWeatherStations.length === 0}
       id={"weatherStationSelect"}
@@ -40,10 +54,7 @@ export const SelectClimateStationArea = ({ regionData = {} }) => {
         setSelected(values);
       }}
       placeholder={"Name der Wetterstation"}
-      options={sortedWeatherStationsArray.map((weatherStation) => ({
-        label: weatherStation.weatherStationName,
-        value: weatherStation._id,
-      }))}
+      options={sortedWeatherStationsArray.map(weatherStationsToOptions)}
     />
   );
 
@@ -61,6 +72,12 @@ export const SelectClimateStationArea = ({ regionData = {} }) => {
             </Button>
           </Row>
         </Col>
+      </Row>
+      <Row>
+        <p className={"small mt-2 mb-2 ml-3"}>
+          Sie können bis zu zwei Wetterstationen auswählen. Daten aus mehreren
+          Wetterstationen werden gemittelt.
+        </p>
       </Row>
     </>
   );

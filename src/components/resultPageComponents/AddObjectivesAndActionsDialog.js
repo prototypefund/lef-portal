@@ -2,7 +2,6 @@ import { Col, Form, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { LefModal } from "../shared/LefModal";
 import MultiSelect from "react-multi-select-component";
-import { usePrevious } from "../../hooks/usePrevious";
 import { getYYYYMMDD } from "../../utils/utils";
 import {
   useCreateActionMutation,
@@ -33,29 +32,20 @@ export const AddObjectivesAndActionsDialog = ({
   ] = useUpdateObjectiveMutation();
   const [
     createObjective,
-    { isLoading: isCreatingObjective, isSuccess: isSuccessCreatingObjective },
+    { isSuccess: isSuccessCreatingObjective },
   ] = useCreateObjectiveMutation();
   const [
     updateAction,
-    { isLoading: isUpdatingAction, isSuccess: isSuccessAction },
+    { isSuccess: isSuccessAction },
   ] = useUpdateActionMutation();
   const [
     createAction,
-    { isLoading: isCreatingAction, isSuccess: isSuccessCreatingAction },
+    { isSuccess: isSuccessCreatingAction },
   ] = useCreateActionMutation();
 
-  /* const {
-      data: regionsActions = [],
-      isFetching: isFetchingActionsForRegion,
-    } = useGetActionsForRegionQuery(regionData._id);*/
-  const {
-    data: regionsObjectives = [],
-    //isFetching: isFetchingObjectivesForRegion,
-  } = useGetObjectivesForRegionQuery(regionData._id);
-
-  //const regionsObjectives = useSelector((state) => state.data.objectivesForRegion[regionData._id] || []);
-  //const isUpdatingObjective = useSelector((state) => state.data.isUpdatingObjective);
-  const previousIsUpdatingObjective = usePrevious(isUpdatingObjective);
+  const { data: regionsObjectives = [] } = useGetObjectivesForRegionQuery(
+    regionData._id
+  );
 
   const [isSaving, setIsSaving] = useState(false);
   const [title, setTitle] = useState(sourceObject.title || "");
@@ -97,7 +87,6 @@ export const AddObjectivesAndActionsDialog = ({
   };
 
   useEffect(() => {
-    //if (previousIsUpdatingObjective && !isUpdatingObjective && isSaving) {
     if (
       isSuccessObjective ||
       isSuccessAction ||
@@ -115,7 +104,6 @@ export const AddObjectivesAndActionsDialog = ({
     isSuccessCreatingObjective,
     isSuccessObjective,
     isUpdatingObjective,
-    previousIsUpdatingObjective,
   ]);
 
   const size = "md";

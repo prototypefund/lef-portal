@@ -3,7 +3,12 @@ import React from "react";
 import { pleaseChoose } from "../../assets/consts";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
-export const LefSelect = ({ options = [], onChange = () => {}, ...rest }) => (
+export const LefSelect = ({
+  options = [],
+  onChange = () => {},
+  children,
+  ...rest
+}) => (
   <Typeahead
     highlightOnlyResult
     placeholder={pleaseChoose}
@@ -12,5 +17,7 @@ export const LefSelect = ({ options = [], onChange = () => {}, ...rest }) => (
     options={options}
     onChange={onChange}
     {...rest}
-  />
+  >
+    {children}
+  </Typeahead>
 );

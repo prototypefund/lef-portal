@@ -22,9 +22,8 @@ const getPartyColor = (party) => {
   return partyObject.primaryColor || "#DDD";
 };
 
-export const VotingWidget = ({ regionData = {}, editMode }) => {
+export const VotingWidget = ({ regionData = {}, editMode, isMobile }) => {
   const { votings = [] } = regionData;
-  // const { data: electionData = {} } = useGetVotingDataForDistrictQuery(isArrayWithOneElement(votings) ? votings[0] : null);
   const [
     getVotingDataForDistrict,
     result = {},
@@ -39,22 +38,12 @@ export const VotingWidget = ({ regionData = {}, editMode }) => {
     }
   }, [votingDataId]);
 
-  const {
-    // region,
-    votingData = [],
-    districtName: electionDistrictName,
-  } = electionData;
+  const { votingData = [], districtName: electionDistrictName } = electionData;
   let partyData = {};
   let labels = [];
 
   votingData.forEach((voting) => {
-    const {
-      // eligibleVoters,
-      // voters,
-      validVotes,
-      year,
-      partyResults = [],
-    } = voting;
+    const { validVotes, year, partyResults = [] } = voting;
     labels.push(year);
     partyResults.forEach((partyResult) => {
       const { party, result } = partyResult;
@@ -82,35 +71,34 @@ export const VotingWidget = ({ regionData = {}, editMode }) => {
   };
 
   const title = `Wahlergebnisse der Region ${electionDistrictName}`;
-  const description = `Wahlergebnisse der Region ${electionDistrictName} im Zeitraum von ${startYear} bis ${endYear}:`;
+  const description = `Die Grafik zeigt die Wahlergebnisse der Region ${electionDistrictName} im Zeitraum von ${startYear} bis ${endYear}.`;
   const lefBarChart = useMemo(
-    () => <LefBarChart data={data} isPercent xTitle={title} />,
+    () => (
+      <LefBarChart isMobile={isMobile} data={data} isPercent xTitle={title} />
+    ),
     [electionDistrictName]
   );
   return (
-    <Col>
+    <>
       {editMode && <SelectVotingDistrictArea regionData={regionData} />}
       {votingData.length > 0 ? (
-        <Col>
-          <Row>
-            <p>{description}</p>
-          </Row>{" "}
-          <Row>
-            <Col sm={12} lg={12}>
+        isMobile ? (
+          lefBarChart
+        ) : (
+          <Col>
+            <Row>
               <div style={{ width: "100%" }}>{lefBarChart}</div>
-            </Col>
-            {/*<Col sm={12} lg={4} className={"mt-sm-2"}>
-          <p
-            style={{ whiteSpace: "pre-wrap" }}
-          >{`Die stärkste Partei bei der letzten Wahl in ${electionDistrictName} war die Partei "${mostRecentWinner}" mit ${mostRecentWinnerResult} Prozent.`}</p>
-        </Col>*/}
-          </Row>
-        </Col>
+            </Row>
+            <Row>
+              <p>{description}</p>
+            </Row>{" "}
+          </Col>
+        )
       ) : (
         <p className={"text-center mt-2 alert alert-secondary"}>
           Keine Daten vorhanden.
         </p>
       )}
-    </Col>
+    </>
   );
 };

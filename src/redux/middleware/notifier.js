@@ -9,13 +9,12 @@ const message_thatDidntWentWell = "Das hat leider nicht geklappt..";
 const message_technicalError = "Technischer Fehler";
 
 export const notifier = ({ dispatch }) => (next) => (action) => {
-  console.debug("TYPE: ", action);
+  // console.debug("TYPE: ", action);
   const notify = (title, message, type = "success") => {
     dispatch(addNotificationMessage(title, message, type));
   };
 
   let isRejectedAction = isRejectedWithValue(action) || isRejected(action);
-  console.debug({ isRejectedAction });
   if (isRejectedAction) {
     const { payload = {}, error = {} } = action;
     const { data = {} } = payload;
@@ -75,7 +74,7 @@ export const notifier = ({ dispatch }) => (next) => (action) => {
   } else {
     const { payload = {} } = action;
     const { code, message } = payload;
-    console.debug("SUCCESS", code, message);
+    // console.debug("SUCCESS", code, message);
     if (code) {
       switch (code) {
         // SUCCESS MESSAGES TO DISPLAY

@@ -93,7 +93,7 @@ const Arrow = ({ left = false, onClick = () => alert("What"), show }) =>
 export const ObjectivesWidget = (props) => {
   const { theme } = useContext(ThemeContext);
   const { COLOR_TEXT_BRIGHT, PRIMARY_COLOR_DARK } = theme.colors;
-  const { regionData, editMode } = props;
+  const { regionData, editMode, isMobile } = props;
   const { _id } = regionData;
   const {
     data: regionsActions = [],
@@ -315,8 +315,27 @@ export const ObjectivesWidget = (props) => {
         );
       });
 
+  let carousel = (
+    <Carousel
+      renderArrowNext={(onClickHandler, hasNext) => (
+        <Arrow onClick={onClickHandler} show={hasNext} />
+      )}
+      renderArrowPrev={(onClickHandler, hasPrevious) => (
+        <Arrow onClick={onClickHandler} show={hasPrevious} left />
+      )}
+      showArrows={true}
+      showThumbs={false}
+      autoPlay={false}
+      showStatus={false}
+      showIndicators={false}
+    >
+      {mappedObjectives(false)}
+    </Carousel>
+  );
   return isFetchingObjectivesForRegion || isFetchingActionsForRegion ? (
     <LefSpinner hideBackground />
+  ) : isMobile ? (
+    carousel
   ) : (
     <Row
       style={{ maxWidth: "100%", minHeight: 300 }}
@@ -329,23 +348,7 @@ export const ObjectivesWidget = (props) => {
           // overflow: "auto",
         }}
       >
-        <div className={"w-100 d-sm-block d-md-none m-0 p-0"}>
-          <Carousel
-            renderArrowNext={(onClickHandler, hasNext) => (
-              <Arrow onClick={onClickHandler} show={hasNext} />
-            )}
-            renderArrowPrev={(onClickHandler, hasPrevious) => (
-              <Arrow onClick={onClickHandler} show={hasPrevious} left />
-            )}
-            showArrows={true}
-            showThumbs={false}
-            autoPlay={false}
-            showStatus={false}
-            showIndicators={false}
-          >
-            {mappedObjectives(false)}
-          </Carousel>
-        </div>
+        <div className={"w-100 d-sm-block d-md-none m-0 p-0"}>{carousel}</div>
         <div className={"d-none d-md-flex"}>{mappedObjectives(true)}</div>
       </div>
 

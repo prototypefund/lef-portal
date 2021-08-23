@@ -1,52 +1,10 @@
 import { Bar } from "react-chartjs-2";
 import {
-  aggregateByYear,
-  isArrayWithOneElement,
+  isValidClimateValue,
   mapToScale,
   mean,
   roundToN,
 } from "../../utils/utils";
-
-const options = (weatherStationName, dataset = [], referenceMean) => ({
-  responsive: true,
-  plugins: {
-    legend: {
-      display: false,
-    },
-    tooltip: {
-      callbacks: {
-        label: (context) => {
-          const { dataIndex } = context;
-          let value = dataset[dataIndex];
-          return value
-            ? `Durchschnittstemperatur: ${roundToN(value, 2)}° Celsius`
-            : "";
-        },
-      },
-    },
-    title: {
-      text: `WarmingStripes für ${weatherStationName}`,
-      display: true,
-      position: "bottom",
-    },
-  },
-  layout: {
-    padding: 0,
-  },
-  scales: {
-    y: {
-      display: false,
-    },
-    x: {
-      title: "Jahr",
-      ticks: {
-        /*        callback: (value, index, values) => {
-                  return index % 5 === 0 ? value : "";
-                },*/
-      },
-    },
-  },
-});
 
 const WARMING_COLORS = [
   "#08306b",
@@ -72,14 +30,55 @@ const DEVIATION = 2.5;
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
-export const WarmingStripe = ({ climateData = [], weatherStationName }) => {
-  let yearlyData = aggregateByYear(
-    climateData.filter(
-      (e) => isArrayWithOneElement(e.monthlyData) && e.monthlyData.length === 12
-    )
-  );
+export const WarmingStripe = ({
+  climateData = [],
+  weatherStationName,
+  isMobile,
+}) => {
+  const years = climateData.map((y) => y.year);
 
-  const years = yearlyData.map((y) => y.year);
+  const options = (weatherStationName, dataset = []) => ({
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const { dataIndex } = context;
+            let value = dataset[dataIndex];
+            return value
+              ? `Durchschnittstemperatur: ${roundToN(value, 2)}° Celsius`
+              : "";
+          },
+        },
+      },
+      title: {
+        text: `WarmingStripes für ${weatherStationName}`,
+        display: true,
+        position: "bottom",
+      },
+    },
+    layout: {
+      padding: 0,
+    },
+    scales: {
+      y: {
+        display: false,
+      },
+      x: {
+        display: !isMobile,
+        title: "Jahr",
+        ticks: {
+          callback: (value, index, values) => {
+            return index % 5 === 0 && !isMobile ? years[index] : "";
+          },
+        },
+      },
+    },
+  });
+
   const startYear = Math.min(...years);
   const endYear = Math.max(...years);
   if (startYear > REFERENCE_RANGE[0] || endYear < REFERENCE_RANGE[1] + 10) {
@@ -90,14 +89,15 @@ export const WarmingStripe = ({ climateData = [], weatherStationName }) => {
       </p>
     );
   }
-  let displayData = yearlyData.filter(
+  let displayData = climateData.filter(
     (y) => y.year >= YEAR_RANGE[0] && y.year <= YEAR_RANGE[1]
   );
-  const referenceData = yearlyData.filter(
+  const referenceData = climateData.filter(
     (entry) =>
       entry.year > REFERENCE_RANGE[0] && entry.year < REFERENCE_RANGE[1]
   );
-  const referenceMean = mean(referenceData.map((d) => d.mean));
+  let means = referenceData.map((d) => d.mean);
+  const referenceMean = mean(means.filter((m) => isValidClimateValue(m)));
   const maxColorValue = referenceMean + DEVIATION;
   const minColorValue = referenceMean - DEVIATION;
 
@@ -107,7 +107,9 @@ export const WarmingStripe = ({ climateData = [], weatherStationName }) => {
     labels: displayData.map((y) => y.year),
     datasets: [
       {
-        data: [...Array(100).keys()].map(() => 100),
+        data: [...Array(100).keys()].map((_, i) =>
+          displayData[i] && !displayData[i].invalidMeans ? 100 : 0
+        ),
         barPercentage: 1,
         categoryPercentage: 1,
         backgroundColor: displayDataMeans.map((temperature) => {

@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { AUTH_STATES, getCurrentUserId, updateAuthState } from "./authSlice";
-import { getSortedArray } from "../utils/utils";
+import { getSortedArray, removeSpaces } from "../utils/utils";
 
 const URL = "https://us-central1-lef-backend.cloudfunctions.net/app/";
 
@@ -48,10 +48,11 @@ export const lefReduxApi = createApi({
     // QUERIES
     getToken: builder.query({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
+        const { email, password } = _arg;
         const { dispatch } = _queryApi;
         const result = await fetchWithBQ({
           url: "token/get",
-          ...getQueryParameters({ ..._arg }),
+          ...getQueryParameters({ email: removeSpaces(email), password }),
         });
         if (result && result.data)
           dispatch(

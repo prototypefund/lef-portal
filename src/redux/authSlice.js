@@ -1,5 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { callApi, lefApi } from "../api/lefApi";
+import { createSlice } from "@reduxjs/toolkit";
 import { addNotificationMessage } from "./notificationSlice";
 import { REQUEST_STATES } from "./consts";
 
@@ -50,12 +49,6 @@ export const requestSignOut = () => (dispatch) => {
   localStorage.removeItem("token");
   localStorage.clear();
   dispatch(updateAuthState({ authState: AUTH_STATES.loggedOut }));
-};
-
-export const setNewPassword = (email, code, newPassword) => (dispatch) => {
-  dispatch(
-    callApi(() => lefApi.setNewPassword(email, code, newPassword))
-  ).then(() => {});
 };
 
 export const requestAddRegionToAccount = () =>

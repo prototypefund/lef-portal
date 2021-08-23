@@ -5,11 +5,13 @@ export const WidgetContainer = ({
   regionData,
   editMode,
   embeddingMode,
+  isMobile,
 }) => {
   const Component = React.createElement(component, {
     regionData,
     editMode,
     embeddingMode,
+    isMobile,
   });
   return Component;
 };

@@ -10,39 +10,62 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import { LefLineChart } from "../shared/charts/LefLineChart";
 import { LefSpinner } from "../shared/LefSpinner";
-import { aggregateByYear, isValidClimateValue } from "../../utils/utils";
+import { mergeWeatherStationData } from "../../utils/utils";
 import { Heading } from "../shared/Heading";
-import { useGetClimateChartQuery } from "../../redux/lefReduxApi";
+import { lefReduxApi } from "../../redux/lefReduxApi";
 import { SelectClimateStationArea } from "./climateWidgetComponents/SelectClimateStationArea";
 
-export const ClimateWidget = ({ regionData, editMode }) => {
+export const ClimateWidget = ({ regionData, editMode, isMobile }) => {
   const { weatherStations = [] } = regionData;
-  const [weatherStationId, weatherStationId2] = weatherStations;
+  const [weatherStationId1, weatherStationId2] = weatherStations;
   const [showRainfall, setShowRainfall] = useState(true);
   const [showTemperature, setShowTemperature] = useState(true);
   const [startYearFilter, setStartYearFilter] = useState();
   const [endYearFilter, setEndYearFilter] = useState();
   const [aggregateByYearFlag, setAggregateByYear] = useState(true);
+  const twoStationMode = weatherStations.length > 1;
+
+  const [
+    getFirstClimateChart,
+    firstClimateChartResult = {},
+  ] = lefReduxApi.endpoints.getClimateChart.useLazyQuery(weatherStationId1);
+  const [
+    getSecondClimateChart,
+    secondClimateChartResult = {},
+  ] = lefReduxApi.endpoints.getClimateChart.useLazyQuery(weatherStationId2);
 
   const {
-    data: climateChart = {},
     isFetching: isFetchingClimateChart,
-  } = useGetClimateChartQuery(weatherStationId);
-  /* const {
-    data: climateChart2 = {},
+    data: firstClimateChart = {},
+  } = firstClimateChartResult;
+  const {
     isFetching: isFetchingClimateChart2,
-  } = useGetClimateChartQuery(weatherStationId2);*/
+    data: secondClimateChart = {},
+  } = secondClimateChartResult;
 
-  const { weatherStation, climateData: yearlyData = [] } = climateChart;
-  /* const {
-    weatherStation: weatherStation2,
-    climateData: yearlyData2 = [],
-  } = climateChart2;*/
+  const { weatherStation: firstWeatherStation } = firstClimateChart;
+  const { weatherStation: secondWeatherStation } = secondClimateChart;
 
-  let yearlyMeans = aggregateByYear(
-    yearlyData.filter(
-      (data) => data.year >= startYearFilter && data.year <= endYearFilter
-    )
+  useEffect(() => {
+    if (weatherStationId1) getFirstClimateChart(weatherStationId1);
+  }, [weatherStationId1]);
+
+  useEffect(() => {
+    if (weatherStationId2) getSecondClimateChart(weatherStationId2);
+  }, [weatherStationId2]);
+
+  const startEndYearFilter = (year) =>
+    year >= startYearFilter && year <= endYearFilter;
+
+  const mergedData = mergeWeatherStationData(
+    twoStationMode
+      ? [firstClimateChart, secondClimateChart]
+      : [firstClimateChart]
+  );
+  const mergedDataArray = Object.keys(mergedData).map((key) => mergedData[key]);
+
+  let filteredData = mergedDataArray.filter((data) =>
+    startEndYearFilter(data.year)
   );
 
   let temperatureMeans = [];
@@ -50,41 +73,45 @@ export const ClimateWidget = ({ regionData, editMode }) => {
   let labels = [];
 
   if (aggregateByYearFlag) {
-    labels = yearlyMeans.map((y) => y.year);
-    rainfalls = yearlyMeans
+    labels = filteredData.map((y) => y.year);
+
+    rainfalls = filteredData
       .map((y, i) => ({
         x: labels[i],
         y: y.rainfallMean,
       }))
-      .filter((e, i) => !yearlyMeans[i].invalidRainfalls);
-    temperatureMeans = yearlyMeans
+      .filter((e, i) => !filteredData[i].invalidRainfalls);
+
+    temperatureMeans = filteredData
       .map((y, i) => ({
-        y: y.mean,
         x: labels[i],
+        y: y.mean,
       }))
-      .filter((e, i) => !yearlyMeans[i].invalidMeans);
+      .filter((e, i) => !filteredData[i].invalidMeans);
   } else {
-    yearlyData
-      .filter(
-        (data) => data.year >= startYearFilter && data.year <= endYearFilter
-      )
-      .forEach((yearData) => {
-        const { monthlyData = [], year } = yearData;
-        monthlyData.forEach((monthData) => {
-          const {
-            month: monthNumber,
-            rainfall,
-            temperatureMean,
-            // temperatureMaxMean,
-          } = monthData;
-          const label = `${year}|${monthNumber}`;
-          if (isValidClimateValue(temperatureMean))
-            temperatureMeans.push({ x: label, y: temperatureMean });
-          if (isValidClimateValue(rainfall))
-            rainfalls.push({ x: label, y: rainfall });
-          labels.push(label);
-        });
+    filteredData.forEach((yearData) => {
+      const { monthlyDataConverted = {}, year } = yearData;
+      const monthDataArray = Object.keys(monthlyDataConverted).map(
+        (key) => monthlyDataConverted[key]
+      );
+      monthDataArray.forEach((monthData) => {
+        const {
+          month: monthNumber,
+          rainfall,
+          temperatureMean,
+          invalidRainfall,
+          invalidMean,
+        } = monthData;
+        const label = `${year}|${monthNumber}`;
+        if (!invalidMean) {
+          temperatureMeans.push({ x: label, y: temperatureMean });
+        }
+        if (!invalidRainfall) {
+          rainfalls.push({ x: label, y: rainfall });
+        }
+        labels.push(label);
       });
+    });
   }
 
   const rainFallSet = {
@@ -112,14 +139,16 @@ export const ClimateWidget = ({ regionData, editMode }) => {
     };
   }, [labels.length, showTemperature, showRainfall]);
 
-  const years = yearlyData.map((d) => d.year);
+  const years = mergedDataArray.map((e) => e.year);
   const minYear = Math.min(...years);
   const maxYear = Math.max(...years);
 
   useEffect(() => {
     setStartYearFilter(Math.min(maxYear - 1, Math.max(1990, minYear)));
     setEndYearFilter(maxYear);
-  }, [yearlyData.length, maxYear, minYear]);
+  }, [mergedDataArray.length, maxYear, minYear]);
+
+  const isFetchingData = isFetchingClimateChart || isFetchingClimateChart2;
 
   const ClimateChart = useMemo(() => {
     let y2Max = Math.ceil(
@@ -136,37 +165,47 @@ export const ClimateWidget = ({ regionData, editMode }) => {
           : temperatureMeans)
       )
     );
-    console.debug({ y2Max, y2Min });
+    let lefLineChart = (
+      <LefLineChart
+        hideScales
+        data={data}
+        y2Min={y2Min}
+        y2Max={y2Max}
+        y1Min={0}
+        y1Max={
+          Math.ceil(
+            Math.max(
+              ...(aggregateByYearFlag ? rainfalls.map((r) => r.y) : rainfalls)
+            ) / 10
+          ) * 10
+        }
+      />
+    );
     return labels.length > 0 && temperatureMeans.length > 0 ? (
-      <Row>
-        <Col sm={12} lg={12}>
-          <div style={{ width: "100%" }}>
-            <LefLineChart
-              data={data}
-              y2Min={y2Min}
-              y2Max={y2Max}
-              y1Min={0}
-              y1Max={
-                Math.ceil(
-                  Math.max(
-                    ...(aggregateByYearFlag
-                      ? rainfalls.map((r) => r.y)
-                      : rainfalls)
-                  ) / 10
-                ) * 10
-              }
-            />
-          </div>
-        </Col>
-      </Row>
-    ) : isFetchingClimateChart ? (
+      isMobile ? (
+        lefLineChart
+      ) : (
+        <Row>
+          <Col sm={12} lg={12}>
+            <div style={{ width: "100%" }}>{lefLineChart}</div>
+          </Col>
+        </Row>
+      )
+    ) : isFetchingData ? (
       <LefSpinner hideBackground />
     ) : (
       <p className={"text-center mt-2 alert alert-secondary"}>
         Keine Daten vorhanden.
       </p>
     );
-  }, [labels.length, temperatureMeans.length, data, isFetchingClimateChart]);
+  }, [
+    aggregateByYearFlag,
+    temperatureMeans,
+    labels.length,
+    data,
+    rainfalls,
+    isFetchingData,
+  ]);
 
   const ClimateChartControls = (
     <>
@@ -238,23 +277,28 @@ export const ClimateWidget = ({ regionData, editMode }) => {
     </>
   );
 
-  let weatherStation2 = false;
-  return (
+  let heading = (
+    <Heading
+      size={"h5"}
+      text={`Klimadaten der ${
+        twoStationMode ? "Wetterstationen" : "Wetterstation"
+      }: ${
+        twoStationMode
+          ? [firstWeatherStation, secondWeatherStation]
+          : [firstWeatherStation].filter((v) => Boolean(v)).join(", ")
+      }`}
+    />
+  );
+  return isMobile ? (
+    <>
+      {heading}
+      {ClimateChart}
+    </>
+  ) : (
     <Container {...(editMode && { style: { minHeight: 400 } })}>
       {editMode && <SelectClimateStationArea regionData={regionData} />}
-      {weatherStation && (
-        <Row className={"mb-3"}>
-          <Heading
-            size={"h5"}
-            text={`Klimadaten der ${
-              weatherStation2 ? "Wetterstationen" : "Wetterstation"
-            }: ${[weatherStation, weatherStation2]
-              .filter((v) => Boolean(v))
-              .join(", ")}`}
-          />
-        </Row>
-      )}
-      {!isFetchingClimateChart && ClimateChartControls}
+      {firstWeatherStation && <Row className={"mb-3"}>{heading}</Row>}
+      {!isFetchingData && ClimateChartControls}
       {ClimateChart}
     </Container>
   );

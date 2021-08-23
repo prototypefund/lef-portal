@@ -8,6 +8,7 @@ export function LefBarChart({
   xTitle = "",
   yMin,
   yMax,
+  isMobile = false,
 }) {
   const { theme } = useContext(ThemeContext);
   const { DIAGRAM_COLORS = [] } = theme.colors;
@@ -18,17 +19,23 @@ export function LefBarChart({
       title: {
         display: Boolean(xTitle),
         text: xTitle,
+      },
+      legend: {
+        display: true,
         position: "bottom",
       },
     },
     scales: {
       y: {
+        display: false,
         stacked: true,
         ...(isPercent && { min: 0, max: 100 }),
         ...(yMin && { min: yMin }),
         ...(yMax && { max: yMax }),
       },
       x: {
+        display: false,
+
         stacked: true,
       },
     },
@@ -36,6 +43,8 @@ export function LefBarChart({
 
   return (
     <Bar
+      {...(isMobile && { height: 200 })}
+      responsive
       type={"bar"}
       data={{
         labels: data.labels,

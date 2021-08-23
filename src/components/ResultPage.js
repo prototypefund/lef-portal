@@ -20,6 +20,7 @@ import {
   useGetRegionQuery,
   useUpdateRegionMutation,
 } from "../redux/lefReduxApi";
+import { isMobile } from "react-device-detect";
 
 const ResultPage = ({ history, location }) => {
   const [updateRegion] = useUpdateRegionMutation();
@@ -65,6 +66,7 @@ const ResultPage = ({ history, location }) => {
           component={widget.component}
           editMode={editMode}
           regionData={regionData}
+          isMobile={isMobile}
         />
       ),
       question: widget.question,
@@ -74,6 +76,19 @@ const ResultPage = ({ history, location }) => {
 
   let typeAheadOptions = getTypeAheadOptions(regions);
   let selectedRegion = typeAheadOptions.find((option) => option.value === _id);
+
+  const ToggleButton = ({ isOpen, onClick }) => (
+    <button
+      className="toggle-button"
+      onClick={onClick}
+      onMouseDown={(e) => {
+        e.preventDefault();
+      }}
+    >
+      {isOpen ? "▲" : "▼"}
+    </button>
+  );
+
   let header = !isFetchingRegion && (
     <>
       <Row>
@@ -96,8 +111,9 @@ const ResultPage = ({ history, location }) => {
                   }
                 >
                   <Input {...inputProps} ref={inputRef} />
-                </Hint>
+                </Hint>.select
               )}*/
+              onMenu
               onFocus={(event) => event.target.select()}
               onChange={(selectedValues) =>
                 selectedValues.length > 0 &&
@@ -123,7 +139,14 @@ const ResultPage = ({ history, location }) => {
                   textDecoration: "underline",
                 },
               }}
-            />
+            >
+              {({ isMenuShown, toggleMenu }) => (
+                <ToggleButton
+                  isOpen={isMenuShown}
+                  onClick={(e) => toggleMenu()}
+                />
+              )}
+            </LefSelect>
           ) : (
             <LefSpinner hideBackground height={100} horizontal />
           )}
@@ -149,32 +172,28 @@ const ResultPage = ({ history, location }) => {
     </>
   );
   return (
-    <Container fluid style={{ maxWidth: 800 }}>
+    <Container fluid style={{ maxWidth: 800, padding: "0px 12px" }}>
       {header}
-      <Row>
-        <Col>
-          {widgets.length > 0 ? (
-            widgets.map((entry, k) => (
-              <ResultEntry
-                key={k}
-                question={entry.question.replaceAll("%s", name)}
-                component={entry.component}
-                editMode={editMode}
-                active={regionData[entry.flag]}
-                onToggleActive={(result) =>
-                  updateRegion({ ...regionData, [entry.flag]: result })
-                }
-                sources={entry.sources}
-              />
-            ))
-          ) : (
-            <p>
-              {name &&
-                `Es sind bislang keine Daten für ${name} vorhanden. Probier es zu einem späteren Zeitpunkt noch einmal.`}
-            </p>
-          )}
-        </Col>
-      </Row>
+      {widgets.length > 0 ? (
+        widgets.map((entry, k) => (
+          <ResultEntry
+            key={k}
+            question={entry.question.replaceAll("%s", name)}
+            component={entry.component}
+            editMode={editMode}
+            active={regionData[entry.flag]}
+            onToggleActive={(result) =>
+              updateRegion({ ...regionData, [entry.flag]: result })
+            }
+            sources={entry.sources}
+          />
+        ))
+      ) : (
+        <p>
+          {name &&
+            `Es sind bislang keine Daten für ${name} vorhanden. Probier es zu einem späteren Zeitpunkt noch einmal.`}
+        </p>
+      )}
     </Container>
   );
 };

@@ -4,6 +4,7 @@ import { ThemeContext } from "./theme/ThemeContext";
 import { WIDGETS } from "./widgets/getWidget";
 import { useGetRegionQuery } from "../redux/lefReduxApi";
 import { SpinnerWrapper } from "./shared/SpinnerWrapper";
+import { isMobile } from "react-device-detect";
 
 export function WidgetEmbedding({
   colorPalette,
@@ -28,6 +29,7 @@ export function WidgetEmbedding({
     <SpinnerWrapper loading={isFetchingRegion}>
       <div className={"d-flex flex-grow-1 m-2"}>
         <WidgetContainer
+          isMobile={isMobile}
           embeddingMode
           regionData={regionData}
           editMode={false}
