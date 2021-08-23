@@ -100,7 +100,13 @@ const MainRouting = ({ location = {}, history = {} }) => {
     },
   ];
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+    <div
+      style={{
+        height: embeddingMode ? "96vh" : "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {!embeddingMode && (
         <Header pages={pages.filter((p) => !p.hidden)} loggedIn={loggedIn} />
       )}

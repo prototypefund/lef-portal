@@ -51,16 +51,16 @@ export const AddObjectivesAndActionsDialog = ({
   const [title, setTitle] = useState(sourceObject.title || "");
   const [budget, setBudget] = useState(sourceObject.budget || "0");
   const [startDate, setStartDate] = useState(
-    sourceObject.startDate ? getYYYYMMDD(sourceObject.startDate) : "01.01.2020"
+    getYYYYMMDD(sourceObject.startDate ? sourceObject.startDate : "01.01.2020")
   );
   const [endDate, setEndDate] = useState(
-    sourceObject.endDate ? getYYYYMMDD(sourceObject.endDate) : "01.01.2030"
+    getYYYYMMDD(sourceObject.endDate ? sourceObject.endDate : "01.01.2030")
   );
   const [description, setDescription] = useState(
     sourceObject.description || ""
   );
   const [tags, setTags] = useState(
-    sourceObject.tags ? sourceObject.tags.join(" ") : ""
+    sourceObject.tags ? sourceObject.tags.join(",") : ""
   );
   const [selectedObjectives, setSelectedObjectives] = useState(
     sourceObject.objectiveIds
@@ -113,7 +113,7 @@ export const AddObjectivesAndActionsDialog = ({
         <Row>
           <Col md={12} lg={6}>
             <Form.Group controlId={isAction ? "actionName" : "objectiveName"}>
-              <Form.Label>Name</Form.Label>
+              <Form.Label>Name * </Form.Label>
               <Form.Control
                 size={size}
                 onChange={(e) => setTitle(e.target.value)}
@@ -125,21 +125,19 @@ export const AddObjectivesAndActionsDialog = ({
           </Col>
           <Col md={12} lg={6}>
             <Form.Group controlId={"objectiveTags"}>
-              <Form.Label>Stichwörter</Form.Label>
+              <Form.Label>Stichwörter *</Form.Label>
               <Form.Control
                 size={size}
                 onChange={(e) => setTags(e.target.value)}
                 type={"tags"}
                 value={tags}
-                placeholder={
-                  "Stichwörter (durch Leerzeichen getrennt) eingeben"
-                }
+                placeholder={"Stichwörter (durch Kommata trennen)"}
               />
             </Form.Group>
           </Col>
         </Row>
         <Form.Group controlId={"objectiveDescription"}>
-          <Form.Label>Beschreibung</Form.Label>
+          <Form.Label>Beschreibung *</Form.Label>
           <Form.Control
             size={size}
             as={"textarea"}
@@ -160,8 +158,8 @@ export const AddObjectivesAndActionsDialog = ({
             <Form.Group controlId={"objectiveStartDate"}>
               <Form.Label>
                 {isAction
-                  ? "Beginn der Maßnahme"
-                  : "Beginn / Datum der Zielsetzung"}
+                  ? "Beginn der Maßnahme *"
+                  : "Beginn / Datum der Zielsetzung *"}
               </Form.Label>
               <Form.Control
                 size={size}
@@ -176,8 +174,8 @@ export const AddObjectivesAndActionsDialog = ({
             <Form.Group controlId={"objectiveEndDate"}>
               <Form.Label>
                 {isAction
-                  ? "Ende der Maßnahme"
-                  : "Angepeiltes Datum der Zielerreichung"}
+                  ? "Ende der Maßnahme *"
+                  : "Angepeiltes Datum der Zielerreichung *"}
               </Form.Label>
               <Form.Control
                 size={size}
@@ -208,7 +206,7 @@ export const AddObjectivesAndActionsDialog = ({
           <Row>
             <Col md={12} lg={6}>
               <Form.Group controlId={"objectives"}>
-                <Form.Label>{"Zugeordnete Ziele"}</Form.Label>
+                <Form.Label>{"Zugeordnete Ziele *"}</Form.Label>
                 <MultiSelect
                   options={regionsObjectives.map(optionsMapping)}
                   value={selectedObjectives}
@@ -233,7 +231,7 @@ export const AddObjectivesAndActionsDialog = ({
       </Form>
     </div>
   );
-  const tagsArray = tags && tags !== "" ? tags.split(" ") : [];
+  const tagsArray = tags && tags !== "" ? tags.split(",") : [];
   return (
     <LefModal
       size={"lg"}
@@ -293,7 +291,13 @@ export const AddObjectivesAndActionsDialog = ({
                 });
             setIsSaving(true);
           },
-          disabled: tagsArray.length === 0,
+          disabled:
+            tagsArray.length === 0 ||
+            !description ||
+            !title ||
+            !startDate ||
+            !endDate ||
+            (isAction && selectedObjectives.length === 0),
         },
       ]}
     />

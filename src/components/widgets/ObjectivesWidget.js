@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from "react";
-import { ArrowRightCircle, ArrowLeftCircle } from "react-bootstrap-icons";
+import { InfoCircle, PlusCircle } from "react-bootstrap-icons";
 import {
   Accordion,
   Button,
@@ -20,7 +20,6 @@ import { ThemeContext } from "../theme/ThemeContext";
 import { LefModal } from "../shared/LefModal";
 import { LefSpinner } from "../shared/LefSpinner";
 import { GermanDateString } from "../shared/GermanDateString";
-import { InfoCircle } from "react-bootstrap-icons";
 import {
   useDeleteActionMutation,
   useDeleteObjectiveMutation,
@@ -28,6 +27,9 @@ import {
   useGetObjectivesForRegionQuery,
 } from "../../redux/lefReduxApi";
 import { isFirefox } from "react-device-detect";
+import { LefButton } from "../shared/LefButton";
+import { Arrow } from "./objectivesWidgetComponents/Arrow";
+import { isArrayWithOneElement } from "../../utils/utils";
 
 const OBJECTIVE_DELETE = "OBJECTIVE_DELETE";
 const ACTION_DELETE = "ACTION_DELETE";
@@ -67,28 +69,6 @@ ConfirmDialog.propTypes = {
   show: PropTypes.bool,
   onClick: PropTypes.func,
 };
-
-const Arrow = ({ left = false, onClick = () => alert("What"), show }) =>
-  show ? (
-    <div
-      onClick={onClick}
-      className={
-        "h-100 position-absolute align-items-center justify-content-center d-flex"
-      }
-      style={{
-        cursor: "pointer",
-        width: 20,
-        backgroundColor: "rgba(100,100,100,0.0)",
-        zIndex: 10000,
-        top: 0,
-        ...(left ? { left: 0 } : { right: 0 }),
-      }}
-    >
-      {left ? <ArrowLeftCircle /> : <ArrowRightCircle />}
-    </div>
-  ) : (
-    <></>
-  );
 
 export const ObjectivesWidget = (props) => {
   const { theme } = useContext(ThemeContext);
@@ -135,31 +115,36 @@ export const ObjectivesWidget = (props) => {
           action.objectiveIds.includes(objective._id)
         );
         const filteredActionsAccordion = (
-          <Accordion className={"w-100"}>
-            {filteredActions.map((action) => (
-              <ActionDisplay
-                key={action._id}
-                action={action}
-                editMode={editMode}
-                onEditAction={(actionId) => {
-                  setIsActionMode(true);
-                  setShowAddDialog(true);
-                  setEditedAction(
-                    regionsActions.find((a) => a._id === actionId)
-                  );
-                }}
-                onDeleteAction={(action) => {
-                  setConfirmParameter({
-                    type: ACTION_DELETE,
-                    action,
-                    text:
-                      "Sind Sie sicher, dass Sie diese Maßnahme löschen wollen?",
-                  });
-                  setConfirmDialogOpen(true);
-                }}
-              />
-            ))}
-          </Accordion>
+          <div
+            style={{ maxHeight: 300, overflowY: "auto" }}
+            className={"w-100"}
+          >
+            <Accordion className={"w-100"}>
+              {filteredActions.map((action) => (
+                <ActionDisplay
+                  key={action._id}
+                  action={action}
+                  editMode={editMode}
+                  onEditAction={(actionId) => {
+                    setIsActionMode(true);
+                    setShowAddDialog(true);
+                    setEditedAction(
+                      regionsActions.find((a) => a._id === actionId)
+                    );
+                  }}
+                  onDeleteAction={(action) => {
+                    setConfirmParameter({
+                      type: ACTION_DELETE,
+                      action,
+                      text:
+                        "Sind Sie sicher, dass Sie diese Maßnahme löschen wollen?",
+                    });
+                    setConfirmDialogOpen(true);
+                  }}
+                />
+              ))}
+            </Accordion>
+          </div>
         );
 
         let descriptionLength = huge ? 500 : 200;
@@ -332,7 +317,8 @@ export const ObjectivesWidget = (props) => {
       {mappedObjectives(false)}
     </Carousel>
   );
-  return isFetchingObjectivesForRegion || isFetchingActionsForRegion ? (
+  let isFetching = isFetchingObjectivesForRegion || isFetchingActionsForRegion;
+  return isFetching ? (
     <LefSpinner hideBackground />
   ) : isMobile ? (
     carousel
@@ -341,6 +327,29 @@ export const ObjectivesWidget = (props) => {
       style={{ maxWidth: "100%", minHeight: 300 }}
       className={"p-sm-1 p-md-2"}
     >
+      {editMode && (
+        <ButtonGroup className={"mb-3"}>
+          <LefButton
+            onClick={() => {
+              setIsActionMode(false);
+              setEditedObjective({});
+              setShowAddDialog(true);
+            }}
+            icon={PlusCircle}
+            title={"Ziel hinzufügen"}
+          />
+          <LefButton
+            title={"Maßnahme hinzufügen"}
+            icon={PlusCircle}
+            onClick={() => {
+              setEditedAction({});
+              setIsActionMode(true);
+              setShowAddDialog(true);
+            }}
+          />
+        </ButtonGroup>
+      )}
+
       <div
         className={"d-flex"}
         style={{
@@ -378,28 +387,6 @@ export const ObjectivesWidget = (props) => {
         ]}
       />
 
-      {editMode && (
-        <ButtonGroup className={"mt-2"}>
-          <Button
-            className={"mr-1"}
-            onClick={() => {
-              setIsActionMode(false);
-              setEditedObjective({});
-              setShowAddDialog(true);
-            }}
-          >
-            + Ziel hinzufügen
-          </Button>
-          <Button
-            onClick={() => {
-              setIsActionMode(true);
-              setShowAddDialog(true);
-            }}
-          >
-            + Maßnahme hinzufügen
-          </Button>
-        </ButtonGroup>
-      )}
       <ConfirmDialog
         title={"Aktion bestätigen"}
         content={<p>{confirmParameter.text}</p>}

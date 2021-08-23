@@ -26,14 +26,19 @@ const ResultPage = ({ history, location }) => {
   const [updateRegion] = useUpdateRegionMutation();
   const loggedIn =
     useSelector((state) => state.auth.authState) === AUTH_STATES.loggedIn;
-  const [getUser, result = {}] = lefReduxApi.endpoints.getUser.useLazyQuery();
+  const [
+    getUser,
+    userResult = {},
+  ] = lefReduxApi.endpoints.getUser.useLazyQuery();
   const {
     isSuccess: isLoadingUserSuccess,
   } = lefReduxApi.endpoints.getUser.useQueryState();
-  const { data: userData = {} } = result;
+  const { data: userData = {} } = userResult;
+  const { _id: userId } = userData;
   const { regionId } = useParams();
   const userIsAdmin =
     loggedIn &&
+    userId &&
     isArray(userData.regionIds) &&
     userData.regionIds.includes(regionId);
   const { state = {} } = location;
@@ -52,10 +57,10 @@ const ResultPage = ({ history, location }) => {
   }, [loggedIn]);
 
   useEffect(() => {
-    if (isLoadingUserSuccess && editMode && !userIsAdmin) {
+    if (editMode && !userIsAdmin) {
       setEditMode(false);
     }
-  }, [_id, isLoadingUserSuccess]);
+  }, [editMode, userIsAdmin]);
 
   const widgets = Object.keys(WIDGETS)
     .map((key) => WIDGETS[key])

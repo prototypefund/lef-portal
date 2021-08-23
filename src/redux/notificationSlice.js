@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getRandomId } from "../utils/utils";
 
+const timeoutDuration = 6000;
+
 const notificationSlice = createSlice({
   name: "notification",
   initialState: [],
@@ -30,5 +32,5 @@ export const addNotificationMessage = (title, message, type = "info") => (
   dispatch(addNotification({ title, message, type, id }));
   setTimeout(() => {
     dispatch(removeNotification({ id }));
-  }, 5000);
+  }, timeoutDuration);
 };
