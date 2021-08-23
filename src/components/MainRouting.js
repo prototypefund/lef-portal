@@ -76,7 +76,6 @@ const MainRouting = ({ location = {}, history = {} }) => {
       id: "2",
       label: "Impressum",
       to: PATHS.IMPRINT,
-      unsecure: true,
     },
     {
       id: "3",
