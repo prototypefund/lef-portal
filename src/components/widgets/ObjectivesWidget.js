@@ -149,11 +149,16 @@ export const ObjectivesWidget = (props) => {
 
         let descriptionLength = huge ? 500 : 200;
         let truncated = description.length > descriptionLength;
+        const setDescription = () =>
+          setSelectedObjectiveDescription(description);
         const objectiveDescription = (
           <>
             <span
               className={"overflow-auto pr-3"}
               style={{ height: huge ? 300 : 100 }}
+              {...(truncated && {
+                onClick: setDescription,
+              })}
             >
               {`${description.substr(0, descriptionLength)}${
                 truncated ? "... " : ""
@@ -163,7 +168,7 @@ export const ObjectivesWidget = (props) => {
                   style={{ verticalAlign: "initial" }}
                   className={"d-inline m-0 p-0 align-self-auto border-0"}
                   variant={"link"}
-                  onClick={() => setSelectedObjectiveDescription(description)}
+                  onClick={setDescription}
                 >
                   mehr
                 </Button>
@@ -311,17 +316,39 @@ export const ObjectivesWidget = (props) => {
       showArrows={true}
       showThumbs={false}
       autoPlay={false}
+      interval={0}
       showStatus={false}
-      showIndicators={false}
+      renderIndicator={(onClick, isSelected, index, label) => (
+        <span style={{ fontSize: "0.8em", padding: 5 }} onClick={onClick}>
+          {isSelected ? "⚫" : "⚪"}
+        </span>
+      )}
+      showIndicators={true}
     >
       {mappedObjectives(false)}
     </Carousel>
   );
   let isFetching = isFetchingObjectivesForRegion || isFetchingActionsForRegion;
+  let descriptionModal = (
+    <LefModal
+      centered
+      show={selectedObjectiveDescription}
+      content={<>{selectedObjectiveDescription}</>}
+      buttons={[
+        {
+          label: "Schließen",
+          onClick: () => setSelectedObjectiveDescription(undefined),
+        },
+      ]}
+    />
+  );
   return isFetching ? (
     <LefSpinner hideBackground />
   ) : isMobile ? (
-    carousel
+    <>
+      {carousel}
+      {descriptionModal}
+    </>
   ) : (
     <Row
       style={{ maxWidth: "100%", minHeight: 300 }}
@@ -375,17 +402,7 @@ export const ObjectivesWidget = (props) => {
         />
       )}
 
-      <LefModal
-        centered
-        show={selectedObjectiveDescription}
-        content={<>{selectedObjectiveDescription}</>}
-        buttons={[
-          {
-            label: "Schließen",
-            onClick: () => setSelectedObjectiveDescription(undefined),
-          },
-        ]}
-      />
+      {descriptionModal}
 
       <ConfirmDialog
         title={"Aktion bestätigen"}
