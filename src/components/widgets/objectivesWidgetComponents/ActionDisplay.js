@@ -4,6 +4,7 @@ import React from "react";
 import * as PropTypes from "prop-types";
 import { DeleteButton } from "../../shared/DeleteButton";
 import { GermanDateString } from "../../shared/GermanDateString";
+import ReactMarkdown from "react-markdown";
 
 export const ActionDisplay = ({
   action = {},
@@ -53,7 +54,8 @@ export const ActionDisplay = ({
                 sm={editMode ? 11 : 12}
                 className={"text-left w-100"}
               >
-                {`${description} (${budget}€)`}
+                <ReactMarkdown skipHtml>{description}</ReactMarkdown>
+                {`Budget: ${budget}€`}
               </Col>
               {editMode && (
                 <Col xs={1}>
