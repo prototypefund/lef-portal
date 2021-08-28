@@ -87,6 +87,9 @@ export const ObjectivesWidget = (props) => {
   const [deleteObjective] = useDeleteObjectiveMutation();
 
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [currentObjectiveForAction, setCurrentObjectiveForAction] = useState(
+    null
+  );
   const [isActionMode, setIsActionMode] = useState(false);
   const [editedObjective, setEditedObjective] = useState({});
   const [editedAction, setEditedAction] = useState({});
@@ -297,6 +300,20 @@ export const ObjectivesWidget = (props) => {
                   <Row>
                     <span className={"h5"}>Maßnahmen</span>
                   </Row>
+                  {editMode && (
+                    <Row className={"mb-2"}>
+                      <LefButton
+                        title={"Maßnahme hinzufügen"}
+                        icon={PlusCircle}
+                        onClick={() => {
+                          setCurrentObjectiveForAction(objective);
+                          setEditedAction({});
+                          setIsActionMode(true);
+                          setShowAddDialog(true);
+                        }}
+                      />
+                    </Row>
+                  )}
                   <Row>{filteredActionsAccordion}</Row>
                 </Col>
               )}
@@ -365,15 +382,6 @@ export const ObjectivesWidget = (props) => {
             icon={PlusCircle}
             title={"Ziel hinzufügen"}
           />
-          <LefButton
-            title={"Maßnahme hinzufügen"}
-            icon={PlusCircle}
-            onClick={() => {
-              setEditedAction({});
-              setIsActionMode(true);
-              setShowAddDialog(true);
-            }}
-          />
         </ButtonGroup>
       )}
 
@@ -390,6 +398,9 @@ export const ObjectivesWidget = (props) => {
 
       {showAddDialog && (
         <AddObjectivesAndActionsDialog
+          initiallyAssignedObjectives={
+            currentObjectiveForAction ? [currentObjectiveForAction] : []
+          }
           isAction={isActionMode}
           editedObjective={editedObjective}
           editedAction={editedAction}

@@ -6,8 +6,7 @@ import { WarmingStripeWidget } from "./WarmingStripeWidget";
 export const WIDGETS = {
   1: {
     name: "Ziele & Maßnahmen",
-    question:
-      "Welche Meilensteine hat %s schon erreicht?\nWelche Ziele hat sich %s für die Zukunft gesetzt?",
+    question: "Welche Ziele hat sich %s für die Zukunft gesetzt?",
     component: ObjectivesWidget,
     flag: "objectiveWidget",
   },
@@ -20,16 +19,14 @@ export const WIDGETS = {
   },
   3: {
     name: "Warming Stripes",
-    question:
-      "Wie hat sich die Temperatur in %s seit 1990 im Vergleich zur Durchschnittstemperatur der Jahre 1961 bis 1990 verändert?",
+    question: "Wie hat sich die Durchschnittstemperatur in %s verändert?",
     component: WarmingStripeWidget,
     flag: "warmingstripeWidget",
     sources: ["Deutscher Wetterdienst"],
   },
   4: {
     name: "Wahlverhalten",
-    question:
-      "Hat sich das Wahlverhalten der Bürger:innen in %s, ggf. mit Hinblick auf das Thema Klimaschutz, in den letzten Jahren verändert?",
+    question: "Welche Parteien hat %s bei Kommunalwahlen gewählt?",
     component: VotingWidget,
     flag: "votingWidget",
     sources: [

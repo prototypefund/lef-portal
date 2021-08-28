@@ -2,32 +2,6 @@ import { isNumber } from "chart.js/helpers";
 
 export const getRandomId = () => "_" + Math.random().toString(36).substr(2, 9);
 
-export const aggregateByYear = (climateData = []) => {
-  let yearlyMeans = [];
-  climateData.forEach((climateDataEntry) => {
-    const { monthlyData = [], year } = climateDataEntry;
-    const monthlyMeans = monthlyData.map((m) => m.temperatureMean);
-    const monthlyRainfallMeans = monthlyData.map((m) => m.rainfall);
-    const yearMean =
-      monthlyMeans.reduce((a, b) => a + b, 0) / monthlyMeans.length;
-    const yearRainfallMean =
-      monthlyRainfallMeans.reduce((a, b) => a + b, 0) /
-      monthlyRainfallMeans.length;
-    yearlyMeans.push({
-      mean: yearMean,
-      year,
-      rainfallMean: yearRainfallMean,
-      invalidRainfalls:
-        monthlyRainfallMeans.length !== 12 ||
-        !monthlyRainfallMeans.every((e) => isValidClimateValue(e)),
-      invalidMeans:
-        monthlyMeans.length !== 12 ||
-        !monthlyMeans.every((e) => isValidClimateValue(e)),
-    });
-  });
-  return yearlyMeans;
-};
-
 export const calculateYearMeans = (monthlyDataConverted = {}) => {
   const dataArray = Object.keys(monthlyDataConverted).map(
     (key) => monthlyDataConverted[key]
@@ -44,10 +18,9 @@ export const calculateYearMeans = (monthlyDataConverted = {}) => {
     rainfallMean: yearRainfallMean,
     invalidRainfalls:
       monthlyRainfallMeans.length !== 12 ||
-      !monthlyRainfallMeans.every((e) => isValidClimateValue(e)),
+      !dataArray.every((e) => !e.invalidRainfall),
     invalidMeans:
-      monthlyMeans.length !== 12 ||
-      !monthlyMeans.every((e) => isValidClimateValue(e)),
+      monthlyMeans.length !== 12 || !dataArray.every((e) => !e.invalidMean),
   };
 };
 
@@ -107,6 +80,7 @@ export const mergeWeatherStationData = (dataArray = []) => {
       ...calculateYearMeans(monthlyDataConverted),
     };
   });
+  console.debug(climateDataDictionary);
   return climateDataDictionary;
 };
 
@@ -163,3 +137,5 @@ export const isArrayWithOneElement = (arr) =>
   Array.isArray(arr) && arr.length > 0;
 
 export const removeSpaces = (str = "") => str.replace(/\s/g, "");
+
+export const sortStrings = (a, b) => (a < b ? -1 : 1);

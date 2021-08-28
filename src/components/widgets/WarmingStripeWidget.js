@@ -3,7 +3,7 @@ import { Col, Row } from "react-bootstrap";
 import { useEffect, useMemo } from "react";
 import { Heading } from "../shared/Heading";
 import { lefReduxApi } from "../../redux/lefReduxApi";
-import { mergeWeatherStationData } from "../../utils/utils";
+import { mergeWeatherStationData, sortStrings } from "../../utils/utils";
 import { SpinnerWrapper } from "../shared/SpinnerWrapper";
 
 export const WarmingStripeWidget = ({ regionData, isMobile }) => {
@@ -51,7 +51,9 @@ export const WarmingStripeWidget = ({ regionData, isMobile }) => {
   const isFetchingData = isFetchingClimateChart || isFetchingClimateChart2;
 
   const weatherStationNameCombined = twoStationMode
-    ? `${firstWeatherStation} / ${secondWeatherStation}`
+    ? `${[firstWeatherStation, secondWeatherStation]
+        .sort(sortStrings)
+        .join(", ")}`
     : firstWeatherStation;
   const WarmingStripes = useMemo(
     () => (
@@ -73,7 +75,9 @@ export const WarmingStripeWidget = ({ regionData, isMobile }) => {
         <Row className={"mb-3"}>
           <Heading
             size={"h5"}
-            text={`WarmingStripes für die Wetterstation ${weatherStationNameCombined}`}
+            text={`WarmingStripes für die ${
+              twoStationMode ? "Wetterstationen" : "Wetterstation"
+            } ${weatherStationNameCombined}`}
           />
         </Row>
         <Row>{WarmingStripes}</Row>

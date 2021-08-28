@@ -2,7 +2,7 @@ import { Col, Form, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { LefModal } from "../shared/LefModal";
 import MultiSelect from "react-multi-select-component";
-import { getYYYYMMDD } from "../../utils/utils";
+import { getYYYYMMDD, isArrayWithOneElement } from "../../utils/utils";
 import {
   useCreateActionMutation,
   useCreateObjectiveMutation,
@@ -17,6 +17,7 @@ const optionsMapping = (objective) => ({
 });
 
 export const AddObjectivesAndActionsDialog = ({
+  initiallyAssignedObjectives = [],
   regionData,
   editedObjective = {},
   show,
@@ -67,6 +68,8 @@ export const AddObjectivesAndActionsDialog = ({
       ? sourceObject.objectiveIds
           .map((id) => regionsObjectives.find((o) => o._id === id))
           .map(optionsMapping)
+      : isArrayWithOneElement(initiallyAssignedObjectives)
+      ? [optionsMapping(initiallyAssignedObjectives[0])]
       : []
   );
 
@@ -105,6 +108,8 @@ export const AddObjectivesAndActionsDialog = ({
     isSuccessObjective,
     isUpdatingObjective,
   ]);
+
+  console.debug({ selectedObjectives });
 
   const size = "md";
   let content = (

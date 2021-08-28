@@ -10,7 +10,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import { LefLineChart } from "../shared/charts/LefLineChart";
 import { LefSpinner } from "../shared/LefSpinner";
-import { mergeWeatherStationData } from "../../utils/utils";
+import { mergeWeatherStationData, sortStrings } from "../../utils/utils";
 import { Heading } from "../shared/Heading";
 import { lefReduxApi } from "../../redux/lefReduxApi";
 import { SelectClimateStationArea } from "./climateWidgetComponents/SelectClimateStationArea";
@@ -277,16 +277,19 @@ export const ClimateWidget = ({ regionData, editMode, isMobile }) => {
     </>
   );
 
+  const weatherStationNames = (twoStationMode
+    ? [firstWeatherStation, secondWeatherStation].sort(sortStrings)
+    : [firstWeatherStation]
+  )
+    .filter((v) => Boolean(v))
+    .join(", ");
   let heading = (
     <Heading
+      style={{ whiteSpace: "pre-wrap" }}
       size={"h5"}
       text={`Klimadaten der ${
         twoStationMode ? "Wetterstationen" : "Wetterstation"
-      }: ${
-        twoStationMode
-          ? [firstWeatherStation, secondWeatherStation]
-          : [firstWeatherStation].filter((v) => Boolean(v)).join(", ")
-      }`}
+      }: ${weatherStationNames}`}
     />
   );
   return isMobile ? (
