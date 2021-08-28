@@ -5,6 +5,7 @@ import {
   Button,
   ButtonGroup,
   Col,
+  Collapse,
   Container,
   Overlay,
   Row,
@@ -29,7 +30,7 @@ import {
 import { isFirefox } from "react-device-detect";
 import { LefButton } from "../shared/LefButton";
 import { Arrow } from "./objectivesWidgetComponents/Arrow";
-import { isArrayWithOneElement } from "../../utils/utils";
+import ReactMarkdown from "react-markdown";
 
 const OBJECTIVE_DELETE = "OBJECTIVE_DELETE";
 const ACTION_DELETE = "ACTION_DELETE";
@@ -154,6 +155,7 @@ export const ObjectivesWidget = (props) => {
         let truncated = description.length > descriptionLength;
         const setDescription = () =>
           setSelectedObjectiveDescription(description);
+        let shortenedDescription = description.substr(0, descriptionLength);
         const objectiveDescription = (
           <>
             <span
@@ -163,9 +165,9 @@ export const ObjectivesWidget = (props) => {
                 onClick: setDescription,
               })}
             >
-              {`${description.substr(0, descriptionLength)}${
+              <ReactMarkdown skipHtml>{`${shortenedDescription}${
                 truncated ? "... " : ""
-              }`}
+              }`}</ReactMarkdown>
               {truncated && (
                 <Button
                   style={{ verticalAlign: "initial" }}
@@ -300,9 +302,10 @@ export const ObjectivesWidget = (props) => {
                   <Row>
                     <span className={"h5"}>Maßnahmen</span>
                   </Row>
-                  {editMode && (
+                  <Collapse in={editMode}>
                     <Row className={"mb-2"}>
                       <LefButton
+                        style={{ width: "100%" }}
                         title={"Maßnahme hinzufügen"}
                         icon={PlusCircle}
                         onClick={() => {
@@ -313,7 +316,7 @@ export const ObjectivesWidget = (props) => {
                         }}
                       />
                     </Row>
-                  )}
+                  </Collapse>
                   <Row>{filteredActionsAccordion}</Row>
                 </Col>
               )}
@@ -350,7 +353,9 @@ export const ObjectivesWidget = (props) => {
     <LefModal
       centered
       show={selectedObjectiveDescription}
-      content={<>{selectedObjectiveDescription}</>}
+      content={
+        <ReactMarkdown skipHtml>{selectedObjectiveDescription}</ReactMarkdown>
+      }
       buttons={[
         {
           label: "Schließen",
@@ -371,9 +376,10 @@ export const ObjectivesWidget = (props) => {
       style={{ maxWidth: "100%", minHeight: 300 }}
       className={"p-sm-1 p-md-2"}
     >
-      {editMode && (
+      <Collapse in={editMode}>
         <ButtonGroup className={"mb-3"}>
           <LefButton
+            style={{ minWidth: 200 }}
             onClick={() => {
               setIsActionMode(false);
               setEditedObjective({});
@@ -383,7 +389,7 @@ export const ObjectivesWidget = (props) => {
             title={"Ziel hinzufügen"}
           />
         </ButtonGroup>
-      )}
+      </Collapse>
 
       <div
         className={"d-flex"}

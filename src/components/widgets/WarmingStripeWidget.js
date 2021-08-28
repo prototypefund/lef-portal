@@ -47,7 +47,6 @@ export const WarmingStripeWidget = ({ regionData, isMobile }) => {
       ? [firstClimateChart, secondClimateChart]
       : [firstClimateChart]
   );
-  const mergedDataArray = Object.keys(mergedData).map((key) => mergedData[key]);
   const isFetchingData = isFetchingClimateChart || isFetchingClimateChart2;
 
   const weatherStationNameCombined = twoStationMode

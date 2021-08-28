@@ -37,6 +37,24 @@ export const WarmingStripe = ({
 }) => {
   const years = climateData.map((y) => y.year);
 
+  const startYear = Math.min(...years);
+  const endYear = Math.max(...years);
+  if (startYear > REFERENCE_RANGE[0] || endYear < REFERENCE_RANGE[1] + 10) {
+    return (
+      <p className={"alert alert-light"}>
+        Für die Darstellung von WarmingStripes stehen leider zu wenig Daten zur
+        Verfügung.{" "}
+      </p>
+    );
+  }
+  let displayData = climateData.filter(
+    (y) => y.year >= YEAR_RANGE[0] && y.year <= YEAR_RANGE[1]
+  );
+  const referenceData = climateData.filter(
+    (entry) =>
+      entry.year > REFERENCE_RANGE[0] && entry.year < REFERENCE_RANGE[1]
+  );
+
   const options = (weatherStationName, dataset = []) => ({
     responsive: true,
     plugins: {
@@ -72,30 +90,13 @@ export const WarmingStripe = ({
         title: "Jahr",
         ticks: {
           callback: (value, index, values) => {
-            return index % 5 === 0 && !isMobile ? years[index] : "";
+            return index % 5 === 0 && !isMobile ? displayData[index].year : "";
           },
         },
       },
     },
   });
 
-  const startYear = Math.min(...years);
-  const endYear = Math.max(...years);
-  if (startYear > REFERENCE_RANGE[0] || endYear < REFERENCE_RANGE[1] + 10) {
-    return (
-      <p className={"alert alert-light"}>
-        Für die Darstellung von WarmingStripes stehen leider zu wenig Daten zur
-        Verfügung.{" "}
-      </p>
-    );
-  }
-  let displayData = climateData.filter(
-    (y) => y.year >= YEAR_RANGE[0] && y.year <= YEAR_RANGE[1]
-  );
-  const referenceData = climateData.filter(
-    (entry) =>
-      entry.year > REFERENCE_RANGE[0] && entry.year < REFERENCE_RANGE[1]
-  );
   let means = referenceData.map((d) => d.mean);
   const referenceMean = mean(means.filter((m) => isValidClimateValue(m)));
   const maxColorValue = referenceMean + DEVIATION;

@@ -16,7 +16,9 @@ export const LefButton = ({
     : null;
   return (
     <Button
-      className={"mr-1 d-flex justify-content-center align-items-center p-2"}
+      className={`mr-1 d-flex justify-content-center align-items-center p-2 ${
+        className ? className : ""
+      }"`}
       {...rest}
     >
       {icon ? (

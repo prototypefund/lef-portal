@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Col, FormCheck, Row } from "react-bootstrap";
+import { Col, Collapse, FormCheck, Row } from "react-bootstrap";
 import { ThemeContext } from "../theme/ThemeContext";
 import { Question } from "./Question";
 import { SourceDisplay } from "../shared/SourceDisplay";
@@ -23,7 +23,7 @@ export const ResultEntry = ({
       <Row>
         <Question question={question} />
       </Row>
-      {editMode && (
+      <Collapse in={editMode}>
         <div onClick={(event) => onToggleActive(!active)}>
           <FormCheck
             type={"switch"}
@@ -33,7 +33,7 @@ export const ResultEntry = ({
             onChange={() => {}}
           />
         </div>
-      )}
+      </Collapse>
       {active &&
         (mobileMode ? (
           <div
