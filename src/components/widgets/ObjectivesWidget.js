@@ -297,7 +297,7 @@ export const ObjectivesWidget = (props) => {
                 <Col className={"pl-0"}>{objectiveDescription}</Col>
               </Row>
 
-              {filteredActions.length > 0 && (
+              {(filteredActions.length > 0 || editMode) && (
                 <Col className={"mt-4 mb-4 pl-0"}>
                   <Row>
                     <span className={"h5"}>Maßnahmen</span>
