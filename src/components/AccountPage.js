@@ -1,5 +1,13 @@
 import { Heading } from "./shared/Heading";
-import { Button, Card, CardGroup, Col, Form, Row } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  CardColumns,
+  CardGroup,
+  Col,
+  Form,
+  Row,
+} from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import EmbeddingWizard from "./embedding/EmbeddingWizard";
@@ -110,65 +118,67 @@ export const AccountPage = () => {
             loading={isFetchingUserData || isFetchingRegions}
             spinnerProps={spinnerProps}
           >
-            <CardGroup>
+            <CardColumns>
               {myRegions.length > 0 ? (
-                myRegions.map((r) => {
-                  const maxPostalcodes = 15;
-                  return (
-                    <Card
-                      key={r._id}
-                      className={"m-1"}
-                      style={{ maxWidth: 400 }}
-                    >
-                      {/*<Card.Header>{r.name}</Card.Header>*/}
-                      <Card.Body>
-                        <Card.Title>{r.name}</Card.Title>
-                        {/*<Card.Subtitle>{r._id}</Card.Subtitle>*/}
-                        <Card.Text>
-                          <p className={"mb-0 mt-3"}>Postleitzahlbereiche:</p>
-                          <div className={"mb-3"}>
-                            {r.postalcodes
-                              .slice(0, maxPostalcodes)
-                              .map((code) => (
-                                <small key={code}>{code + ", "}</small>
-                              ))}
-                            {r.postalcodes.length > maxPostalcodes && "..."}
-                          </div>
-                        </Card.Text>
-                        <Row className={"ml-0 mt-4"}>
-                          {/*<Button
+                myRegions
+                  .sort((a, b) => (a.name < b.name ? -1 : 1))
+                  .map((r) => {
+                    const maxPostalcodes = 15;
+                    return (
+                      <Card
+                        key={r._id}
+                        className={"m-1"}
+                        style={{ maxWidth: 400 }}
+                      >
+                        {/*<Card.Header>{r.name}</Card.Header>*/}
+                        <Card.Body>
+                          <Card.Title>{r.name}</Card.Title>
+                          {/*<Card.Subtitle>{r._id}</Card.Subtitle>*/}
+                          <Card.Text>
+                            <p className={"mb-0 mt-3"}>Postleitzahlbereiche:</p>
+                            <div className={"mb-3"}>
+                              {r.postalcodes
+                                .slice(0, maxPostalcodes)
+                                .map((code) => (
+                                  <small key={code}>{code + ", "}</small>
+                                ))}
+                              {r.postalcodes.length > maxPostalcodes && "..."}
+                            </div>
+                          </Card.Text>
+                          <Row className={"ml-0 mt-4"}>
+                            {/*<Button
                           size={"sm"}
                           variant={"secondary"}
                           className={"mr-2"}
                         >
                           Entfernen
                         </Button>*/}
-                          <Button size={"sm"}>
-                            <Link
-                              className={"navbar text-decoration-none"}
-                              to={{
-                                pathname: `/result/${r._id}`,
-                                state: { startInEditMode: true },
-                              }}
-                            >
-                              Bearbeiten
-                            </Link>
-                          </Button>
-                          {/*<Button onClick={() => lefApi.createClimateChart()}>
+                            <Button size={"sm"}>
+                              <Link
+                                className={"navbar text-decoration-none"}
+                                to={{
+                                  pathname: `/result/${r._id}`,
+                                  state: { startInEditMode: true },
+                                }}
+                              >
+                                Bearbeiten
+                              </Link>
+                            </Button>
+                            {/*<Button onClick={() => lefApi.createClimateChart()}>
                           CREATE
                         </Button>*/}
-                        </Row>
-                      </Card.Body>
-                      {/* <Card.Footer> <small className="text-muted"> </small> </Card.Footer>*/}
-                    </Card>
-                  );
-                })
+                          </Row>
+                        </Card.Body>
+                        {/* <Card.Footer> <small className="text-muted"> </small> </Card.Footer>*/}
+                      </Card>
+                    );
+                  })
               ) : (
                 <p className={"mt-1"}>
                   Bislang sind keine Regionen mit Ihrem Account verknüpft.
                 </p>
               )}
-            </CardGroup>
+            </CardColumns>
           </SpinnerWrapper>
 
           {/*<div>
