@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import MapChart from "./MapChart";
 import { Heading } from "./shared/Heading";
-import { Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import { ThemeContext } from "./theme/ThemeContext";
 import { LefSpinner } from "./shared/LefSpinner";
 import { LefSelect } from "./shared/LefSelect";
@@ -104,7 +104,7 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
                     isFetchingRegions={isFetchingRegions}
                   />
                 </Row>
-                {/*<Row>
+                <Row>
                   <Button
                     className={"mt-3"}
                     size={"sm"}
@@ -113,7 +113,7 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
                   >
                     Meinen Standort verwenden
                   </Button>
-                </Row>*/}
+                </Row>
               </Col>
 
               <Row className={"mt-5 mr-3"}>{infoBox}</Row>
@@ -156,7 +156,7 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
                       height: 20,
                     }}
                   />
-                  <span>Diese Orte sind schon dabei</span>
+                  <span>Daten zu Klimazielen eingetragen</span>
                 </div>
                 <div
                   className={"w-100 pl-2 pb-2 p-1 d-flex align-items-center"}
