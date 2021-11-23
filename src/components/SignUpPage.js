@@ -1,14 +1,24 @@
-import { lefApi } from "../api/lefApi";
 import { Button, Form } from "react-bootstrap";
 import { useState } from "react";
 import { Heading } from "./shared/Heading";
+import { lefReduxApi } from "../redux/lefReduxApi";
 
 export function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+
+  const [
+    requestSignUpOfUser,
+    signUpResult = {},
+  ] = lefReduxApi.endpoints.requestSignUpUser.useLazyQuery(
+    email,
+    username,
+    password
+  );
 
   const onFinish = (values) => {
-    // lefApi.signUp(email, password);
+    requestSignUpOfUser(email, username, password);
   };
 
   return (

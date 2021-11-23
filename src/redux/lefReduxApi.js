@@ -167,6 +167,12 @@ export const lefReduxApi = createApi({
         };
       },
     }),
+    requestSignUpUser: builder.query({
+      query: (email, username, password) => ({
+        url: "request",
+        ...getQueryParameters({ email, username, password }),
+      }),
+    }),
 
     // MUTATIONS
     updateRegion: builder.mutation({
