@@ -168,9 +168,9 @@ export const lefReduxApi = createApi({
       },
     }),
     requestSignUpUser: builder.query({
-      query: (email, username, password) => ({
-        url: "request",
-        ...getQueryParameters({ email, username, password }),
+      query: ({ email, username, code, password }) => ({
+        url: "signup",
+        ...getQueryParameters({ email, username, code, password }),
       }),
     }),
 

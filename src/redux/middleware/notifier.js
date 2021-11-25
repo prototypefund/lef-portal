@@ -43,6 +43,13 @@ export const notifier = ({ dispatch }) => (next) => (action) => {
             "warning"
           );
           break;
+        case "CODE_ERROR":
+          notify(
+            "Ungültiger Aktivierungs-Code",
+            "Ihr Aktivierungs-Code ist ungültig oder abgelaufen.",
+            "warning"
+          );
+          break;
 
         // TECHNICAL ERRORS
         case "NO_API_FOR_THIS_CALL_ERROR":
