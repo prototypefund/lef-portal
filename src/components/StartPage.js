@@ -78,9 +78,6 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
         // style={{ height: 600 }}
       >
         <Col>
-          <Row className={"mb-3 w-100"} xs={12}>
-            {/*<Heading text={"Dein Klimacheck"} size={"h1"} />*/}
-          </Row>
           <Row xs={12} className={"w-100"}>
             <Col
               md={12}
@@ -89,7 +86,7 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
                 "d-flex align-items-center justify-content-center flex-column p-0"
               }
             >
-              <Row xs={12} className={"mt-0 mt-md-2 mt-lg-5 w-100"}>
+              <Row xs={12} className={"mt-0 mt-md-2 mt-lg-0 w-100"}>
                 <p className={"h1 d-md-none"}>{mainTitle}</p>
                 <p className={"display-4 d-none d-md-block d-lg-none"}>
                   {mainTitle}
@@ -116,7 +113,7 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
                 </Row>
               </Col>
 
-              <Row className={"mt-5 mr-3"}>{infoBox}</Row>
+              <Row className={"mt-3 mr-md-3"}>{infoBox}</Row>
             </Col>
 
             <Col

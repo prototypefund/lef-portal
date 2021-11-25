@@ -1,5 +1,5 @@
 import { Alert, Button, Form } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Heading } from "./shared/Heading";
 import { lefReduxApi } from "../redux/lefReduxApi";
 
@@ -7,8 +7,8 @@ export function SignUpPage() {
   const splitPath = window.location.pathname.split("/");
   const lastPath = splitPath[splitPath.length - 1];
   const pairs = lastPath.split("&");
-  const splittedPairs = pairs.map((pair) => pair.split("="));
-  const keyValues = splittedPairs.reduce((acc, curr) => {
+  const splitPairs = pairs.map((pair) => pair.split("="));
+  const keyValues = splitPairs.reduce((acc, curr) => {
     acc[curr[0]] = curr[1];
     return acc;
   }, {});
