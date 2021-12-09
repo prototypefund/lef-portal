@@ -18,11 +18,7 @@ const defaultLat = 51.2;
 
 const MapChart = ({ lon, lat, regions = [], onRegionClick, dots = [] }) => {
   const { theme } = useContext(ThemeContext);
-  const {
-    COLOR_TEXT_BRIGHT,
-    NAVIGATION_COLOR,
-    PRIMARY_COLOR_DARK,
-  } = theme.colors;
+  const { COLOR_TEXT_BRIGHT } = theme.colors;
   const [hoveredRegion, setHoveredRegion] = useState(null);
   const [hoveredDot, setHoveredDot] = useState(null);
   const allPostalcodes = regions
@@ -44,9 +40,7 @@ const MapChart = ({ lon, lat, regions = [], onRegionClick, dots = [] }) => {
       fill: isHovered
         ? "#444"
         : allPostalcodes.includes(geo.properties.plz)
-        ? geosRegion.objectiveWidget
-          ? PRIMARY_COLOR_DARK
-          : NAVIGATION_COLOR
+        ? geosRegion.color
         : COLOR_TEXT_BRIGHT,
       outline: "#FFF",
       stroke: isHovered ? "#444" : "#646464",
@@ -111,9 +105,7 @@ const MapChart = ({ lon, lat, regions = [], onRegionClick, dots = [] }) => {
                 const geosRegion = postalcodeToRegionMap[geo.properties.plz];
                 const renderTooltip = (props) => (
                   <Tooltip id="tooltip" {...props}>
-                    {`${geo.properties.note}${
-                      geosRegion ? ` (${geosRegion.name})` : ""
-                    }`}
+                    {geosRegion.name}
                   </Tooltip>
                 );
                 const style = getStyle(geo, allPostalcodes, geosRegion);

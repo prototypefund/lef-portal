@@ -7,6 +7,8 @@ import { LefSpinner } from "./shared/LefSpinner";
 import { LefSelect } from "./shared/LefSelect";
 import { useGetAllRegionsQuery } from "../redux/lefReduxApi";
 import { getString } from "../assets/dictionary_de";
+import * as PropTypes from "prop-types";
+import { LayerEntry } from "./mainMap/LayerEntry";
 // import { requestCreateRegion } from "../redux/dataSlice";
 
 export const getTypeAheadOptions = (regions) => {
@@ -42,6 +44,28 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
   const [coords, setCoords] = useState({});
   const { longitude, latitude } = coords;
 
+  const LAYERS = [
+    {
+      name: "district",
+      color: theme.colors.NAVIGATION_COLOR,
+      label: "Kreise",
+    },
+    {
+      name: "city",
+      color: theme.colors.PRIMARY_COLOR_DARK,
+      label: "Städte",
+    },
+    {
+      name: "weatherStation",
+      color: theme.colors.INTERACTIVE_ELEMENT_COLOR,
+      label: "Wetterstationen",
+    },
+  ];
+
+  const [shownLayers, setShownLayers] = useState(
+    new Set(LAYERS.map((layer) => layer.name))
+  );
+
   const {
     data: regions = [],
     isFetching: isFetchingRegions,
@@ -65,6 +89,24 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
     </div>
   );
   const mainTitle = "Wie läuft der Klimaschutz in..";
+
+  const toggleLayer = (name) => {
+    let updatedShownLayers = new Set(shownLayers);
+    if (updatedShownLayers.has(name)) {
+      updatedShownLayers.delete(name);
+    } else {
+      updatedShownLayers.add(name);
+    }
+    setShownLayers(updatedShownLayers);
+  };
+
+  const convertedRegions = regions
+    .filter((region) => shownLayers.has(region.type))
+    .map((region) => ({
+      ...region,
+      color: LAYERS.find((layer) => layer.name === region.type)?.color,
+    }));
+
   return (
     <div className={"col"}>
       {/*/!* <Button onClick={() => dispatch(requestCreateRegion("Demo-Region", []))}>*/}
@@ -139,42 +181,32 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
               <div
                 style={{ bottom: 0, fontSize: 12 }}
                 className={
-                  "position-absolute w-100 d-flex align-items-center flex-column"
+                  "position-absolute w-100 d-flex align-items-start flex-column pb-2"
                 }
               >
-                <div className={"w-100 pl-2 p-1 d-flex align-items-center"}>
-                  <div
-                    style={{
-                      backgroundColor: theme.colors.PRIMARY_COLOR_DARK,
-                      color: "#FFF",
-                      marginRight: 7,
-                      borderRadius: 5,
-                      width: 20,
-                      height: 20,
-                    }}
-                  />
-                  <span>Daten zu Klimazielen eingetragen</span>
-                </div>
                 <div
-                  className={"w-100 pl-2 pb-2 p-1 d-flex align-items-center"}
+                  style={{
+                    border: "1px solid #DDD",
+                    borderRadius: 5,
+                    backgroundColor: "#FFF",
+                    opacity: 0.8,
+                    padding: "5px 15px 5px 10px",
+                  }}
                 >
-                  <div
-                    style={{
-                      backgroundColor: theme.colors.NAVIGATION_COLOR,
-                      color: "#FFF",
-                      marginRight: 7,
-                      borderRadius: 5,
-                      width: 20,
-                      height: 20,
-                    }}
-                  />
-                  <span>nur Wetterdaten</span>
+                  {LAYERS.map(({ name, color, label }) => (
+                    <LayerEntry
+                      color={color}
+                      label={label}
+                      onClick={() => toggleLayer(name)}
+                      active={shownLayers.has(name)}
+                    />
+                  ))}
                 </div>
               </div>
               <MapChart
                 lat={latitude}
                 lon={longitude}
-                regions={regions}
+                regions={convertedRegions}
                 onRegionClick={(regionId) => onCitySelect(regionId)}
               />
             </Col>
