@@ -31,6 +31,7 @@ export const PATHS = {
     `/setPassword/${email ? email : ":email"}/${code ? code : ":code"}`,
   SET_NEW_PASSWORD_BLANK: "/setPassword",
   IMPRINT: "/imprint",
+  DATA_PRIVACY: "/dataPrivacy",
   EMBEDDING: "/embeddedWidget/:regionId/:widgetId/:colorPalette/:fontStyle",
 };
 
@@ -73,6 +74,11 @@ const MainRouting = ({ location = {}, history = {} }) => {
         }),
       button: true,
       hidden: true,
+    },
+    {
+      id: "1",
+      label: "Datenschutzerklärung",
+      to: PATHS.DATA_PRIVACY,
     },
     {
       id: "2",
@@ -141,10 +147,6 @@ const MainRouting = ({ location = {}, history = {} }) => {
       )}
       <div className={"d-flex flex-grow-1 pt-3 p-sm-1 p-md-3"}>
         <Switch>
-          <Route path={PATHS.IMPRINT}>
-            <Imprint />
-          </Route>
-
           <Route path={PATHS.EMBEDDING}>
             <WidgetEmbeddingPage />
           </Route>
@@ -178,6 +180,23 @@ const MainRouting = ({ location = {}, history = {} }) => {
           <Route path={PATHS.SET_NEW_PASSWORD_BLANK}>
             <SetNewPassword />
           </Route>
+
+          <Route
+            path={PATHS.IMPRINT}
+            component={() => {
+              window.location.href =
+                "https://emission-framework.org/impressum/";
+              return null;
+            }}
+          />
+          <Route
+            path={PATHS.DATA_PRIVACY}
+            component={() => {
+              window.location.href =
+                "https://emission-framework.org/datenschutzerklaerung/";
+              return null;
+            }}
+          />
 
           <Route path="/">
             <StartPage
