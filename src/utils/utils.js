@@ -80,7 +80,6 @@ export const mergeWeatherStationData = (dataArray = []) => {
       ...calculateYearMeans(monthlyDataConverted),
     };
   });
-  console.debug(climateDataDictionary);
   return climateDataDictionary;
 };
 

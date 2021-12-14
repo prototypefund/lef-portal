@@ -15,12 +15,14 @@ import { notifier } from "./redux/middleware/notifier";
 import { apiMiddleware } from "./redux/middleware/apiMiddleware";
 import { lefReduxApi } from "./redux/lefReduxApi";
 
+export const isDev = process.env.NODE_ENV === "development";
+
 const logger = createLogger({
   timestamp: true,
 });
 const middleware = [
   ...getDefaultMiddleware(),
-  logger,
+  ...(isDev ? [logger] : []),
   notifier,
   apiMiddleware,
   lefReduxApi.middleware,

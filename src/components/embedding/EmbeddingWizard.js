@@ -76,7 +76,11 @@ const EmbeddingWizard = ({ ownRegionIds, regions, open, onClose }) => {
                           <MenuGroupLabel label={"Meine Regionen"} />
                           {ownRegionsResults.length === 0 && noResultsLine}
                           {ownRegionsResults.map((result, index) => (
-                            <MenuItem option={result} position={index}>
+                            <MenuItem
+                              option={result}
+                              position={index}
+                              key={index}
+                            >
                               {result.label}
                             </MenuItem>
                           ))}
@@ -87,6 +91,7 @@ const EmbeddingWizard = ({ ownRegionIds, regions, open, onClose }) => {
                             .sort((a, b) => (a.label < b.label ? -1 : 1))
                             .map((result, index) => (
                               <MenuItem
+                                key={index + ownRegionsResults.length}
                                 option={result}
                                 position={index + ownRegionsResults.length}
                               >
@@ -105,8 +110,10 @@ const EmbeddingWizard = ({ ownRegionIds, regions, open, onClose }) => {
                     defaultValue={pleaseChoose}
                     onChange={(event) => setWidgetId(event.target.value)}
                   >
-                    {Object.keys(WIDGETS).map((widget) => (
-                      <option value={widget}>{WIDGETS[widget].name}</option>
+                    {Object.keys(WIDGETS).map((widget, index) => (
+                      <option key={index} value={widget}>
+                        {WIDGETS[widget].name}
+                      </option>
                     ))}
                   </Form.Control>
                 </Form.Group>

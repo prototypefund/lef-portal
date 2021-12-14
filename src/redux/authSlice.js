@@ -4,7 +4,8 @@ import { REQUEST_STATES } from "./consts";
 
 let localUserId = "";
 
-export const getCurrentUserToken = () => localStorage.getItem("token") || null;
+export const getCurrentUserToken = () =>
+  sessionStorage.getItem("token") || null;
 export const getCurrentUserId = () => localUserId;
 
 export const AUTH_STATES = {
@@ -28,15 +29,33 @@ const authSlice = createSlice({
   reducers: {
     updateAuthState: (state, action) => {
       const { authState, message, token, userId } = action.payload;
-      if (authState) state.authState = authState;
-      if (message) state.message = message;
+      console.debug("---------------------------");
+      console.debug({
+        authState: state.authState,
+        message: state.message,
+        token: state.token,
+        userId: state.userId,
+      });
+      console.debug({ authState, message, token, userId });
+      state.authState = authState || state.authState;
+      state.message = message;
+      state.token =
+        state.authState === AUTH_STATES.loggedOut
+          ? null
+          : token
+          ? token
+          : state.token;
+      localUserId = userId || null;
+      state.userId = userId || state.userId;
       if (token) {
-        state.token = token;
-        localStorage.setItem("token", token);
+        sessionStorage.setItem("token", token);
       }
-      if (userId) {
-        localUserId = userId;
-      }
+      console.debug({
+        authState: state.authState,
+        message: state.message,
+        token: state.token,
+        userId: state.userId,
+      });
     },
   },
   extraReducers: {},
@@ -46,9 +65,8 @@ export const { updateAuthState } = authSlice.actions;
 export default authSlice.reducer;
 
 export const requestSignOut = () => (dispatch) => {
-  localStorage.removeItem("token");
-  localStorage.clear();
-  dispatch(updateAuthState({ authState: AUTH_STATES.loggedOut }));
+  sessionStorage.clear();
+  dispatch(updateAuthState({ authState: AUTH_STATES.loggedOut, token: null }));
 };
 
 export const requestAddRegionToAccount = () =>

@@ -14,7 +14,10 @@ import EmbeddingWizard from "./embedding/EmbeddingWizard";
 import { useEffect, useState } from "react";
 import { PasswordChangeDialog } from "./accountPageComponents/PasswordChangeDialog";
 import { AddRegionDialog } from "./accountPageComponents/AddRegionDialog";
-import { requestAddRegionToAccount } from "../redux/authSlice";
+import {
+  getCurrentUserId,
+  requestAddRegionToAccount,
+} from "../redux/authSlice";
 import { usePrevious } from "../hooks/usePrevious";
 import {
   useChangePasswordMutation,
@@ -24,9 +27,9 @@ import {
 import { SpinnerWrapper } from "./shared/SpinnerWrapper";
 
 export const AccountPage = () => {
-  const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth) || {};
   const { changePasswordState } = auth;
+  const dispatch = useDispatch();
 
   const {
     data: regions = [],
@@ -35,7 +38,9 @@ export const AccountPage = () => {
   const {
     data: userData = {},
     isFetching: isFetchingUserData,
-  } = useGetUserQuery();
+  } = useGetUserQuery(null, {
+    refetchOnMountOrArgChange: true,
+  });
   const [
     changePassword,
     { isLoading: isUpdatingPassword, isSuccess: isSuccessPasswordChanged },

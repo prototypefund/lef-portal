@@ -1,13 +1,19 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { AUTH_STATES, getCurrentUserId, updateAuthState } from "./authSlice";
+import {
+  AUTH_STATES,
+  getCurrentUserId,
+  getCurrentUserToken,
+  updateAuthState,
+} from "./authSlice";
 import { getSortedArray, removeSpaces } from "../utils/utils";
 
 const URL = "https://us-central1-lef-backend.cloudfunctions.net/app/";
 
-const getQueryParameters = (body, secure = false) => ({
+const getQueryParameters = (body, secure = false, token = null) => ({
   body: {
     ...body,
     ...(secure && { userId: getCurrentUserId() }),
+    ...(token && { token }),
   },
   method: "POST",
 });
@@ -17,7 +23,7 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers, { getState }) => {
     const state = getState();
     const { auth = {} } = state;
-    const { token } = auth;
+    const { token } = auth || getCurrentUserToken();
     headers.set("Access-Control-Allow-Origin", "*");
     if (token) {
       headers.set("authorization", `Bearer ${token}`);
@@ -75,7 +81,7 @@ export const lefReduxApi = createApi({
         const { dispatch } = _queryApi;
         const result = await fetchWithBQ({
           url: "user/get",
-          ...getQueryParameters({}),
+          ...getQueryParameters({}, false, getCurrentUserToken()),
         });
         if (result.error) {
         } else {

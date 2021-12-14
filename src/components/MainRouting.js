@@ -2,7 +2,6 @@ import { Route, Switch } from "react-router-dom";
 import { withRouter } from "react-router";
 import { StartPage } from "./StartPage";
 import ResultPage from "./ResultPage";
-import { Imprint } from "./Imprint";
 import SignInPage from "./SignInPage";
 import { SignUpPage } from "./SignUpPage";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,14 +10,13 @@ import ProtectedRoute from "./ProtectedRoute";
 import { AUTH_STATES, requestSignOut } from "../redux/authSlice";
 import { useEffect } from "react";
 import { Header } from "./Header";
-import { Col, Container, Row, Toast } from "react-bootstrap";
+import { Col, Row, Toast } from "react-bootstrap";
 import { WidgetEmbeddingPage } from "./WidgetEmbeddingPage";
 import { LefModal } from "./shared/LefModal";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import { SetNewPassword } from "./pages/SetNewPassword";
 import { lefReduxApi, useCreateUserMutation } from "../redux/lefReduxApi";
-import BmbfLogo from "../assets/bmbf_logo.jpg";
-import PrototypeLogo from "../assets/prototypefund_logo.jpg";
+import { LefFooter } from "./LefFooter";
 
 export const getCityPath = (city) => `/result/${city}`;
 export const PATHS = {
@@ -76,16 +74,6 @@ const MainRouting = ({ location = {}, history = {} }) => {
       hidden: true,
     },
     {
-      id: "1",
-      label: "Datenschutzerklärung",
-      to: PATHS.DATA_PRIVACY,
-    },
-    {
-      id: "2",
-      label: "Impressum",
-      to: PATHS.IMPRINT,
-    },
-    {
       id: "3",
       label: "Anmelden",
       to: PATHS.SIGN_IN,
@@ -106,33 +94,6 @@ const MainRouting = ({ location = {}, history = {} }) => {
       button: true,
     },
   ];
-
-  const footer = (
-    <Container fluid>
-      <hr />
-      <Row className={"ml-1 mr-1 align-items-center justify-content-between"}>
-        <Col xs={12} sm={"auto"}>
-          <img
-            src={BmbfLogo}
-            alt={"BMBF Logo"}
-            style={{ height: 120, marginRight: 10 }}
-          />
-        </Col>
-        <Col xs={12} sm={"auto"}>
-          <img
-            src={PrototypeLogo}
-            alt={"Prototype Fund Logo"}
-            style={{ height: 70, marginRight: 10 }}
-          />
-        </Col>
-        <Col xs={"auto"}>
-          <Row style={{ fontSize: 10 }}>
-            Local Emission Framework 2021 (c) v0.1
-          </Row>
-        </Col>
-      </Row>
-    </Container>
-  );
 
   return (
     <div
@@ -181,23 +142,6 @@ const MainRouting = ({ location = {}, history = {} }) => {
             <SetNewPassword />
           </Route>
 
-          <Route
-            path={PATHS.IMPRINT}
-            component={() => {
-              window.location.href =
-                "https://emission-framework.org/impressum/";
-              return null;
-            }}
-          />
-          <Route
-            path={PATHS.DATA_PRIVACY}
-            component={() => {
-              window.location.href =
-                "https://emission-framework.org/datenschutzerklaerung/";
-              return null;
-            }}
-          />
-
           <Route path="/">
             <StartPage
               onCitySelect={(city) => history.push(getCityPath(city))}
@@ -205,7 +149,7 @@ const MainRouting = ({ location = {}, history = {} }) => {
           </Route>
         </Switch>
       </div>
-      {footer}
+      <LefFooter showLogos={!embeddingMode} showLinks={!embeddingMode} />
       <div
         className="p-3"
         style={{ position: "fixed", bottom: 10, right: 10, zIndex: 2000 }}
