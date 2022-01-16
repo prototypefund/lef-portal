@@ -175,7 +175,6 @@ export const GenericWidgetEditor = ({
       title: "Allgemeine Einstellungen",
       content: (
         <>
-          {" "}
           <Form.Group controlId={"title"} as={Row}>
             <Form.Label>Bezeichnung</Form.Label>
             <Form.Control
@@ -209,6 +208,11 @@ export const GenericWidgetEditor = ({
       title: "Daten",
       content: (
         <>
+          <p>
+            {
+              "Sie können jede Art von Zeitreihen-Daten darstellen, also solche Daten, die Messwerte für verschiedene Zeitpunkte enthalten. Dabei können pro Zeitpunkt auch mehrere Werte enthalten sein. Die Daten können aus CSV-Dateien importiert werden."
+            }
+          </p>
           <Col xs={12}>
             {dataExists && (
               <>
@@ -216,7 +220,7 @@ export const GenericWidgetEditor = ({
                   <Heading size={"h5"} text={"Importierte Daten"} />
                 </Row>
                 <Row>{`Die Daten umfassen ${dataMap.length} Zeitpunkte mit jeweils bis zu ${maximumCategories} Kategorien.`}</Row>
-                <Row className={"mb-3 alert alert-dark mt-2"}>
+                <Row className={"mb-3 alert alert-primary mt-2"}>
                   <DataMapPreview dataMap={dataMap} />
                 </Row>
               </>

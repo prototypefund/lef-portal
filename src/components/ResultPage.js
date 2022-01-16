@@ -1,6 +1,6 @@
 import { ResultEntry } from "./resultPageComponents/ResultEntry";
 import { Heading } from "./shared/Heading";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { EditButton } from "./shared/EditButton";
@@ -17,16 +17,13 @@ import { isArray } from "chart.js/helpers";
 import { LefSelect } from "./shared/LefSelect";
 import {
   lefReduxApi,
-  useCreateGenericChartMutation,
   useGetAllRegionsQuery,
   useGetRegionQuery,
   useUpdateRegionMutation,
 } from "../redux/lefReduxApi";
 import { isMobile } from "react-device-detect";
-import { fakeGenericWidgetData } from "../assets/fakeData/fakeData";
 import { LefButton } from "./shared/LefButton";
 import { GenericWidgetEditor } from "./widgets/genericWidgetComponents/GenericWidgetEditor";
-import { isDev } from "../App";
 
 const ResultPage = ({ history, location }) => {
   const [updateRegion] = useUpdateRegionMutation();
@@ -230,12 +227,14 @@ const ResultPage = ({ history, location }) => {
           onClick={() => setShowWidgetEditor(true)}
         />
       )}
-      <GenericWidgetEditor
-        currentObject={{}}
-        open={showWidgetEditor}
-        onClose={() => setShowWidgetEditor(false)}
-        regionData={regionData}
-      />
+      {showWidgetEditor && (
+        <GenericWidgetEditor
+          currentObject={{}}
+          open
+          onClose={() => setShowWidgetEditor(false)}
+          regionData={regionData}
+        />
+      )}
     </Container>
   );
 };

@@ -30,9 +30,20 @@ export const GenericWidget = ({ editMode, active, widgetId, regionData }) => {
 
   useEffect(() => {
     if (deletedGenericChart) {
+      updateRegion({
+        ...regionData,
+        customWidgets: regionData.customWidgets.filter(
+          (w) => w.widgetId !== widgetId
+        ),
+      });
+    }
+  }, [deletedGenericChart]);
+
+  useEffect(() => {
+    if (updatedRegion) {
       setDeleteDialogOpen(false);
     }
-  });
+  }, [updatedRegion]);
 
   return (
     <>
@@ -57,12 +68,6 @@ export const GenericWidget = ({ editMode, active, widgetId, regionData }) => {
             label: "Löschen",
             loading: deletingGenericChart,
             onClick: () => {
-              /*updateRegion({
-                ...regionData,
-                customWidgets: regionData.customWidgets.filter(
-                  (w) => w.widgetId !== widgetId
-                ),
-              });*/
               deleteGenericChart(widgetId);
             },
           },
@@ -77,7 +82,7 @@ export const GenericWidget = ({ editMode, active, widgetId, regionData }) => {
         }
       />
 
-      {loadingGenericChart ? (
+      {loadingGenericChart || deletingGenericChart || updatingRegion ? (
         <LefSpinner hideBackground />
       ) : (
         <ResultEntry
