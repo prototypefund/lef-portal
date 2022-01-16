@@ -26,7 +26,9 @@ export const GenericWidget = ({ editMode, active, widgetId }) => {
             icon: TrashFill,
             title: "",
             variant: "danger",
-            // TODO onClick GenericChart entfernen
+            onClick: () => {
+              // TODO GenericChart entfernen
+            },
           },
           {
             icon: PencilFill,
@@ -45,6 +47,9 @@ export const GenericWidget = ({ editMode, active, widgetId }) => {
         }
         question={title}
         active={active}
+        onToggleActive={(newActive) => {
+          // TODO GenericChart aktivieren/deaktivieren
+        }}
       />
     </>
   );

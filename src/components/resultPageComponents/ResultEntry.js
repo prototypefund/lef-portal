@@ -10,7 +10,6 @@ const textColor = "#222";
 
 export const ResultEntry = ({
   buttons,
-  onEditClick,
   question,
   component,
   editMode,
@@ -29,7 +28,7 @@ export const ResultEntry = ({
       <Collapse in={editMode}>
         <Row className={""}>
           <Col>
-            <div onClick={(event) => onToggleActive(!active)}>
+            <div onClick={() => onToggleActive(!active)}>
               <FormCheck
                 type={"switch"}
                 className={"mt-2 mb-3"}

@@ -1,36 +1,10 @@
-import { Line, Chart } from "react-chartjs-2";
+import { Chart } from "react-chartjs-2";
 import React, { useContext } from "react";
 // @ts-ignore
 import { ThemeContext } from "../../theme/ThemeContext";
 import { isArray } from "chart.js/helpers";
 // import { defaults } from "react-chartjs-2";
-
-import {
-  Chart as ChartJS,
-  ChartType,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-interface IDataPoint {
-  x: number;
-  y: String;
-}
+import { ChartType } from "chart.js";
 
 interface ILefLineChartDatasets {
   label: string;

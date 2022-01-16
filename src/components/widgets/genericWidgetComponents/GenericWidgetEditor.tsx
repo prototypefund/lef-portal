@@ -115,7 +115,6 @@ export const GenericWidgetEditor = ({
       onFileLoad={(data) => {
         if (data.length === 0) return;
         const map = data.map((d) => d.data).slice(1);
-        console.debug({ map });
         setCsvData(map);
         const firstEntry = data[0].data;
         setCsvHeaders(firstEntry);
@@ -128,6 +127,7 @@ export const GenericWidgetEditor = ({
   );
 
   let find = CHART_TYPES.find((t) => t.id === chartType);
+  let dataExists = dataMap.length > 0;
   const steps = [
     {
       id: "common",
@@ -169,25 +169,27 @@ export const GenericWidgetEditor = ({
       content: (
         <>
           <Col xs={12}>
-            <Row>
-              <Heading size={"h5"} text={"Importierte Daten"} />
-            </Row>
-            <Row>{`Die Daten umfassen ${dataMap.length} Zeitpunkte mit jeweils bis zu ${maximumCategories} Kategorien.`}</Row>
-            <Row className={"mb-3 alert alert-dark mt-2"}>
-              {dataMap.length > 0 && <DataMapPreview dataMap={dataMap} />}
-            </Row>
-
+            {dataExists && (
+              <>
+                <Row>
+                  <Heading size={"h5"} text={"Importierte Daten"} />
+                </Row>
+                <Row>{`Die Daten umfassen ${dataMap.length} Zeitpunkte mit jeweils bis zu ${maximumCategories} Kategorien.`}</Row>
+                <Row className={"mb-3 alert alert-dark mt-2"}>
+                  <DataMapPreview dataMap={dataMap} />
+                </Row>
+              </>
+            )}
             <Row>
               <LefButton
                 onClick={() => setShowDataImportModal(true)}
-                title={
-                  dataMap.length > 0 ? "Daten ersetzen" : "Daten importieren"
-                }
+                title={dataExists ? "Daten ersetzen" : "Daten importieren"}
               />{" "}
             </Row>
           </Col>
 
           <LefModal
+            size={"xl"}
             title={"Daten importieren"}
             show={showDataImportModal}
             buttons={[
@@ -256,7 +258,7 @@ export const GenericWidgetEditor = ({
           />
         </>
       ),
-      nextEnabled: dataMap.length > 0,
+      nextEnabled: dataExists,
       nextLabel: "Weiter",
     },
     {
