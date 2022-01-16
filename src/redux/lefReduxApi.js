@@ -267,6 +267,12 @@ export const lefReduxApi = createApi({
       }),
       invalidatesTags: (result, error, _id) => [{ type: "Actions", id: _id }],
     }),
+    deleteGenericChart: builder.mutation({
+      query: (_id) => ({
+        url: "genericchart/delete",
+        ...getQueryParameters({ _id }, true),
+      }),
+    }),
     deleteObjective: builder.mutation({
       query: (_id) => ({
         url: "objective/delete",
@@ -318,6 +324,7 @@ export const {
   useCreateUserMutation,
   useDeleteActionMutation,
   useDeleteObjectiveMutation,
+  useDeleteGenericChartMutation,
   useChangePasswordMutation,
   useRequestPasswordResetMutation,
   useResetPasswordMutation,

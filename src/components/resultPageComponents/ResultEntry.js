@@ -5,6 +5,7 @@ import { Question } from "./Question";
 import { SourceDisplay } from "../shared/SourceDisplay";
 import { isMobile } from "react-device-detect";
 import { LefButton } from "../shared/LefButton";
+import ErrorBoundary from "../widgets/genericWidgetComponents/ErrorBoundary";
 
 const textColor = "#222";
 
@@ -21,7 +22,7 @@ export const ResultEntry = ({
   const { theme } = useContext(ThemeContext);
   const { COLOR_TEXT_BRIGHT, LIGHT_BACKGROUND_COLOR } = theme.colors;
   return (
-    <>
+    <ErrorBoundary>
       <Row>
         <Question question={question} />
       </Row>
@@ -40,8 +41,8 @@ export const ResultEntry = ({
           </Col>
           {buttons && (
             <Col className={"justify-content-end d-flex"}>
-              {buttons.map((button) => (
-                <LefButton size={"sm"} {...button} />
+              {buttons.map((button, p) => (
+                <LefButton key={p} size={"sm"} {...button} />
               ))}
             </Col>
           )}
@@ -84,6 +85,6 @@ export const ResultEntry = ({
           </Row>
         ))}
       <hr style={{ margin: 50 }} />
-    </>
+    </ErrorBoundary>
   );
 };

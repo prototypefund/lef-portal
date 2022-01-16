@@ -13,6 +13,10 @@ import { LefButton } from "../../shared/LefButton";
 // @ts-ignore
 import { LefModal } from "../../shared/LefModal";
 // @ts-ignore
+import { useCreateGenericChartMutation } from "../../../redux/lefReduxApi";
+// @ts-ignore
+import { useUpdateRegionMutation } from "../../../redux/lefReduxApi";
+// @ts-ignore
 import { useUpdateGenericChartMutation } from "../../../redux/lefReduxApi";
 // @ts-ignore
 import { CsvHeaderMapping } from "./genericWidgetEditorComponents/CsvHeaderMapping";
@@ -72,15 +76,48 @@ interface ICsvHeaders {
   [index: number]: string;
 }
 
+type TWidgetInRegion = {
+  widgetId: string;
+  isActive: boolean;
+};
+
+interface IRegion {
+  postalcodes: string[];
+  name: string;
+  objectiveWidget: boolean;
+  climateWidget: boolean;
+  votingWidget: boolean;
+  customWidgets: TWidgetInRegion[];
+}
+
 export const GenericWidgetEditor = ({
   currentObject,
+  regionData,
   open,
   onClose = () => {},
 }: {
   currentObject: IGenericWidget;
+  regionData: IRegion;
   open: boolean;
   onClose: () => void;
 }) => {
+  const [
+    createGenericChart,
+    {
+      isSuccess: createdGenericChart,
+      isLoading: creatingGenericChart,
+      data: newGenericChartData,
+    },
+  ] = useCreateGenericChartMutation();
+  const [
+    updateGenericChart,
+    { isSuccess: updatedGenericChart, isLoading: updatingGenericChart },
+  ] = useUpdateGenericChartMutation();
+  const [
+    updateRegion,
+    { isSuccess: updatedRegion, isLoading: updatingRegion },
+  ] = useUpdateRegionMutation();
+
   const [dataMap, setDataMap] = useState(currentObject.dataMap || []);
   const [title, setTitle] = useState(currentObject.title || "");
   const [description, setDescription] = useState(
@@ -99,16 +136,20 @@ export const GenericWidgetEditor = ({
   const categories = dataMap.map((entry) => entry.values).map((v) => v.length);
   const maximumCategories = Math.max(...categories);
 
-  const [
-    updateGenericChart,
-    { isSuccess: isSuccessGenericChart, isLoading: updatingGenericChart },
-  ] = useUpdateGenericChartMutation();
-
   useEffect(() => {
-    if (isSuccessGenericChart) {
+    if (updatedGenericChart || updatedRegion) {
       onClose();
+    } else if (createdGenericChart) {
+      console.debug({ newGenericChartData });
+      updateRegion({
+        ...regionData,
+        customWidgets: [
+          ...regionData.customWidgets,
+          { widgetId: newGenericChartData._id, isActive: true },
+        ],
+      });
     }
-  }, [isSuccessGenericChart]);
+  }, [updatedGenericChart, createdGenericChart, updatedRegion]);
 
   const csvReader = (
     <CSVReader
@@ -324,7 +365,12 @@ export const GenericWidgetEditor = ({
             chartType,
           });
         } else {
-          // TODO create new object & add to region
+          createGenericChart({
+            dataMap,
+            description,
+            title,
+            chartType,
+          });
         }
       },
     },
@@ -356,7 +402,8 @@ export const GenericWidgetEditor = ({
         {
           disabled: !currentStepObject.nextEnabled,
           label: currentStepObject.nextLabel,
-          loading: updatingGenericChart,
+          loading:
+            updatingGenericChart || creatingGenericChart || updatingRegion,
           onClick: currentStepObject.onNext
             ? currentStepObject.onNext
             : () => setCurrentStep(currentStep + 1),

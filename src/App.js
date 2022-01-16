@@ -14,6 +14,7 @@ import { ThemeContext } from "./components/theme/ThemeContext";
 import { notifier } from "./redux/middleware/notifier";
 import { apiMiddleware } from "./redux/middleware/apiMiddleware";
 import { lefReduxApi } from "./redux/lefReduxApi";
+import "chart.js/auto";
 
 export const isDev = process.env.NODE_ENV === "development";
 

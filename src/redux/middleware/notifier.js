@@ -137,6 +137,16 @@ export const notifier = ({ dispatch }) => (next) => (action) => {
       "Ihre Änderungen an dieser Maßnahme wurden übernommen.",
     ],
     [
+      lefReduxApi.endpoints.updateGenericChart.matchFulfilled(action),
+      message_changesSaved,
+      "Ihre Änderungen an diesem Widget wurden übernommen.",
+    ],
+    [
+      lefReduxApi.endpoints.createGenericChart.matchFulfilled(action),
+      message_changesSaved,
+      "Ihr Widget wurde erstellt.",
+    ],
+    [
       lefReduxApi.endpoints.createAction.matchFulfilled(action),
       message_changesSaved,
       "Ihre Maßnahme wurde erstellt.",
@@ -150,6 +160,12 @@ export const notifier = ({ dispatch }) => (next) => (action) => {
       lefReduxApi.endpoints.createAction.matchPending(action),
       message_changesPending,
       "Ihre Maßnahme wird erstellt..",
+      "info",
+    ],
+    [
+      lefReduxApi.endpoints.createGenericChart.matchPending(action),
+      message_changesPending,
+      "Ihr Widget wird erstellt..",
       "info",
     ],
     [

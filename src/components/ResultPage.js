@@ -69,17 +69,13 @@ const ResultPage = ({ history, location }) => {
     }
   }, [editMode, userIsAdmin]);
 
-  const [
-    createGenericChart,
-    { isSuccess: isCreatingChartSuccess },
-  ] = useCreateGenericChartMutation();
-
-  const customWidgetsConverted = customWidgets.map((w) => ({
-    component: GenericWidget,
-    widgetId: w.widgetId,
-    active: w.isActive,
-    type: "generic",
-  }));
+  const customWidgetsConverted = customWidgets
+    .map((w) => ({
+      widgetId: w.widgetId,
+      active: w.isActive,
+      type: "generic",
+    }))
+    .filter((widget) => editMode || widget.active);
 
   const widgets = Object.keys(WIDGETS)
     .map((key) => WIDGETS[key])
@@ -198,36 +194,12 @@ const ResultPage = ({ history, location }) => {
   return (
     <Container fluid style={{ maxWidth: 800, padding: "0px 12px" }}>
       {header}
-      {isDev && (
-        <>
-          <Button onClick={() => createGenericChart(fakeGenericWidgetData)}>
-            Test
-          </Button>
-          <Button
-            onClick={() =>
-              updateRegion({
-                ...regionData,
-                customWidgets: [
-                  {
-                    widgetId: "61e1b45dc3808f1c55794c76",
-                    isActive: true,
-                  },
-                  {
-                    widgetId: "61e31747e93ca1b88dcab821",
-                    isActive: true,
-                  },
-                ],
-              })
-            }
-          >
-            Test2
-          </Button>
-        </>
-      )}{" "}
       {widgets.length > 0 ? (
         widgets.map((entry, k) =>
           entry.type === "generic" ? (
             <GenericWidget
+              regionData={regionData}
+              key={k}
               editMode={editMode}
               active={entry.active}
               widgetId={entry.widgetId}
@@ -262,6 +234,7 @@ const ResultPage = ({ history, location }) => {
         currentObject={{}}
         open={showWidgetEditor}
         onClose={() => setShowWidgetEditor(false)}
+        regionData={regionData}
       />
     </Container>
   );
