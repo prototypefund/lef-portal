@@ -3,6 +3,8 @@ import { isArrayWithOneElement } from "../../../utils/utils";
 import React from "react";
 import { IGenericWidget } from "../../../types/IGenericWidget";
 import { LefLineChart } from "../../shared/charts/LefLineChart";
+// @ts-ignore
+import { LefBarChart } from "../../shared/charts/LefBarChart";
 import { ChartType } from "chart.js";
 
 export function LefGenericChart({
@@ -30,8 +32,11 @@ export function LefGenericChart({
     }),
   }));
 
+  const data = { labels: xLabels, datasets: datasets };
   return chartType === "line" ? (
-    <LefLineChart hideScales data={{ labels: xLabels, datasets: datasets }} />
+    <LefLineChart hideScales data={data} />
+  ) : chartType === "bar" ? (
+    <LefBarChart data={data} />
   ) : (
     <>{"Anzeigeformat derzeit nicht verfügbar."}</>
   );

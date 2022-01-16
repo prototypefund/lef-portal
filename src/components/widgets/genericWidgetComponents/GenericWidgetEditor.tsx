@@ -4,8 +4,6 @@ import { Col, Form, FormGroup, FormLabel, Row } from "react-bootstrap";
 import { isArrayWithOneElement } from "../../../utils/utils";
 import React, { useEffect, useState } from "react";
 import { CSVReader } from "react-papaparse";
-// @ts-ignore
-import { LefSelect } from "../../shared/LefSelect";
 import { LefGenericChart } from "./LefGenericChart";
 import { DataMapPreview } from "./genericWidgetEditorComponents/DataMapPreview";
 // @ts-ignore
@@ -23,12 +21,13 @@ import { CsvHeaderMapping } from "./genericWidgetEditorComponents/CsvHeaderMappi
 import { IGenericWidget } from "../../../types/IGenericWidget";
 import { ChartType } from "chart.js";
 import { IDataMapEntry } from "../../../types/IDataMapEntry";
+import { LefSelect } from "../../shared/LefSelect";
 
 const CHART_TYPES = [
   { id: "bar", label: "Balkendiagramm" },
-  { id: "scatter", label: "Punktdiagramm" },
-  { id: "cake", label: "Kuchendiagramm" },
   { id: "line", label: "Liniendiagramm" },
+  //{ id: "scatter", label: "Punktdiagramm" },
+  //{ id: "cake", label: "Kuchendiagramm" },
 ];
 
 function convertCsvToDataMap(
