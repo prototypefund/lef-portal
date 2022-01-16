@@ -44,8 +44,6 @@ export function LefBarChart({
   return (
     <Bar
       {...(isMobile && { height: 200 })}
-      responsive
-      type={"bar"}
       data={{
         labels: data.labels,
         datasets: data.datasets.map((entry, i) => {

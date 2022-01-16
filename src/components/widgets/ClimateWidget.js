@@ -117,7 +117,7 @@ export const ClimateWidget = ({ regionData, editMode, isMobile }) => {
   const rainFallSet = {
     label: "Niederschlag",
     data: rainfalls,
-    yAxisID: "y1",
+    yAxisID: "y",
     color: "#1693ff",
     type: "bar",
   };
@@ -125,8 +125,10 @@ export const ClimateWidget = ({ regionData, editMode, isMobile }) => {
   const temperatureSet = {
     label: "Durchschnittstemperatur",
     data: temperatureMeans,
-    yAxisID: "y2",
+    yAxisID: "y1",
     color: "#f46247",
+    type: "line",
+    fill: false,
   };
 
   const data = useMemo(() => {

@@ -1,4 +1,4 @@
-import { Line } from "react-chartjs-2";
+import { Line, Chart } from "react-chartjs-2";
 import React, { useContext } from "react";
 // @ts-ignore
 import { ThemeContext } from "../../theme/ThemeContext";
@@ -103,26 +103,6 @@ export function LefLineChart({
     }
   });
 
-  const labels = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-  ];
-
-  const fakeData = [
-    {
-      label: "Dataset 2",
-      data: labels.map(() => Math.random() * 100),
-      borderColor: "rgb(53, 162, 235)",
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
-      yAxisID: "y1",
-    },
-  ];
-
   const convertedData = data.datasets.map((entry, i) => {
     const color = entry.color || DIAGRAM_COLORS[i % DIAGRAM_COLORS.length];
     return {
@@ -130,21 +110,14 @@ export function LefLineChart({
       data: entry.data,
       borderColor: color,
       backgroundColor: color,
-      // type: entry.type,
+      type: entry.type,
       yAxisID: entry.yAxisID,
     };
-
-    /*return {
-
-
-
-
-
-    };*/
   });
 
   return (
-    <Line
+    <Chart
+      type={"bar"}
       data={{
         labels: data.labels,
         datasets: convertedData,
