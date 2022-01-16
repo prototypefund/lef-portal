@@ -1,13 +1,5 @@
 import { Heading } from "./shared/Heading";
-import {
-  Button,
-  Card,
-  CardColumns,
-  CardGroup,
-  Col,
-  Form,
-  Row,
-} from "react-bootstrap";
+import { Button, Card, CardGroup, Col, Form, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import EmbeddingWizard from "./embedding/EmbeddingWizard";
@@ -123,7 +115,7 @@ export const AccountPage = () => {
             loading={isFetchingUserData || isFetchingRegions}
             spinnerProps={spinnerProps}
           >
-            <CardColumns>
+            <Card.Text>
               {myRegions.length > 0 ? (
                 myRegions
                   .sort((a, b) => (a.name < b.name ? -1 : 1))
@@ -183,7 +175,7 @@ export const AccountPage = () => {
                   Bislang sind keine Regionen mit Ihrem Account verknüpft.
                 </p>
               )}
-            </CardColumns>
+            </Card.Text>
           </SpinnerWrapper>
 
           {/*<div>

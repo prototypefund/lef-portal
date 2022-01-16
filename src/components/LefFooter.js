@@ -41,8 +41,8 @@ export function LefFooter({ showLogos = true, showLinks = true }) {
               label: "Impressum",
               to: "https://emission-framework.org/impressum/",
             },
-          ].map((link) => (
-            <Col xs={"auto"}>
+          ].map((link, i) => (
+            <Col xs={"auto"} key={i}>
               <a style={{ fontSize: "0.7em" }} href={link.to}>
                 {link.label}
               </a>

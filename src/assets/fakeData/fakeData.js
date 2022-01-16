@@ -2556,3 +2556,45 @@ export const fakeElectionData = {
     },
   ],
 };
+
+export const fakeGenericWidgetData = {
+  title: "Wie haben sich die CO2-Emissionen in Münster verändert?",
+  description:
+    "Diese Daten zeigen die CO2-Emissionen in Münster nach Sektor und Jahr.",
+  objectType: "CO2",
+  chartType: "line",
+  dataMap: [
+    {
+      timestamp: "01.01.2018",
+      description: "2018",
+      values: [
+        {
+          value: 4.5,
+          content: "Industrie",
+          color: "green",
+        },
+        {
+          value: 7.0,
+          content: "Verkehr",
+          color: "red",
+        },
+      ],
+    },
+    {
+      timestamp: "01.01.2019",
+      description: "2019",
+      values: [
+        {
+          value: 6.2,
+          content: "Industrie",
+          color: "green",
+        },
+        {
+          value: 9.0,
+          content: "Verkehr",
+          color: "red",
+        },
+      ],
+    },
+  ],
+};

@@ -111,6 +111,7 @@ const MapChart = ({ lon, lat, regions = [], onRegionClick, dots = [] }) => {
                 const style = getStyle(geo, allPostalcodes, geosRegion);
                 return (
                   <OverlayTrigger
+                    key={j}
                     placement="right"
                     delay={{ show: 250, hide: 400 }}
                     overlay={renderTooltip}

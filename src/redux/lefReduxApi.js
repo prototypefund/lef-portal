@@ -33,17 +33,7 @@ const baseQuery = fetchBaseQuery({
 });
 
 const customBaseQuery = async (args, api, extraOptions) => {
-  let result = await baseQuery(args, api, extraOptions);
-  /*
-            console.debug({ args });
-            api.dispatch(
-              addNotificationMessage(
-                `BaseQuery: ${result.meta.response.status}`,
-                result.meta.request.url
-              )
-            );
-          */
-  return result;
+  return baseQuery(args, api, extraOptions);
 };
 
 export const lefReduxApi = createApi({
@@ -173,6 +163,15 @@ export const lefReduxApi = createApi({
         };
       },
     }),
+    getGenericChart: builder.query({
+      query: (genericChartId) => ({
+        url: "genericchart/get",
+        ...getQueryParameters({ _id: genericChartId }),
+      }),
+      providesTags: (result, error, genericChartId) => {
+        return [{ type: "GenericChart", id: genericChartId }];
+      },
+    }),
     requestSignUpUser: builder.query({
       query: ({ email, username, code, password }) => ({
         url: "signup",
@@ -208,10 +207,28 @@ export const lefReduxApi = createApi({
         { type: "Objectives", id: objective._id },
       ],
     }),
+    updateGenericChart: builder.mutation({
+      query: (genericChart) => ({
+        url: "genericchart/update",
+        ...getQueryParameters({ genericChart }, true),
+      }),
+      invalidatesTags: (result, error, genericChart) => [
+        { type: "GenericChart", id: genericChart._id },
+      ],
+    }),
     createRegion: builder.mutation({
       query: ({ name, postalcodes }) => ({
         url: "region/create",
         ...getQueryParameters({ name, postalcodes }, true),
+      }),
+    }),
+    createGenericChart: builder.mutation({
+      query: ({ title, objectType, chartType, dataMap, description }) => ({
+        url: "genericchart/create",
+        ...getQueryParameters(
+          { title, objectType, chartType, dataMap, description },
+          true
+        ),
       }),
     }),
     createObjective: builder.mutation({
@@ -291,9 +308,11 @@ export const {
   useGetAllVotingAreasQuery,
   // useGetVotingDataForDistrictQuery,
   useGetTokenLazyQuery,
+  useGetGenericChartQuery,
   useUpdateRegionMutation,
   useUpdateObjectiveMutation,
   useUpdateActionMutation,
+  useUpdateGenericChartMutation,
   useCreateObjectiveMutation,
   useCreateActionMutation,
   useCreateUserMutation,
@@ -302,4 +321,5 @@ export const {
   useChangePasswordMutation,
   useRequestPasswordResetMutation,
   useResetPasswordMutation,
+  useCreateGenericChartMutation,
 } = lefReduxApi;

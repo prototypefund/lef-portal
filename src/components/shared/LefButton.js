@@ -23,11 +23,11 @@ export const LefButton = ({
     >
       {icon ? (
         <>
-          {iconComponent}
+          {icon && iconComponent}
           <p className={"p-0 m-0 ml-2"}>{title}</p>
         </>
       ) : (
-        { title }
+        title
       )}
     </Button>
   );

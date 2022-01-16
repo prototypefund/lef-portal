@@ -1,12 +1,13 @@
 import { ResultEntry } from "./resultPageComponents/ResultEntry";
 import { Heading } from "./shared/Heading";
-import { Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { EditButton } from "./shared/EditButton";
 import { useParams } from "react-router-dom";
 import { WidgetContainer } from "./WidgetContainer";
 import { WIDGETS } from "./widgets/getWidget";
+import { GenericWidget } from "./widgets/GenericWidget";
 import { getTypeAheadOptions } from "./StartPage";
 import { getCityPath } from "./MainRouting";
 import { withRouter } from "react-router";
@@ -16,11 +17,13 @@ import { isArray } from "chart.js/helpers";
 import { LefSelect } from "./shared/LefSelect";
 import {
   lefReduxApi,
+  useCreateGenericChartMutation,
   useGetAllRegionsQuery,
   useGetRegionQuery,
   useUpdateRegionMutation,
 } from "../redux/lefReduxApi";
 import { isMobile } from "react-device-detect";
+import { fakeGenericWidgetData } from "../assets/fakeData/fakeData";
 
 const ResultPage = ({ history, location }) => {
   const [updateRegion] = useUpdateRegionMutation();
@@ -48,7 +51,7 @@ const ResultPage = ({ history, location }) => {
     isFetching: isFetchingRegion,
   } = useGetRegionQuery(regionId);
   const { data: regions = [] } = useGetAllRegionsQuery();
-  const { name, _id } = regionData;
+  const { name, _id, customWidgets = [] } = regionData;
 
   useEffect(() => {
     if (loggedIn) {
@@ -62,9 +65,22 @@ const ResultPage = ({ history, location }) => {
     }
   }, [editMode, userIsAdmin]);
 
+  const [
+    createGenericChart,
+    { isSuccess: isCreatingChartSuccess },
+  ] = useCreateGenericChartMutation();
+
+  const customWidgetsConverted = customWidgets.map((w, i) => ({
+    component: GenericWidget,
+    question: "Weitere Widgets " + i,
+    flag: w.isActive ? "generic" : "",
+    props: { widgetId: w.widgetId },
+  }));
+
   const widgets = Object.keys(WIDGETS)
     .map((key) => WIDGETS[key])
     .filter((widget) => editMode || !widget.flag || regionData[widget.flag])
+    .concat(customWidgetsConverted)
     .map((widget) => ({
       component: (
         <WidgetContainer
@@ -72,6 +88,7 @@ const ResultPage = ({ history, location }) => {
           editMode={editMode}
           regionData={regionData}
           isMobile={isMobile}
+          widgetProps={widget.props}
         />
       ),
       question: widget.question,
@@ -179,6 +196,29 @@ const ResultPage = ({ history, location }) => {
   return (
     <Container fluid style={{ maxWidth: 800, padding: "0px 12px" }}>
       {header}
+      <Button onClick={() => createGenericChart(fakeGenericWidgetData)}>
+        Test
+      </Button>
+
+      <Button
+        onClick={() =>
+          updateRegion({
+            ...regionData,
+            customWidgets: [
+              {
+                widgetId: "61e1b45dc3808f1c55794c76",
+                isActive: true,
+              },
+              {
+                widgetId: "61e31747e93ca1b88dcab821",
+                isActive: true,
+              },
+            ],
+          })
+        }
+      >
+        Test2
+      </Button>
       {widgets.length > 0 ? (
         widgets.map((entry, k) => (
           <ResultEntry
@@ -186,7 +226,7 @@ const ResultPage = ({ history, location }) => {
             question={entry.question.replaceAll("%s", name)}
             component={entry.component}
             editMode={editMode}
-            active={regionData[entry.flag]}
+            active={entry.flag === "generic" || regionData[entry.flag]}
             onToggleActive={(result) =>
               updateRegion({ ...regionData, [entry.flag]: result })
             }

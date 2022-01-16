@@ -7,7 +7,6 @@ import { LefSpinner } from "./shared/LefSpinner";
 import { LefSelect } from "./shared/LefSelect";
 import { useGetAllRegionsQuery } from "../redux/lefReduxApi";
 import { getString } from "../assets/dictionary_de";
-import * as PropTypes from "prop-types";
 import { LayerEntry } from "./mainMap/LayerEntry";
 // import { requestCreateRegion } from "../redux/dataSlice";
 
@@ -193,8 +192,9 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
                     padding: "5px 15px 5px 10px",
                   }}
                 >
-                  {LAYERS.map(({ name, color, label }) => (
+                  {LAYERS.map(({ name, color, label }, i) => (
                     <LayerEntry
+                      key={i}
                       color={color}
                       label={label}
                       onClick={() => toggleLayer(name)}

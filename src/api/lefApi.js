@@ -6,7 +6,6 @@ export const lefApi = {
   // USER & AUTH
   setNewPassword: (email, key, newPassword) =>
     apiRequest("/password/reset", { email, key, password: newPassword }),
-  // createClimateChart: () => apiRequest("/weatherstationdata/create", { fromFile: true }, true),
 };
 
 const apiRequest = (path, body, secure = false, method = "post") => {
