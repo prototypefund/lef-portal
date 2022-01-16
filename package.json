@@ -70,6 +70,7 @@
   "devDependencies": {
     "eslint-config-prettier": "^8.1.0",
     "husky": "^6.0.0",
+    "mini-css-extract-plugin": "2.4.5",
     "prettier": "2.2.1",
     "prop-types": "^15.7.2",
     "redux-devtools": "^3.7.0"
