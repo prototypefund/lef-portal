@@ -6,14 +6,12 @@ export const WidgetContainer = ({
   editMode,
   embeddingMode,
   isMobile,
-  widgetProps,
 }) => {
   const Component = React.createElement(component, {
     regionData,
     editMode,
     embeddingMode,
     isMobile,
-    widgetProps,
   });
   return Component;
 };

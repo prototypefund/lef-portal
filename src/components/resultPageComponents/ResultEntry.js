@@ -4,10 +4,13 @@ import { ThemeContext } from "../theme/ThemeContext";
 import { Question } from "./Question";
 import { SourceDisplay } from "../shared/SourceDisplay";
 import { isMobile } from "react-device-detect";
+import { LefButton } from "../shared/LefButton";
 
 const textColor = "#222";
 
 export const ResultEntry = ({
+  buttons,
+  onEditClick,
   question,
   component,
   editMode,
@@ -24,15 +27,26 @@ export const ResultEntry = ({
         <Question question={question} />
       </Row>
       <Collapse in={editMode}>
-        <div onClick={(event) => onToggleActive(!active)}>
-          <FormCheck
-            type={"switch"}
-            className={"mt-2 mb-3"}
-            checked={active}
-            label={"Widget anzeigen"}
-            onChange={() => {}}
-          />
-        </div>
+        <Row className={""}>
+          <Col>
+            <div onClick={(event) => onToggleActive(!active)}>
+              <FormCheck
+                type={"switch"}
+                className={"mt-2 mb-3"}
+                checked={active}
+                label={"Widget anzeigen"}
+                onChange={() => {}}
+              />
+            </div>
+          </Col>
+          {buttons && (
+            <Col className={"justify-content-end d-flex"}>
+              {buttons.map((button) => (
+                <LefButton size={"sm"} {...button} />
+              ))}
+            </Col>
+          )}
+        </Row>
       </Collapse>
       {active &&
         (mobileMode ? (

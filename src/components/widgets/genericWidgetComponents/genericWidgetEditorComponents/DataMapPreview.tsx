@@ -1,7 +1,6 @@
-import { Col, Row, Table } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import React from "react";
 import { TDataMap } from "../../../../types/TDataMap";
-import { Heading } from "../../../shared/Heading";
 // @ts-ignore
 import { isArrayWithOneElement } from "../../../../utils/utils";
 

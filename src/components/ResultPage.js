@@ -24,6 +24,9 @@ import {
 } from "../redux/lefReduxApi";
 import { isMobile } from "react-device-detect";
 import { fakeGenericWidgetData } from "../assets/fakeData/fakeData";
+import { LefButton } from "./shared/LefButton";
+import { GenericWidgetEditor } from "./widgets/genericWidgetComponents/GenericWidgetEditor";
+import { isDev } from "../App";
 
 const ResultPage = ({ history, location }) => {
   const [updateRegion] = useUpdateRegionMutation();
@@ -46,6 +49,7 @@ const ResultPage = ({ history, location }) => {
     userData.regionIds.includes(regionId);
   const { state = {} } = location;
   const [editMode, setEditMode] = useState(state.startInEditMode);
+  const [showWidgetEditor, setShowWidgetEditor] = useState(false);
   const {
     data: regionData = {},
     isFetching: isFetchingRegion,
@@ -70,17 +74,16 @@ const ResultPage = ({ history, location }) => {
     { isSuccess: isCreatingChartSuccess },
   ] = useCreateGenericChartMutation();
 
-  const customWidgetsConverted = customWidgets.map((w, i) => ({
+  const customWidgetsConverted = customWidgets.map((w) => ({
     component: GenericWidget,
-    question: "Weitere Widgets " + i,
-    flag: w.isActive ? "generic" : "",
-    props: { widgetId: w.widgetId },
+    widgetId: w.widgetId,
+    active: w.isActive,
+    type: "generic",
   }));
 
   const widgets = Object.keys(WIDGETS)
     .map((key) => WIDGETS[key])
     .filter((widget) => editMode || !widget.flag || regionData[widget.flag])
-    .concat(customWidgetsConverted)
     .map((widget) => ({
       component: (
         <WidgetContainer
@@ -88,14 +91,13 @@ const ResultPage = ({ history, location }) => {
           editMode={editMode}
           regionData={regionData}
           isMobile={isMobile}
-          widgetProps={widget.props}
         />
       ),
       question: widget.question,
       flag: widget.flag,
       sources: widget.sources,
-    }));
-
+    }))
+    .concat(customWidgetsConverted);
   let typeAheadOptions = getTypeAheadOptions(regions);
   let selectedRegion = typeAheadOptions.find((option) => option.value === _id);
 
@@ -165,7 +167,7 @@ const ResultPage = ({ history, location }) => {
               {({ isMenuShown, toggleMenu }) => (
                 <ToggleButton
                   isOpen={isMenuShown}
-                  onClick={(e) => toggleMenu()}
+                  onClick={() => toggleMenu()}
                 />
               )}
             </LefSelect>
@@ -196,49 +198,71 @@ const ResultPage = ({ history, location }) => {
   return (
     <Container fluid style={{ maxWidth: 800, padding: "0px 12px" }}>
       {header}
-      <Button onClick={() => createGenericChart(fakeGenericWidgetData)}>
-        Test
-      </Button>
-
-      <Button
-        onClick={() =>
-          updateRegion({
-            ...regionData,
-            customWidgets: [
-              {
-                widgetId: "61e1b45dc3808f1c55794c76",
-                isActive: true,
-              },
-              {
-                widgetId: "61e31747e93ca1b88dcab821",
-                isActive: true,
-              },
-            ],
-          })
-        }
-      >
-        Test2
-      </Button>
-      {widgets.length > 0 ? (
-        widgets.map((entry, k) => (
-          <ResultEntry
-            key={k}
-            question={entry.question.replaceAll("%s", name)}
-            component={entry.component}
-            editMode={editMode}
-            active={entry.flag === "generic" || regionData[entry.flag]}
-            onToggleActive={(result) =>
-              updateRegion({ ...regionData, [entry.flag]: result })
+      {isDev && (
+        <>
+          <Button onClick={() => createGenericChart(fakeGenericWidgetData)}>
+            Test
+          </Button>
+          <Button
+            onClick={() =>
+              updateRegion({
+                ...regionData,
+                customWidgets: [
+                  {
+                    widgetId: "61e1b45dc3808f1c55794c76",
+                    isActive: true,
+                  },
+                  {
+                    widgetId: "61e31747e93ca1b88dcab821",
+                    isActive: true,
+                  },
+                ],
+              })
             }
-            sources={entry.sources}
-          />
-        ))
+          >
+            Test2
+          </Button>
+        </>
+      )}{" "}
+      {widgets.length > 0 ? (
+        widgets.map((entry, k) =>
+          entry.type === "generic" ? (
+            <GenericWidget
+              editMode={editMode}
+              active={entry.active}
+              widgetId={entry.widgetId}
+            />
+          ) : (
+            <ResultEntry
+              key={k}
+              question={entry.question.replaceAll("%s", name)}
+              component={entry.component}
+              editMode={editMode}
+              active={entry.flag === "generic" || regionData[entry.flag]}
+              onToggleActive={(result) =>
+                updateRegion({ ...regionData, [entry.flag]: result })
+              }
+              sources={entry.sources}
+            />
+          )
+        )
       ) : (
         <p>
           {name &&
             `Es sind bislang keine Daten für ${name} vorhanden. Probier es zu einem späteren Zeitpunkt noch einmal.`}
         </p>
       )}
+      {editMode && (
+        <LefButton
+          title={"Widget hinzufügen"}
+          onClick={() => setShowWidgetEditor(true)}
+        />
+      )}
+      <GenericWidgetEditor
+        currentObject={{}}
+        open={showWidgetEditor}
+        onClose={() => setShowWidgetEditor(false)}
+      />
     </Container>
   );
 };

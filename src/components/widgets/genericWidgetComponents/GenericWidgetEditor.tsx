@@ -20,8 +20,6 @@ import { IGenericWidget } from "../../../types/IGenericWidget";
 import { ChartType } from "chart.js";
 import { IDataMapEntry } from "../../../types/IDataMapEntry";
 
-type FIX_LATER = any;
-
 const CHART_TYPES = [
   { id: "bar", label: "Balkendiagramm" },
   { id: "scatter", label: "Punktdiagramm" },
@@ -89,7 +87,6 @@ export const GenericWidgetEditor = ({
     currentObject.description || ""
   );
   const [chartType, setChartType] = useState(currentObject.chartType || "line");
-  const [hasHeaders, setHasHeaders] = useState(true);
   const [contentRowIndex, setContentRowIndex] = useState(-1);
   const [valueRowIndex, setValueRowIndex] = useState(-1);
   const [timestampRowIndex, setTimestampRowIndex] = useState(-1);
@@ -99,9 +96,7 @@ export const GenericWidgetEditor = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [showDataImportModal, setShowDataImportModal] = useState(false);
 
-  const categories = dataMap
-    .map((entry) => entry.values)
-    .map((v) => (v.length > 0 ? v[0].value : 0));
+  const categories = dataMap.map((entry) => entry.values).map((v) => v.length);
   const maximumCategories = Math.max(...categories);
 
   const [
@@ -119,13 +114,11 @@ export const GenericWidgetEditor = ({
     <CSVReader
       onFileLoad={(data) => {
         if (data.length === 0) return;
-        const map = data.map((d) => d.data).slice(hasHeaders ? 1 : 0);
+        const map = data.map((d) => d.data).slice(1);
         console.debug({ map });
         setCsvData(map);
-        if (hasHeaders) {
-          const firstEntry = data[0].data;
-          setCsvHeaders(firstEntry);
-        }
+        const firstEntry = data[0].data;
+        setCsvHeaders(firstEntry);
       }}
       //onError={this.handleOnError}
       //onRemoveFile={this.handleOnRemoveFile}
@@ -179,7 +172,7 @@ export const GenericWidgetEditor = ({
             <Row>
               <Heading size={"h5"} text={"Importierte Daten"} />
             </Row>
-            <Row>{`Die Daten beinhalten ${dataMap.length} Zeitpunkte mit jeweils bis zu ${maximumCategories} Kategorien.`}</Row>
+            <Row>{`Die Daten umfassen ${dataMap.length} Zeitpunkte mit jeweils bis zu ${maximumCategories} Kategorien.`}</Row>
             <Row className={"mb-3 alert alert-dark mt-2"}>
               {dataMap.length > 0 && <DataMapPreview dataMap={dataMap} />}
             </Row>
@@ -303,6 +296,7 @@ export const GenericWidgetEditor = ({
               <Row className={"p-3 justify-content-center"}>
                 <LefGenericChart
                   genericChart={{
+                    _id: currentObject._id,
                     chartType,
                     dataMap,
                     title,
@@ -317,14 +311,20 @@ export const GenericWidgetEditor = ({
       ),
       nextEnabled: true,
       nextLabel: "Speichern",
-      onNext: () =>
-        updateGenericChart({
-          ...currentObject,
-          dataMap,
-          description,
-          title,
-          chartType,
-        }),
+      onNext: () => {
+        const editing = Boolean(currentObject._id);
+        if (editing) {
+          updateGenericChart({
+            ...currentObject,
+            dataMap,
+            description,
+            title,
+            chartType,
+          });
+        } else {
+          // TODO create new object & add to region
+        }
+      },
     },
   ];
 

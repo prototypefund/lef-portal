@@ -1,19 +1,14 @@
 import React, { useState } from "react";
 import { useGetGenericChartQuery } from "../../redux/lefReduxApi";
-import { Heading } from "../shared/Heading";
-import { LefButton } from "../shared/LefButton";
-import { PencilFill } from "react-bootstrap-icons";
-import { LefModal } from "../shared/LefModal";
+import { PencilFill, TrashFill } from "react-bootstrap-icons";
 import { LefGenericChart } from "./genericWidgetComponents/LefGenericChart";
 import { GenericWidgetEditor } from "./genericWidgetComponents/GenericWidgetEditor";
-import { Row } from "react-bootstrap";
+import { ResultEntry } from "../resultPageComponents/ResultEntry";
 
-export const GenericWidget = ({ regionData, editMode, widgetProps = {} }) => {
+export const GenericWidget = ({ editMode, active, widgetId }) => {
   const [editorOpen, setEditorOpen] = useState(false);
-  const { widgetId } = widgetProps;
   const { data: genericChartData = {} } = useGetGenericChartQuery(widgetId);
   const { description, title } = genericChartData;
-  console.debug({ genericChartData, widgetProps });
 
   return (
     <>
@@ -25,20 +20,32 @@ export const GenericWidget = ({ regionData, editMode, widgetProps = {} }) => {
         />
       )}
 
-      {editMode && (
-        <Row className={"w-100"}>
-          <div className={"ml-auto"}>
-            <LefButton
-              icon={PencilFill}
-              title={"Widget bearbeiten"}
-              onClick={() => setEditorOpen(true)}
-            />
-          </div>
-        </Row>
-      )}
-      <Heading size={"h5"} text={title} />
-      <LefGenericChart genericChart={genericChartData} />
-      <p>{description}</p>
+      <ResultEntry
+        buttons={[
+          {
+            icon: TrashFill,
+            title: "",
+            variant: "danger",
+            // TODO onClick GenericChart entfernen
+          },
+          {
+            icon: PencilFill,
+            title: "",
+            onClick: () => setEditorOpen(true),
+          },
+        ]}
+        showEditButton
+        onEditClick={() => setEditorOpen(true)}
+        editMode={editMode}
+        component={
+          <>
+            <LefGenericChart genericChart={genericChartData} />
+            <p>{description}</p>
+          </>
+        }
+        question={title}
+        active={active}
+      />
     </>
   );
 };
