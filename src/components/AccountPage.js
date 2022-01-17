@@ -17,6 +17,7 @@ import {
   useGetUserQuery,
 } from "../redux/lefReduxApi";
 import { SpinnerWrapper } from "./shared/SpinnerWrapper";
+import { LefButton } from "./shared/LefButton";
 
 export const AccountPage = () => {
   const auth = useSelector((state) => state.auth) || {};
@@ -68,16 +69,18 @@ export const AccountPage = () => {
 
       <SpinnerWrapper loading={isFetchingUserData} spinnerProps={spinnerProps}>
         <Form>
-          <Form.Group controlId={"userEmail"}>
-            <Form.Label>Name</Form.Label>
-            <Form.Control
-              type={"name"}
-              placeholder={"(kein Name vergeben)"}
-              value={userName}
-              disabled
-            />
-          </Form.Group>
-          <Row>
+          <Row className={"mt-2"}>
+            <Form.Group controlId={"userEmail"}>
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type={"name"}
+                placeholder={"(kein Name vergeben)"}
+                value={userName}
+                disabled
+              />
+            </Form.Group>
+          </Row>
+          <Row className={"mt-2"}>
             <Form.Group controlId={"userEmail"} as={Col}>
               <Form.Label>E-Mail</Form.Label>
               <Form.Control
@@ -98,10 +101,11 @@ export const AccountPage = () => {
               />
             </Form.Group>
           </Row>
-          <Form.Group>
-            <Button onClick={() => setShowPasswordDialog(true)}>
-              Passwort ändern
-            </Button>
+          <Form.Group className={"mt-2"}>
+            <LefButton
+              title={"Passwort ändern"}
+              onClick={() => setShowPasswordDialog(true)}
+            />
           </Form.Group>
         </Form>
       </SpinnerWrapper>
@@ -115,7 +119,7 @@ export const AccountPage = () => {
             loading={isFetchingUserData || isFetchingRegions}
             spinnerProps={spinnerProps}
           >
-            <Card.Text>
+            <Row className={"g-4 mt-3 ml-1"} xs={1} md={2}>
               {myRegions.length > 0 ? (
                 myRegions
                   .sort((a, b) => (a.name < b.name ? -1 : 1))
@@ -143,13 +147,6 @@ export const AccountPage = () => {
                             </div>
                           </Card.Text>
                           <Row className={"ml-0 mt-4"}>
-                            {/*<Button
-                          size={"sm"}
-                          variant={"secondary"}
-                          className={"mr-2"}
-                        >
-                          Entfernen
-                        </Button>*/}
                             <Button size={"sm"}>
                               <Link
                                 className={"navbar text-decoration-none"}
@@ -161,12 +158,8 @@ export const AccountPage = () => {
                                 Bearbeiten
                               </Link>
                             </Button>
-                            {/*<Button onClick={() => lefApi.createClimateChart()}>
-                          CREATE
-                        </Button>*/}
                           </Row>
                         </Card.Body>
-                        {/* <Card.Footer> <small className="text-muted"> </small> </Card.Footer>*/}
                       </Card>
                     );
                   })
@@ -175,7 +168,7 @@ export const AccountPage = () => {
                   Bislang sind keine Regionen mit Ihrem Account verknüpft.
                 </p>
               )}
-            </Card.Text>
+            </Row>
           </SpinnerWrapper>
 
           {/*<div>

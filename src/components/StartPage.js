@@ -8,6 +8,7 @@ import { LefSelect } from "./shared/LefSelect";
 import { useGetAllRegionsQuery } from "../redux/lefReduxApi";
 import { getString } from "../assets/dictionary_de";
 import { LayerEntry } from "./mainMap/LayerEntry";
+import { LefButton } from "./shared/LefButton";
 // import { requestCreateRegion } from "../redux/dataSlice";
 
 export const getTypeAheadOptions = (regions) => {
@@ -143,18 +144,18 @@ export const StartPage = ({ onCitySelect = () => {} }) => {
                   />
                 </Row>
                 <Row>
-                  <Button
-                    className={"mt-3"}
-                    size={"sm"}
-                    variant={"primary"}
-                    onClick={() => getLocation()}
-                  >
-                    Meinen Standort verwenden
-                  </Button>
+                  <Col className={"mt-3"}>
+                    <LefButton
+                      variant={"secondary"}
+                      size={"sm"}
+                      title={"Meinen Standort verwenden"}
+                      onClick={getLocation}
+                    />
+                  </Col>
                 </Row>
               </Col>
 
-              <Row className={"mt-3 mr-md-3"}>{infoBox}</Row>
+              <Row className={"mt-3 mr-md-3 ml-0"}>{infoBox}</Row>
             </Col>
 
             <Col
