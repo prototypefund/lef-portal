@@ -22,7 +22,7 @@ export function LefBarChart({
       },
       legend: {
         display: true,
-        position: "bottom",
+        position: "top",
       },
     },
     scales: {
@@ -34,8 +34,7 @@ export function LefBarChart({
         ...(yMax && { max: yMax }),
       },
       x: {
-        display: false,
-
+        display: true,
         stacked: true,
       },
     },

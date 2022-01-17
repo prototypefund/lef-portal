@@ -13,11 +13,11 @@ import { LefModal } from "../../shared/LefModal";
 // @ts-ignore
 // @ts-ignore
 // @ts-ignore
-import {
-  useCreateGenericChartMutation,
-  useUpdateGenericChartMutation,
-  useUpdateRegionMutation,
-} from "../../../redux/lefReduxApi";
+import { useCreateGenericChartMutation } from "../../../redux/lefReduxApi";
+// @ts-ignore
+import { useUpdateRegionMutation } from "../../../redux/lefReduxApi";
+// @ts-ignore
+import { useUpdateGenericChartMutation } from "../../../redux/lefReduxApi";
 // @ts-ignore
 import { CsvHeaderMapping } from "./genericWidgetEditorComponents/CsvHeaderMapping";
 import { IGenericWidget, TLefChartType } from "../../../types/IGenericWidget";

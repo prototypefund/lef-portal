@@ -36,7 +36,7 @@ export function LefGenericChart({
 
   const data = { labels: xLabels, datasets: datasets };
   return chartType === "line" ? (
-    <LefLineChart hideScales data={data} />
+    <LefLineChart data={data} />
   ) : chartType === "bar" ? (
     <LefBarChart data={data} />
   ) : chartType === "cake" ? (
