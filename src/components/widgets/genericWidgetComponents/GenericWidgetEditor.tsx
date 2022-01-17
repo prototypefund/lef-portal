@@ -11,32 +11,33 @@ import { LefButton } from "../../shared/LefButton";
 // @ts-ignore
 import { LefModal } from "../../shared/LefModal";
 // @ts-ignore
-import { useCreateGenericChartMutation } from "../../../redux/lefReduxApi";
 // @ts-ignore
-import { useUpdateRegionMutation } from "../../../redux/lefReduxApi";
 // @ts-ignore
-import { useUpdateGenericChartMutation } from "../../../redux/lefReduxApi";
+import {
+  useCreateGenericChartMutation,
+  useUpdateGenericChartMutation,
+  useUpdateRegionMutation,
+} from "../../../redux/lefReduxApi";
 // @ts-ignore
 import { CsvHeaderMapping } from "./genericWidgetEditorComponents/CsvHeaderMapping";
-import { IGenericWidget } from "../../../types/IGenericWidget";
-import { ChartType } from "chart.js";
+import { IGenericWidget, TLefChartType } from "../../../types/IGenericWidget";
 import { IDataMapEntry } from "../../../types/IDataMapEntry";
 import { LefSelect } from "../../shared/LefSelect";
 
-const CHART_TYPES = [
+export const CHART_TYPES = [
   { id: "bar", label: "Balkendiagramm" },
   { id: "line", label: "Liniendiagramm" },
-  //{ id: "scatter", label: "Punktdiagramm" },
-  //{ id: "cake", label: "Kuchendiagramm" },
+  // { id: "scatter", label: "Punktdiagramm" },
+  { id: "cake", label: "Kuchendiagramm" },
 ];
 
-function convertCsvToDataMap(
+const convertCsvToDataMap = (
   csvData: ICsvData,
   contentRowIndex: number,
   valueRowIndex: number,
   timestampRowIndex: number,
   descriptionRowIndex: number
-): IDataMapEntry[] {
+): IDataMapEntry[] => {
   let convertedData: any[] = [];
   csvData.forEach((entry) => {
     const content = entry[contentRowIndex];
@@ -58,11 +59,11 @@ function convertCsvToDataMap(
       });
     }
   });
-  return convertedData;
-}
+  return convertedData.sort((a, b) => a.timestamp - b.timestamp);
+};
 
 interface TSelectValues {
-  value: ChartType;
+  value: TLefChartType;
 }
 
 interface ICsvData {
@@ -122,7 +123,9 @@ export const GenericWidgetEditor = ({
   const [description, setDescription] = useState(
     currentObject.description || ""
   );
-  const [chartType, setChartType] = useState(currentObject.chartType || "line");
+  const [chartType, setChartType] = useState<TLefChartType>(
+    currentObject.chartType || "line"
+  );
   const [contentRowIndex, setContentRowIndex] = useState(-1);
   const [valueRowIndex, setValueRowIndex] = useState(-1);
   const [timestampRowIndex, setTimestampRowIndex] = useState(-1);

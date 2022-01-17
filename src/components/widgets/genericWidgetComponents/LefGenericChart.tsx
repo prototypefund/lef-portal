@@ -5,6 +5,8 @@ import { IGenericWidget } from "../../../types/IGenericWidget";
 import { LefLineChart } from "../../shared/charts/LefLineChart";
 // @ts-ignore
 import { LefBarChart } from "../../shared/charts/LefBarChart";
+// @ts-ignore
+import { LefPieChart } from "../../shared/charts/LefPieChart";
 import { ChartType } from "chart.js";
 
 export function LefGenericChart({
@@ -37,6 +39,8 @@ export function LefGenericChart({
     <LefLineChart hideScales data={data} />
   ) : chartType === "bar" ? (
     <LefBarChart data={data} />
+  ) : chartType === "cake" ? (
+    <LefPieChart data={data} />
   ) : (
     <>{"Anzeigeformat derzeit nicht verfügbar."}</>
   );

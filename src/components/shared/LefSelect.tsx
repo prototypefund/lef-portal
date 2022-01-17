@@ -23,6 +23,7 @@ export function LefSelect({
 }) {
   return (
     <Typeahead
+      id={id}
       highlightOnlyResult
       placeholder={pleaseChoose}
       emptyLabel={"Keine Ergebnisse."}

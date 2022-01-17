@@ -84,12 +84,11 @@ export const mergeWeatherStationData = (dataArray = []) => {
 };
 
 const movingAverage = (oldSum, newValue, count) => {
-  let newVar = newValue
+  return newValue
     ? count > 1
       ? ((count - 1) * oldSum + newValue) / count
       : newValue
     : oldSum;
-  return newVar;
 };
 
 export const mapToScale = (value, oldMin, oldMax, newMin, newMax) => {

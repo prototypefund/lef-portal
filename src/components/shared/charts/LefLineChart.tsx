@@ -1,9 +1,7 @@
 import { Chart } from "react-chartjs-2";
 import React, { useContext } from "react";
-// @ts-ignore
 import { ThemeContext } from "../../theme/ThemeContext";
 import { isArray } from "chart.js/helpers";
-// import { defaults } from "react-chartjs-2";
 import { ChartType } from "chart.js";
 
 interface ILefLineChartDatasets {
@@ -36,7 +34,6 @@ export function LefLineChart({
   y2Max?: number;
   hideScales?: boolean;
 }) {
-  // defaults.animation = !disableAnimations;
   const { theme } = useContext(ThemeContext);
   const { DIAGRAM_COLORS = [] } = theme.colors;
   const usedScales = isArray(data.datasets)
